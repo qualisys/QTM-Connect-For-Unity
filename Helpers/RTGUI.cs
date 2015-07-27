@@ -54,20 +54,25 @@ namespace QualisysRealTime.Unity
             GUILayout.Label("Server Settings", EditorStyles.boldLabel);
             if (Application.isPlaying)
             {
-                GUILayout.Label("QTM Servers:");
-                List<GUIContent> serverSelection = new List<GUIContent>();
-                foreach (var discoveryResponse in discoveryResponses)
-                {
-                    serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ")"));
-                }
-                serverNumber = EditorGUILayout.Popup(serverNumber, serverSelection.ToArray());
-                if (serverNumber >= 0 && serverNumber < discoveryResponses.Count)
-                {
-                    selectedDiscoveryResponse = discoveryResponses[serverNumber];
+                selectedDiscoveryResponse = null;
+                if (discoveryResponses != null)
+                {                
+                    GUILayout.Label("QTM Servers:");
+                    List<GUIContent> serverSelection = new List<GUIContent>();
+                    foreach (var discoveryResponse in discoveryResponses)
+                    {
+                        serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ")"));
+                    }
+                    serverNumber = EditorGUILayout.Popup(serverNumber, serverSelection.ToArray());
+                    if (serverNumber >= 0 && serverNumber < discoveryResponses.Count)
+                    {
+                        selectedDiscoveryResponse = discoveryResponses[serverNumber];
+                    }
                 }
                 else
                 {
-                    selectedDiscoveryResponse = null;
+                    GUILayout.Label("No QTM Servers where discovered on the network");
+                    return;
                 }
             }
             else
@@ -75,7 +80,9 @@ namespace QualisysRealTime.Unity
                 GUILayout.Label("(Unity needs to be in play mode to set server)");
             }
             if (connected)
+            {
                 GUI.enabled = false;
+            }
             GUILayout.Label("Stream Settings", EditorStyles.boldLabel);
             portUDP = (short)EditorGUILayout.IntField("UDP Port:", portUDP);
             stream3d = EditorGUILayout.Toggle("3D Labeled Markers", stream3d);
