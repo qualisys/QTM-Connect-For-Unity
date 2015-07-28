@@ -31,4 +31,4 @@ Scripts in this folder are Unity helper scripts used to commuicate with Qualisys
 
 #### RTClientSDK.Net
 
-These is a packaged version of the [Realtime client SDK for .Net](https://github.com/qualisys/RTClientSDK.Net).
+The Unity SDK includes a packaged version of the [Realtime client SDK for .Net](https://github.com/qualisys/RTClientSDK.Net).
