@@ -166,29 +166,35 @@ namespace QualisysRealTime.Unity
         }
 
         /// <summary>
-        /// Get list of servers available on network
+        /// Get list of servers available on network (always add localhost)
         /// </summary>
         /// <returns><c>true</c>, if discovery packet was sent, <c>false</c> otherwise.</returns>
         /// <param name="list">List of discovered servers</param>
-        public bool GetServers(out List<DiscoveryResponse> list)
+        public List<DiscoveryResponse> GetServers()
         {
             // Send discovery packet
+            List<DiscoveryResponse> list = new List<DiscoveryResponse>();
             if (mProtocol.DiscoverRTServers(1337))
             {
                 if (mProtocol.DiscoveryResponses.Count > 0)
                 {
                     //Get list of all servers from protocol
-                    list = new List<DiscoveryResponse>();
                     foreach (var discoveryResponse in mProtocol.DiscoveryResponses)
                     {
                         //add them to our list for user to pick from
                         list.Add(discoveryResponse);
                     }
-                    return true;
                 }
             }
-            list = null;
-            return false;
+            list.Add(new DiscoveryResponse
+            {
+                HostName = "Localhost",
+                IpAddress = "127.0.0.1",
+                Port = RTProtocol.Constants.STANDARD_BASE_PORT,
+                InfoText = "",
+                CameraCount = 0
+            });
+            return list;
         }
 
         /// <summary>
@@ -208,7 +214,30 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        // streaming status of client
+        /// <summary>
+        /// Connect the specified IpAddress.
+        /// </summary>
+        /// <param name="IpAddress">IP adress</param>
+        /// <param name="udpPort">UDP port streaming should occur on.</param>
+        /// <param name="stream6d"> if 6DOF data should be streamed.</param>
+        /// <param name="stream3d"> if labeled markers should be streamed.</param>
+        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d)
+        {
+            if (mProtocol.Connect(IpAddress, udpPort))
+            {
+                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d);
+            }
+            Debug.Log("Error Creating Connection to server");
+            return false;
+        }
+
+        // Get protocol error string
+        public string GetErrorString()
+        {
+            return mProtocol.GetErrorString();
+        }
+
+        // Get streaming status of client
         public bool GetStreamingStatus()
         {
             return mStreamingStatus;
@@ -225,7 +254,6 @@ namespace QualisysRealTime.Unity
             mProtocol.StopStreamListen();
             mProtocol.Disconnect();
         }
-
 
         private bool Get6DOFSettings()
         {

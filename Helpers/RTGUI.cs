@@ -22,7 +22,7 @@ namespace QualisysRealTime.Unity
         bool stream3d = true;
 
         private List<SixDOFBody> availableBodies;
-        List<DiscoveryResponse> discoveryResponses;
+        private List<DiscoveryResponse> discoveryResponses;
 
         [MenuItem("Window/Qualisys/RTClient")]
         public static void ShowWindow()
@@ -32,7 +32,7 @@ namespace QualisysRealTime.Unity
 
         public void OnEnable()
         {
-            RTClient.GetInstance().GetServers(out discoveryResponses);
+            discoveryResponses = RTClient.GetInstance().GetServers();
         }
 
         /// This makes sure we only can connect when in playing mode
@@ -56,12 +56,12 @@ namespace QualisysRealTime.Unity
             {
                 selectedDiscoveryResponse = null;
                 if (discoveryResponses != null)
-                {                
+                {
                     GUILayout.Label("QTM Servers:");
                     List<GUIContent> serverSelection = new List<GUIContent>();
                     foreach (var discoveryResponse in discoveryResponses)
                     {
-                        serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ")"));
+                        serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ":" + discoveryResponse.Port + ") " + discoveryResponse.InfoText));
                     }
                     serverNumber = EditorGUILayout.Popup(serverNumber, serverSelection.ToArray());
                     if (serverNumber >= 0 && serverNumber < discoveryResponses.Count)
@@ -119,7 +119,6 @@ namespace QualisysRealTime.Unity
             else
             {
                 GUILayout.Label("Please start Play to start streaming", EditorStyles.boldLabel);
-
             }
         }
 
@@ -140,7 +139,9 @@ namespace QualisysRealTime.Unity
         void OnConnect()
         {
             if (selectedDiscoveryResponse.HasValue)
+            {
                 connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d);
+            }
 
             if (connected)
             {
@@ -149,7 +150,7 @@ namespace QualisysRealTime.Unity
             }
             else
             {
-                connectionStatus = "Connection error - check console";
+                connectionStatus = "Connection error - " + RTClient.GetInstance().GetErrorString() + " (also check console)";
             }
         }
     }

@@ -185,17 +185,17 @@ namespace QTMRealTimeSDK
             /// <summary>Size of component header, component size and component type</summary>
             public const int COMPONENT_HEADER = 8;
             /// <summary>Default base port used by QTM</summary>
-            public const ushort STANDARD_BASE_PORT = 22222;
+            public const int STANDARD_BASE_PORT = 22222;
             /// <summary>Port QTM listens to for discovery requests</summary>
-            public const ushort STANDARD_BROADCAST_PORT = 22226;
+            public const int STANDARD_BROADCAST_PORT = 22226;
 
         }
 
-		public delegate void ProcessStream(RTPacket packet);
+        public delegate void ProcessStream(RTPacket packet);
         /// <summary>Callback for processing real time data packets</summary>
         public ProcessStream RealTimeDataCallback;
         /// <summary>Callback for receiving events</summary>
-		public ProcessStream EventDataCallback;
+        public ProcessStream EventDataCallback;
 
         /// <summary>Packet received from QTM</summary>
         public RTPacket Packet { get { return mPacket; } }
@@ -227,7 +227,7 @@ namespace QTMRealTimeSDK
         SettingsGazeVector mGazeVectorSettings;
         /// <summary>Gaze vector settings from QTM</summary>
         public SettingsGazeVector GazeVectorSettings { get { return mGazeVectorSettings; } }
-        
+
         private bool mBroadcastSocketCreated = false;
         private Thread mProcessStreamthread;
         private RTNetwork mNetwork;
@@ -268,8 +268,8 @@ namespace QTMRealTimeSDK
         /// <param name="port">base port for QTM server, default is 22222</param>
         /// <returns>true if connection was successful, otherwise false</returns>
         public bool Connect(string serverAddr, short serverPortUDP = -1,
-                            int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION,
-                            int port = Constants.STANDARD_BASE_PORT)
+        int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION,
+        int port = Constants.STANDARD_BASE_PORT)
         {
             Disconnect();
             mMajorVersion = majorVersion;
@@ -486,9 +486,9 @@ namespace QTMRealTimeSDK
                 PacketType packetType;
                 do
                 {
-                     receieved = ReceiveRTPacket(out packetType);
-                     if (packetType == PacketType.PacketCommand)
-                     {
+                    receieved = ReceiveRTPacket(out packetType);
+                    if (packetType == PacketType.PacketCommand)
+                    {
                         DiscoveryResponse response;
                         if (mPacket.GetDiscoverData(out response))
                         {
@@ -522,23 +522,23 @@ namespace QTMRealTimeSDK
 
             while (mThreadActive)
             {
-				ReceiveRTPacket(out packetType);
+                ReceiveRTPacket(out packetType);
 
                 var packet = mPacket;
-				if (packet != null)
+                if (packet != null)
                 {
-					if (packetType == PacketType.PacketData)
-					{
+                    if (packetType == PacketType.PacketData)
+                    {
                         var realtimeDataCallback = RealTimeDataCallback;
                         if (realtimeDataCallback != null)
                             realtimeDataCallback(packet);
-					}
-					else if (packetType == PacketType.PacketEvent)
-					{
+                    }
+                    else if (packetType == PacketType.PacketEvent)
+                    {
                         var eventDataCallback = EventDataCallback;
                         if (eventDataCallback != null)
                             eventDataCallback(packet);
-					}
+                    }
 
                 }
 
@@ -552,9 +552,9 @@ namespace QTMRealTimeSDK
         {
             mThreadActive = false;
             if (mProcessStreamthread != null)
-			{
-				mProcessStreamthread.Join(new TimeSpan(0,1,0));
-			}
+            {
+                mProcessStreamthread.Join(new TimeSpan(0, 1, 0));
+            }
         }
 
         #region get set functions
@@ -616,11 +616,11 @@ namespace QTMRealTimeSDK
         {
             if (SendCommand("QTMVersion"))
             {
-				PacketType responsePacketType = mPacket.PacketType;
+                PacketType responsePacketType = mPacket.PacketType;
                 if (responsePacketType == PacketType.PacketCommand)
                 {
                     version = mPacket.GetCommandString();
-					return true;
+                    return true;
                 }
             }
             version = "";
@@ -634,19 +634,19 @@ namespace QTMRealTimeSDK
         /// <returns>true if command was sent successfully</returns>
         public bool GetByteOrder(out bool bigEndian)
         {
-			if (SendCommand("ByteOrder"))
-			{
-				PacketType responsePacketType = mPacket.PacketType;
-				if (responsePacketType == PacketType.PacketCommand)
-				{
-					string response = mPacket.GetCommandString();
-					if (response == "Byte order is big endian")
-						bigEndian = true;
-					else
-						bigEndian = false;
-					return true;
-				}
-			}
+            if (SendCommand("ByteOrder"))
+            {
+                PacketType responsePacketType = mPacket.PacketType;
+                if (responsePacketType == PacketType.PacketCommand)
+                {
+                    string response = mPacket.GetCommandString();
+                    if (response == "Byte order is big endian")
+                        bigEndian = true;
+                    else
+                        bigEndian = false;
+                    return true;
+                }
+            }
             bigEndian = false;
             return false;
         }
@@ -658,24 +658,24 @@ namespace QTMRealTimeSDK
         /// <returns>true if command was successfully sent AND License passed, otherwise false</returns>
         public bool CheckLicense(string licenseCode)
         {
-			if (SendCommand("CheckLicense " + licenseCode))
-			{
-				PacketType responsePacketType = mPacket.PacketType;
-				if (responsePacketType == PacketType.PacketCommand)
-				{
-					string response = mPacket.GetCommandString();
-					if (response == "License pass")
-					{
-						return true;
+            if (SendCommand("CheckLicense " + licenseCode))
+            {
+                PacketType responsePacketType = mPacket.PacketType;
+                if (responsePacketType == PacketType.PacketCommand)
+                {
+                    string response = mPacket.GetCommandString();
+                    if (response == "License pass")
+                    {
+                        return true;
 
-					}
-					else
-					{
-						mErrorString = "Wrong license code.";
-						return false;
-					}
-				}
-			}
+                    }
+                    else
+                    {
+                        mErrorString = "Wrong license code.";
+                        return false;
+                    }
+                }
+            }
             return false;
         }
 
@@ -723,7 +723,7 @@ namespace QTMRealTimeSDK
         /// <param name="packet">packet with data returned from server</param>
         /// <param name="components">list of specific component types to stream, ignored if streamAll is set to true</param>
         /// <returns>true if command was sent successfully and response was a datapacket with frame</returns>
-        public bool GetCurrentFrame(out RTPacket packet,bool streamAll, List<ComponentType> components = null)
+        public bool GetCurrentFrame(out RTPacket packet, bool streamAll, List<ComponentType> components = null)
         {
             bool status;
             if (components != null)
@@ -759,8 +759,8 @@ namespace QTMRealTimeSDK
         /// if not set streaming occurs on same ip as command came from</param>
         /// <returns></returns>
         public bool StreamFrames(StreamRate streamRate, int streamValue,
-                                bool streamAllComponents, List<ComponentType> components = null,
-                                short port = -1, string ipAdress = "")
+        bool streamAllComponents, List<ComponentType> components = null,
+        short port = -1, string ipAdress = "")
         {
             string command = "streamframes";
 
@@ -804,8 +804,8 @@ namespace QTMRealTimeSDK
 
 
         public bool StreamFrames(StreamRate streamRate, int streamValue,
-                                bool streamAllComponents, ComponentType component,
-                                short port = -1, string ipAdress = "")
+        bool streamAllComponents, ComponentType component,
+        short port = -1, string ipAdress = "")
         {
             List<ComponentType> list = new List<ComponentType>();
             list.Add(component);
@@ -960,8 +960,8 @@ namespace QTMRealTimeSDK
             {
                 string response = mPacket.GetCommandString();
                 if (response == "Closing connection" ||
-                    response == "No connection to close" ||
-                    response == "Closing file")
+                response == "No connection to close" ||
+                response == "Closing file")
                 {
                     return true;
                 }
@@ -1063,11 +1063,11 @@ namespace QTMRealTimeSDK
                 string response = mPacket.GetCommandString();
                 if (response.Contains("Measurement saved"))
                 {
-                    if(response.Contains("Measurement saved"))
+                    if (response.Contains("Measurement saved"))
                     {
                         Regex pattern = new Regex("'.*'$");
                         Match match = pattern.Match(response);
-                        newFilename = match.Value.Replace("'",""); 
+                        newFilename = match.Value.Replace("'", "");
                     }
                     return true;
                 }
@@ -1088,7 +1088,7 @@ namespace QTMRealTimeSDK
         /// <returns>true if project was loaded</returns>
         public bool LoadProject(string projectPath)
         {
-            if (SendCommand("LoadProject " + projectPath ))
+            if (SendCommand("LoadProject " + projectPath))
             {
                 string response = mPacket.GetCommandString();
                 if (response.Contains("Project loaded"))
@@ -1226,7 +1226,7 @@ namespace QTMRealTimeSDK
         /// <returns>class with general settings from QTM</returns>
         public static SettingsGeneral ReadGeneralSettings(string xmldata)
         {
-            xmldata = xmldata.Replace("True", "true").Replace("False","false").Replace("None","-1");
+            xmldata = xmldata.Replace("True", "true").Replace("False", "false").Replace("None", "-1");
 
             XmlSerializer serializer = new XmlSerializer(typeof(SettingsGeneral));
             MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(xmldata));
@@ -1533,7 +1533,7 @@ namespace QTMRealTimeSDK
                         xmlWriter.WriteElementString("Frequency_Tolerance", timeBaseSettings.FreqTolerance.ToString());
 
 
-                        if (timeBaseSettings.NominalFrequency > 0 )
+                        if (timeBaseSettings.NominalFrequency > 0)
                         {
                             xmlWriter.WriteElementString("Nominal_Frequency", timeBaseSettings.NominalFrequency.ToString("0.000"));
                         }

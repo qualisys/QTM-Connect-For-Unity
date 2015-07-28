@@ -24,13 +24,12 @@ namespace QualisysRealTime.Unity
 
         public void OnEnable()
         {
-            RTClient.GetInstance().GetServers(out discoveryResponses);
+            discoveryResponses = RTClient.GetInstance().GetServers();
         }
 
         /// This makes sure we only can connect when in playing mode
         void OnInspectorUpdate()
         {
-
             if (!Application.isPlaying)
             {
                 OnDisconnect();
@@ -50,7 +49,7 @@ namespace QualisysRealTime.Unity
             List<GUIContent> serverSelection = new List<GUIContent>();
             foreach (var discoveryResponse in discoveryResponses)
             {
-                serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ")"));
+                serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ":" + discoveryResponse.Port + ") " + discoveryResponse.InfoText));
             }
 
             GUI.Label(new Rect(20, 75, 200, 40), serverSelection[selectedServer], style);
