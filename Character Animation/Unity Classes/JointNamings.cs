@@ -71,7 +71,7 @@ namespace QualisysRealTime.Unity.Skeleton {
             exludeName = { "Nub", "Dummy", "dummy", "Tip", "IK", "Mesh", "mesh", "Goal", "goal", "Pole", "pole", "slot" },
             spineExclude = { "Head", "head", "Pelvis", "pelvis", "Hip", "hip", "Root", "root" },
             headExclude = { "Top", "End" },
-            armExclude = { "Finger", "finger", "Index", "index", "Point", "point", "Mid", "mid", "Pinky", "pinky", "Pink", "pink", "Ring", "Thumb", "thumb", "Adjust", "adjust", "Twist", "twist" },
+            armExclude = { "Finger", "finger", "Index", "index", "Point", "point", "Mid", "mid", "Pinky", "pinky", "Pink", "pink", "Ring", "Thumb", "thumb", "Adjust", "adjust", "Twist", "twist", "fing", "Fing"},
             fingerExclude = { "Thumb", "thumb", "Adjust", "adjust", "Twist", "twist", "Medial", "medial", "Distal", "distal", "Finger0",
                                     "02",
                                     "11","12",

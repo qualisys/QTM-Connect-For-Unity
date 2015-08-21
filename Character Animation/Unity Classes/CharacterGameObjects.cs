@@ -185,6 +185,7 @@ namespace QualisysRealTime.Unity.Skeleton {
             if (!neck) neck = JointNamings.GetBone(transforms, JointNamings.JointObject.Neck);
             // Find Pelvis
             if (!pelvis) pelvis = JointNamings.GetMatch(transforms, JointNamings.pelvisAlias);
+            //if pelvis not found, pelvis is common ancestor of the thighs
             if (!pelvis) pelvis = rightThigh.CommonAncestorOf(leftThigh);
 
             // Find spine
@@ -198,16 +199,18 @@ namespace QualisysRealTime.Unity.Skeleton {
                 left = leftUpperArm;
                 right = rightUpperArm;
             }
-
             if (left && right && pelvis)
             {
                 Transform lastSpine = left.CommonAncestorOf(right);
                 if (lastSpine)
                 {
+                    // if pelvis is not ancestor of last spine
                     if (!pelvis.IsAncestorOf(lastSpine))
                     {
+                        // Set common ancestor to pelvis
                         pelvis = pelvis.CommonAncestorOf(lastSpine);
                     }
+                    // Spine is all ancestors between last spine and pelvis
                     spine = GetAncestorsBetween(lastSpine, pelvis);
                     // Head is not set
                     if (!head)
@@ -215,18 +218,22 @@ namespace QualisysRealTime.Unity.Skeleton {
                         for (int i = 0; i < lastSpine.childCount; i++)
                         {
                             Transform child = lastSpine.GetChild(i);
-
+                            // all children of last spine that is not left and right
                             if (!child.ContainsChild(left) && !child.ContainsChild(right))
                             {
+                                // if that object has a child, it is probably the head and that object the neck
                                 if (child.childCount == 1)
                                 {
                                     head = child.GetChild(0);
                                     neck = child;
+                                    break;
                                 }
+                                // otherwise we set last spine as neck and its child as head
                                 else
                                 {
                                     head = child;
                                     neck = lastSpine;
+                                    break;
                                 }
                             }
                         }
@@ -330,6 +337,14 @@ namespace QualisysRealTime.Unity.Skeleton {
                 if (!leftForearm) leftForearm = results[2];
                 if (!leftHand) leftHand = results[3];
             }
+            else if (results.Length == 3)
+            {
+                if (!leftUpperArm) leftUpperArm = results[0];
+                if (!leftForearm) leftForearm = results[1];
+                if (!leftHand) leftHand = results[2];
+            }
+            else foreach (var res in results) UnityEngine.Debug.Log(res);
+
         }
         /// <summary>
         /// Finding and adding right arm
