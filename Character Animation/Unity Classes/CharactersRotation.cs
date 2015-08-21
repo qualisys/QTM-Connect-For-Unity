@@ -51,7 +51,8 @@ namespace QualisysRealTime.Unity.Skeleton
             armLowerRight,
             handRight,
             thumbRight,
-            fingersRight;
+            fingersRight,
+            headCamera;
     }
     [System.Serializable]
     public class Model1 : BoneRotations
@@ -85,6 +86,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(0f, 0f, 0f);
             thumbRight = new Vector3(0f, 0f, 0f);
             fingersRight = new Vector3(0f, 0f, 0f);
+            headCamera = new Vector3(0f, 270f, 270f);
         }
     }
     [System.Serializable]
@@ -119,6 +121,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(345f, 0f, 90f);
             thumbRight = new Vector3(270f, 0f, 90f);
             fingersRight = new Vector3(0f, 0f, 90f);
+            headCamera = new Vector3(0f, 0f, 0f);
         }
     }
     [System.Serializable]
@@ -153,6 +156,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(90f, 0f, 0f);
             thumbRight = new Vector3(90f, 0f, 0f);
             fingersRight = new Vector3(90f, 0f, 0f);
+            headCamera = new Vector3(0f, 0f, 0f);
         }
     }
     [System.Serializable]
@@ -187,6 +191,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(90f, 90f, 0f);
             thumbRight = new Vector3(90f, 90f, 0f);
             fingersRight = new Vector3(90f, 90f, 0f);
+            headCamera = new Vector3(0f, 0f, 0f);
         }
     }
     [System.Serializable]
@@ -221,6 +226,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(0f, 270f, 0f);
             thumbRight = new Vector3(0f, 0f, 0f);
             fingersRight = new Vector3(0f, 0f, 0f);
+            headCamera = new Vector3(0f, 90f, 0f);
         }
     }
     [System.Serializable]
@@ -255,6 +261,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight     = new Vector3(0f, 180f, 90f);
             thumbRight    = new Vector3(0f, 180f, 90f);
             fingersRight  = new Vector3(0f, 180f, 90f);
+            headCamera = new Vector3(0f, 270f, 270f);
         }
     }
     [System.Serializable]
@@ -291,6 +298,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(0f, 270f, 30f);
             thumbRight = new Vector3(0f, 0f, 0f);
             fingersRight = new Vector3(0f, 0f, 0f);
+            headCamera = new Vector3(0f, 0f, 270f);
         }
     }
     [System.Serializable]
@@ -327,6 +335,7 @@ namespace QualisysRealTime.Unity.Skeleton
             handRight = new Vector3(0f, 0f, 0f);
             thumbRight = new Vector3(0f, 0f, 0f);
             fingersRight = new Vector3(0f, 0f, 0f);
+            headCamera = new Vector3(0f, 0f, 0f);
         }
     }
 }

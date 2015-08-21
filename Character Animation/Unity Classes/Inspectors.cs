@@ -43,4 +43,11 @@ namespace QualisysRealTime.Unity.Skeleton {
            public Color boneColor = Color.blue;
        }
     }
+    [System.Serializable]
+    public class Oculus
+    {
+        public bool UseOculus = true;
+        public bool Recenter = true;
+        public Vector3 CameraOffset = new Vector3(0, .11f, .11f);
+    }
 }

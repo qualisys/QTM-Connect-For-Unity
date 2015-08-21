@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿    #region --- LINCENSE ---
 /*
     The MIT License (MIT)
 
@@ -22,39 +22,38 @@ namespace QualisysRealTime.Unity.Skeleton
     {
         public string MarkerPrefix = "";
         public bool UseFingers = false;
-        private bool fingerUse;
         public bool ScaleToModel = false;
         public bool LockPosition = false;
         public bool Reset = false;
         public CharactersModel model = CharactersModel.Model1;
+        private CharactersModel _model = CharactersModel.Model1;
         public BoneRotations boneRotatation = new Model1();
+        public Oculus oculus;
         public Debugging debug;
 
+        private Camera headCamera;
         private RTClient rtClient;
         private Vector3 pos;
-        private bool streaming = false;
         private List<LabeledMarker> markerData;
         private SkeletonBuilder skeletonBuilder;
         private BipedSkeleton skeleton;
         private CharacterGameObjects charactersJoints = new CharacterGameObjects();
-        private CharactersModel cf = CharactersModel.Model1;
         private float scale = 0;
-        private bool jointsFound = false;
+
         /// <summary>
         /// Locating the joints of the character and find the scale by which the position should be applied to
         /// </summary>
         public void Start()
         {
             rtClient = RTClient.GetInstance();
-            fingerUse = UseFingers;
-            charactersJoints.SetLimbs(this.transform, fingerUse);
-            if (!charactersJoints.IsAllJointsSet(fingerUse))
+            //Find all joints of the characters
+            if (!charactersJoints.SetLimbs(this.transform, UseFingers))
             {
                 charactersJoints.PrintAll();
                 UnityEngine.Debug.LogError("Could not find all necessary joints");
             }
-            else jointsFound = true;
-            
+            if (oculus.UseOculus) GetCamera();
+            // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
         }
@@ -63,10 +62,8 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         public void Update()
         {
-            if (!jointsFound) return;
             if (rtClient == null) rtClient = RTClient.GetInstance();
-            streaming = rtClient.GetStreamingStatus();
-            if (!streaming && !LockPosition) return;
+            if (!rtClient.GetStreamingStatus() && !LockPosition) return;
             markerData = rtClient.Markers;
             if ((markerData == null || markerData.Count == 0) && !LockPosition)
             {
@@ -75,11 +72,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             if (Reset || skeletonBuilder == null)
             {
-                if (fingerUse != UseFingers)
-                {
-                    fingerUse = UseFingers;
-                    charactersJoints.SetLimbs(this.transform, fingerUse);
-                }
+                charactersJoints.SetLimbs(this.transform, UseFingers);
                 scale = 0;
                 skeletonBuilder = new SkeletonBuilder();
                 skeletonBuilder.MarkerPrefix = MarkerPrefix;
@@ -88,14 +81,14 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             if (!LockPosition)
             {
-                if (debug!= null) skeletonBuilder.SolveWithIK = debug.UseIK;
+                if (debug != null) skeletonBuilder.SolveWithIK = debug.UseIK;
                 skeleton = skeletonBuilder.SolveSkeleton(markerData);
             }
-            if (scale == 0 && ScaleToModel) scale = FindScale(charactersJoints.pelvis);
-            SetModelRotation();
+            if (ScaleToModel && scale == 0) scale = FindScale(charactersJoints.pelvis);
+            if (_model != model) SetModelRotation();
             SetAll();
         }
-         
+
         /// <summary>
         /// Maps the built skeleton joint rotation to the characeters joints
         /// </summary>
@@ -109,10 +102,10 @@ namespace QualisysRealTime.Unity.Skeleton
                         SetJointRotation(charactersJoints.pelvis, b.Data, boneRotatation.hip);
                         if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
                         {
-                            Vector3 positionChange = ScaleToModel ?
-                                (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
-                                : b.Data.Pos.Convert();
-                            charactersJoints.pelvis.position = transform.position + positionChange;
+                            charactersJoints.pelvis.position = transform.position 
+                                        + (ScaleToModel ?
+                                            (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
+                                            : b.Data.Pos.Convert());
                         }
                         break;
                     case Joint.SPINE0:
@@ -131,7 +124,10 @@ namespace QualisysRealTime.Unity.Skeleton
                         SetJointRotation(charactersJoints.neck, b.Data, boneRotatation.neck);
                         break;
                     case Joint.HEAD:
-                        SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
+                        if (oculus.UseOculus)
+                            SetOculus(b.Data);
+                        else
+                            SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
                         break;
                     case Joint.HIP_L:
                         SetJointRotation(charactersJoints.leftThigh, b.Data, boneRotatation.legUpperLeft);
@@ -176,21 +172,21 @@ namespace QualisysRealTime.Unity.Skeleton
                         SetJointRotation(charactersJoints.rightHand, b.Data, boneRotatation.handRight);
                         break;
                     case Joint.HAND_L:
-                        if (fingerUse && charactersJoints.fingersLeft != null) 
-                            foreach (var fing in charactersJoints.fingersLeft) 
+                        if (UseFingers && charactersJoints.fingersLeft != null)
+                            foreach (var fing in charactersJoints.fingersLeft)
                                 SetJointRotation(fing, b.Data, boneRotatation.fingersLeft);
                         break;
                     case Joint.HAND_R:
-                        if (fingerUse && charactersJoints.fingersRight != null) 
-                            foreach (var fing in charactersJoints.fingersRight) 
+                        if (UseFingers && charactersJoints.fingersRight != null)
+                            foreach (var fing in charactersJoints.fingersRight)
                                 SetJointRotation(fing, b.Data, boneRotatation.fingersRight);
                         break;
                     case Joint.TRAP_L:
-                        if (fingerUse) 
+                        if (UseFingers)
                             SetJointRotation(charactersJoints.thumbLeft, b.Data, boneRotatation.thumbLeft);
                         break;
                     case Joint.TRAP_R:
-                        if (fingerUse) 
+                        if (UseFingers)
                             SetJointRotation(charactersJoints.thumbRight, b.Data, boneRotatation.thumbRight);
                         break;
                     case Joint.ANKLE_L:
@@ -198,6 +194,23 @@ namespace QualisysRealTime.Unity.Skeleton
                     default:
                         break;
                 }
+            }
+        }
+        /// <summary>
+        /// Sets the rotation of the Transform from Bone object to 
+        /// </summary>
+        /// <param name="go">Joint Transform</param>
+        /// <param name="b">Bone</param>
+        /// <param name="euler">Euler angels</param>
+        private void SetJointRotation(Transform go, Bone b, Vector3 euler)
+        {
+            if (go && !b.HasNaN)
+            {
+                go.rotation =
+                    transform.rotation
+                    * b.Orientation.Convert()
+                    * Quaternion.Euler(euler)
+                    * Quaternion.Euler(boneRotatation.root);
             }
         }
         /// <summary>
@@ -212,71 +225,51 @@ namespace QualisysRealTime.Unity.Skeleton
             while (trans && trans != this.transform) {
                 pelvisHeight += trans.localPosition.y;
                 trans = trans.parent;
-            } 
+            }
             float s = pelvisHeight / skeleton.Root.Data.Pos.Y;
             s /= transform.localScale.magnitude;
             return s;
-        }
-        /// <summary>
-        /// Sets the rotation of the Transform from Bone object to 
-        /// </summary>
-        /// <param name="go">Joint Transform</param>
-        /// <param name="b">Bone</param>
-        /// <param name="euler">Euler angels</param>
-        private void SetJointRotation(Transform go, Bone b, Vector3 euler)
-        {
-            if (b != null && !b.Orientation.IsNaN() && go)
-            {
-                go.rotation =
-                    transform.rotation
-                    * b.Orientation.Convert()
-                    * Quaternion.Euler(euler)
-                    * Quaternion.Euler(boneRotatation.root);
-            }
         }
         /// <summary>
         /// Checks whether the model has been changed since last and change the model
         /// </summary>
         private void SetModelRotation()
         {
-            if (cf != model)
+            switch (model)
             {
-                switch (model)
-                {
-                    case CharactersModel.Model1:
-                        boneRotatation = new Model1();
-                        break;
-                    case CharactersModel.Model2:
-                        boneRotatation = new Model2();
-                        break;
-                    case CharactersModel.Model3:
-                        boneRotatation = new Model3();
-                        break;
-                    case CharactersModel.Model4:
-                        boneRotatation = new Model4();
-                        break;
-                    case CharactersModel.Model5:
-                        boneRotatation = new Model5();
-                        break;
-                    case CharactersModel.Model6:
-                        boneRotatation = new Model6();
-                        break;
-                    case CharactersModel.Model7:
-                        boneRotatation = new Model7();
-                        break;
-                    case CharactersModel.EmptyModel:
-                        boneRotatation = new Empty();
-                        break;
-                    default:
-                        break;
-                }
-                cf = model;
+                case CharactersModel.Model1:
+                    boneRotatation = new Model1();
+                    break;
+                case CharactersModel.Model2:
+                    boneRotatation = new Model2();
+                    break;
+                case CharactersModel.Model3:
+                    boneRotatation = new Model3();
+                    break;
+                case CharactersModel.Model4:
+                    boneRotatation = new Model4();
+                    break;
+                case CharactersModel.Model5:
+                    boneRotatation = new Model5();
+                    break;
+                case CharactersModel.Model6:
+                    boneRotatation = new Model6();
+                    break;
+                case CharactersModel.Model7:
+                    boneRotatation = new Model7();
+                    break;
+                case CharactersModel.EmptyModel:
+                    boneRotatation = new Empty();
+                    break;
+                default:
+                    break;
             }
+            _model = model;
         }
         void OnDrawGizmos()
         {
-            if ( Application.isPlaying && 
-                (streaming && debug != null && markerData != null) 
+            if (Application.isPlaying &&
+                (rtClient.GetStreamingStatus() && debug != null && markerData != null)
                 || LockPosition)
             {
                 pos = this.transform.position + debug.Offset;
@@ -298,8 +291,8 @@ namespace QualisysRealTime.Unity.Skeleton
                         Debug.DrawLine(from, to, debug.markers.boneColor);
                     }
                 }
-                
-                if (skeleton != null && 
+
+                if (skeleton != null &&
                     (debug.showSkeleton || debug.showRotationTrace || debug.showJoints || debug.showConstraints || debug.showTwistConstraints))
                 {
                     Gizmos.color = debug.jointColor;
@@ -344,6 +337,46 @@ namespace QualisysRealTime.Unity.Skeleton
                     }
                 }
             }
+        }
+        /// <summary>
+        /// If using head rotation from oculus instead of from markers
+        /// </summary>
+        /// <param name="b">The head bone as defiention what rotation is forward</param>
+        void SetOculus(Bone b)
+        {
+            if (headCamera)
+            {
+                var cameraAnchor = headCamera.transform.parent;
+                if (oculus.Recenter)
+                {
+                    cameraAnchor.rotation = b.Orientation.Convert();
+                    UnityEngine.VR.InputTracking.Recenter();
+                    oculus.Recenter = false;
+                }
+                Vector3 cameraOffset = oculus.CameraOffset * (scale != 0 && ScaleToModel ? scale : 1);
+                charactersJoints.head.rotation = headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
+                cameraAnchor.position = charactersJoints.head.position + (headCamera.transform.rotation * cameraOffset);
+            }
+            else GetCamera();
+        }
+        /// <summary>
+        /// Finds the camera and sets the reference
+        /// </summary>
+        void GetCamera()
+        {
+            var searchRes = this.transform.Find("Camera");
+            if (searchRes)
+            {
+                headCamera = searchRes.GetComponent<Camera>();
+            }
+            if (headCamera)
+            {
+                headCamera.nearClipPlane = 0.03f;
+                var go = new GameObject("CameraAnchor");
+                headCamera.transform.position = Vector3.zero;
+                headCamera.transform.SetParent(go.transform);
+                go.transform.SetParent(transform);
+            } else oculus.UseOculus = false;
         }
     }
 }
