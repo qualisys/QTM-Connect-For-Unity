@@ -304,6 +304,9 @@ namespace QualisysRealTime.Unity
                     newMarker.Color.b = (marker.ColorRGB >> 16) & 0xFF;
 
                     newMarker.Color /= 255;
+
+                    newMarker.Color.a = 1F;
+
                     Markers.Add(newMarker);
                 }
 
@@ -320,7 +323,7 @@ namespace QualisysRealTime.Unity
                         bone.FromMarker = GetMarker(settingsBone.from);
                         bone.To = settingsBone.to;
                         bone.ToMarker = GetMarker(settingsBone.to);
-                        Bones.Add(bone);
+                        mBones.Add(bone);
                     }
                 }
 
