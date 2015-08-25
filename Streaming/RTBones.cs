@@ -10,27 +10,23 @@ namespace QualisysRealTime.Unity
     /// Stream bones from QTM
     public class RTBones : MonoBehaviour
     {
-        private List<Bone> boneData;
         private RTClient rtClient;
-        private GameObject markerRoot;
         private List<LineRenderer> bones;
+        private GameObject allBones;
 
         public bool visibleBones = true;
-
         [Range(0.001f, 0.5f)]
         public float boneScale = 0.01f;
-
-        public bool UseMakersColor = true;
         public Color color = Color.yellow;
-
-        private bool streaming = false;
 
         // Use this for initialization
         void Start()
         {
             rtClient = RTClient.GetInstance();
             bones = new List<LineRenderer>();
-            markerRoot = gameObject;
+            allBones = new GameObject("Bones");
+            allBones.transform.parent = transform;
+            allBones.transform.localPosition = Vector3.zero;
         }
 
 
@@ -42,15 +38,14 @@ namespace QualisysRealTime.Unity
             }
 
             bones.Clear();
-            boneData = rtClient.Bones;
+            var boneData = rtClient.Bones;
 
-            Material material = new Material(Shader.Find("Particles/Additive"));
+            Material material = new Material(Shader.Find("Unlit/Color"));
             for (int i = 0; i < boneData.Count; i++)
             {
-                GameObject newBone = new GameObject();
-                LineRenderer lineRenderer = newBone.AddComponent<LineRenderer>();
+                LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
                 lineRenderer.name = boneData[i].From + " to " + boneData[i].To;
-                lineRenderer.transform.parent = markerRoot.transform;
+                lineRenderer.transform.parent = allBones.transform;
                 lineRenderer.transform.localPosition = Vector3.zero;
                 lineRenderer.material = material;
                 lineRenderer.useWorldSpace = false;
@@ -61,48 +56,32 @@ namespace QualisysRealTime.Unity
         // Update is called once per frame
         void Update()
         {
-            if (rtClient.GetStreamingStatus() && !streaming)
+            if (!visibleBones)
             {
-                InitiateBones();
-                streaming = true;
-            }
-            if (!rtClient.GetStreamingStatus() && streaming)
-            {
-                streaming = false;
-                InitiateBones();
-            }
-
-            boneData = rtClient.Bones;
-
-            if (boneData == null && boneData.Count == 0)
+                allBones.SetActive(false);
                 return;
-
-            if (bones.Count != boneData.Count)
-            {
-                InitiateBones();
             }
+            if (rtClient == null) rtClient = RTClient.GetInstance();
 
-            Color fromColor, toColor;
+            if (!rtClient.GetStreamingStatus()) return;
+
+            var boneData = rtClient.Bones;
+
+            if (boneData == null && boneData.Count == 0) return;
+
+            if (bones.Count != boneData.Count) InitiateBones();
+
+            allBones.SetActive(true);
             for (int i = 0; i < boneData.Count; i++)
             {
-                if (   boneData[i].FromMarker.Position.magnitude > 0
+                if (boneData[i].FromMarker.Position.magnitude > 0
                     && boneData[i].ToMarker.Position.magnitude > 0)
                 {
                     bones[i].SetPosition(0, boneData[i].FromMarker.Position);
                     bones[i].SetPosition(1, boneData[i].ToMarker.Position);
                     bones[i].SetWidth(boneScale, boneScale);
-                    if (UseMakersColor)
-                    {
-                        fromColor = boneData[i].FromMarker.Color;
-                        toColor = boneData[i].ToMarker.Color;
-                    }
-                    else
-                    {
-                        fromColor = toColor = color;
-                    }
-                    bones[i].SetColors(fromColor, toColor);
+                    bones[i].material.color = color;
                     bones[i].gameObject.SetActive(true);
-                    bones[i].GetComponent<Renderer>().enabled = visibleBones;
                 }
                 else
                 {

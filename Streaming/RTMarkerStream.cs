@@ -16,6 +16,7 @@ namespace QualisysRealTime.Unity
 
         public bool visibleMarkers = true;
 
+        [Range(0.001f, 0.5f)]
         public float markerScale = 0.01f;
 
         private bool streaming = false;
@@ -25,7 +26,7 @@ namespace QualisysRealTime.Unity
         {
             rtClient = RTClient.GetInstance();
             markers = new List<GameObject>();
-            markerRoot = this.gameObject;
+            markerRoot = gameObject;
         }
 
 
@@ -33,7 +34,7 @@ namespace QualisysRealTime.Unity
         {
             foreach (var marker in markers)
             {
-                UnityEngine.GameObject.Destroy(marker);
+                Destroy(marker);
             }
 
             markers.Clear();
@@ -41,7 +42,7 @@ namespace QualisysRealTime.Unity
 
             for (int i = 0; i < markerData.Count; i++)
             {
-                GameObject newMarker = UnityEngine.GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                GameObject newMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 newMarker.name = markerData[i].Label;
                 newMarker.transform.parent = markerRoot.transform;
                 newMarker.transform.localScale = Vector3.one * markerScale;
