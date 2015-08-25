@@ -24,6 +24,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public bool UseFingers = false;
         public bool ScaleToModel = false;
         public bool LockPosition = false;
+        public bool SetJointPosition = false;
         public bool Reset = false;
         public CharactersModel model = CharactersModel.Model1;
         private CharactersModel _model = CharactersModel.Model1;
@@ -100,7 +101,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 {
                     case Joint.PELVIS:
                         SetJointRotation(charactersJoints.pelvis, b.Data, boneRotatation.hip);
-                        if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
+                        if (charactersJoints.pelvis && !b.Data.Pos.IsNaN() && !SetJointPosition)
                         {
                             charactersJoints.pelvis.position = transform.position 
                                         + (ScaleToModel ?
@@ -211,6 +212,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     * b.Orientation.Convert()
                     * Quaternion.Euler(euler)
                     * Quaternion.Euler(boneRotatation.root);
+                if (SetJointPosition) go.position = b.Pos.Convert() + transform.root.position ;
             }
         }
         /// <summary>

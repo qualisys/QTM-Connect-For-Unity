@@ -46,7 +46,7 @@ namespace QualisysRealTime.Unity.Skeleton {
     [System.Serializable]
     public class Oculus
     {
-        public bool UseOculus = true;
+        public bool UseOculus = false;
         public bool Recenter = true;
         public Vector3 CameraOffset = new Vector3(0, .11f, .11f);
     }
