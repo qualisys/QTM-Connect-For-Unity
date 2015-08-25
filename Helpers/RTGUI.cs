@@ -50,7 +50,7 @@ namespace QualisysRealTime.Unity
 
         void OnGUI()
         {
-            title = "QTM Streaming";
+            titleContent.text = "QTM Streaming";
             GUILayout.Label("Server Settings", EditorStyles.boldLabel);
             if (Application.isPlaying)
             {

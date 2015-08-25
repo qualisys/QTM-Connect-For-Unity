@@ -54,6 +54,7 @@ namespace QualisysRealTime.Unity
         // Update is called once per frame
         void Update()
         {
+            if (rtClient == null) rtClient = RTClient.GetInstance();
             if (rtClient.GetStreamingStatus() && !streaming)
             {
                 InitiateMarkers();
