@@ -25,34 +25,34 @@ namespace QualisysRealTime.Unity.Skeleton
     public class BoneRotations
     {
         public Vector3
-            root,
-            hip,
-            spine,
-            neck,
-            head,
+            root = new Vector3(0f, 0f, 270f),
+        hip = new Vector3(0f, 270f, 0f),
+        spine = new Vector3(0f, 270f, 0f),
+        neck = new Vector3(0f, 270f, 0f),
+        head = new Vector3(0f, 270f, 0f),
 
-            legUpperLeft,
-            legLowerLeft,
-            footLeft,
+        legUpperLeft = new Vector3(0f, 270f, 0f),
+        legLowerLeft = new Vector3(0f, 270f, 0f),
+        footLeft = new Vector3(0f, 270f, 90f),
 
-            legUpperRight,
-            legLowerRight,
-            footRight,
+        legUpperRight = new Vector3(0f, 270f, 0f),
+        legLowerRight = new Vector3(0f, 270f, 0f),
+        footRight = new Vector3(0f, 270f, 90f),
 
-            clavicleLeft,
-            armUpperLeft,
-            armLowerLeft,
-            handLeft,
-            thumbLeft,
-            fingersLeft,
+        clavicleLeft = new Vector3(0f, 90f, 0f),
+        armUpperLeft = new Vector3(0f, 90f, 0f),
+        armLowerLeft = new Vector3(0f, 90f, 0f),
+        handLeft = new Vector3(0f, 180f, 0f),
+        thumbLeft = new Vector3(0f, 180f, 0f),
+        fingersLeft = new Vector3(0f, 180f, 0f),
 
-            clavicleRight,
-            armUpperRight,
-            armLowerRight,
-            handRight,
-            thumbRight,
-            fingersRight,
-            headCamera;
+        clavicleRight = new Vector3(0f, 90f, 0f),
+        armUpperRight = new Vector3(0f, 90f, 0f),
+        armLowerRight = new Vector3(0f, 90f, 0f),
+        handRight = new Vector3(0f, 0f, 0f),
+        thumbRight = new Vector3(0f, 0f, 0f),
+        fingersRight = new Vector3(0f, 0f, 0f),
+        headCamera = new Vector3(0f, 270f, 270f);
     }
     [System.Serializable]
     public class Model1 : BoneRotations
