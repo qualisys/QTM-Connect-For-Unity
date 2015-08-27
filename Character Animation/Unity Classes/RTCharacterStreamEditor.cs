@@ -8,7 +8,6 @@ namespace QualisysRealTime.Unity.Skeleton
     [CanEditMultipleObjects]
     public class RTCharacterStreamEditor : Editor
     {
-        bool fold = true;
         RTCharacterStream c;
         SerializedObject cSerializedObject;
         SerializedProperty boneRotation;
