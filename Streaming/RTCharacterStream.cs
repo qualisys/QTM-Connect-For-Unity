@@ -47,11 +47,9 @@ namespace QualisysRealTime.Unity.Skeleton
             rtClient = RTClient.GetInstance();
             //Find all joints of the characters
             jointsFound = charactersJoints.SetLimbs(this.transform, true);
-            if (headCam != null && headCam.UseHeadCamera) GetCamera();
             // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
-            if (boneRotatation == null) SetModelRotation();
         }
         /// <summary>
         /// Updates the rotation and position of the Character
@@ -63,12 +61,13 @@ namespace QualisysRealTime.Unity.Skeleton
             markerData = rtClient.Markers;
             if ((markerData == null || markerData.Count == 0))
             {
-                UnityEngine.Debug.LogError("The stream does not contain any markers");
+                Debug.LogError("The stream does not contain any markers");
                 return;
             }
             if (skeletonBuilder != null) skeleton = skeletonBuilder.SolveSkeleton(markerData);
             else ResetSkeleton();
             SetAll();
+            if (!headCam.UseHeadCamera && headCamera) DestroyCamera();
         }
         public void ResetSkeleton()
         {
@@ -80,7 +79,6 @@ namespace QualisysRealTime.Unity.Skeleton
             else skeleton = new BipedSkeleton();
             if (ScaleMovementToSize) scale = FindScale();
             else scale = 0;
-            if (boneRotatation == null) SetModelRotation();
         }
 
         /// <summary>
@@ -119,9 +117,16 @@ namespace QualisysRealTime.Unity.Skeleton
                         break;
                     case Joint.HEAD:
                         if (headCam.UseHeadCamera)
-                            SetVRDevice(b.Data);
-                        if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation)
+                            SetCameraPosition(b.Data);
+                        if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
+                        {
                             SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
+                        }
+                        else if (headCamera)
+                        {
+                            charactersJoints.head.rotation =
+                                headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
+                        }
                         break;
                     case Joint.HIP_L:
                         SetJointRotation(charactersJoints.leftThigh, b.Data, boneRotatation.legUpperLeft);
@@ -262,22 +267,16 @@ namespace QualisysRealTime.Unity.Skeleton
         /// If using head rotation from oculus instead of from markers
         /// </summary>
         /// <param name="b">The head bone as defiention what rotation is forward</param>
-        void SetVRDevice(Bone b)
+        void SetCameraPosition(Bone b)
         {
+            if(!headCamera) GetCamera();
             if (headCamera)
             {
                 var cameraAnchor = headCamera.transform.parent;
-                Vector3 cameraOffset = 
-                    headCam.CameraOffset * (scale != 0 && ScaleMovementToSize ? scale : 1);
-                if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation)
-                {
-                    charactersJoints.head.rotation = 
-                        headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
-                }
                 cameraAnchor.position = 
-                    charactersJoints.head.position + (headCamera.transform.rotation * cameraOffset);
+                    charactersJoints.head.position 
+                    + (headCamera.transform.rotation * headCam.CameraOffset);
             }
-            else GetCamera();
         }
         /// <summary>
         /// Finds the camera and sets the reference
@@ -285,22 +284,21 @@ namespace QualisysRealTime.Unity.Skeleton
         public void GetCamera()
         {
             var searchRes = this.transform.Find("Camera");
-            if (searchRes)
-            {
-                headCamera = searchRes.GetComponent<Camera>();
-            } else
+            if (searchRes) headCamera = searchRes.GetComponent<Camera>();
+            else
             {
                 var cameraGO = new GameObject("Camera");
-                cameraGO.AddComponent<Camera>();
                 cameraGO.transform.parent = transform;
+                headCamera = cameraGO.AddComponent<Camera>();
             }
             if (headCamera)
             {
-                headCamera.nearClipPlane = 0.03f;
+                headCamera.nearClipPlane = 0.03f; 
                 var go = new GameObject("CameraAnchor");
                 headCamera.transform.position = Vector3.zero;
                 headCamera.transform.SetParent(go.transform);
                 go.transform.SetParent(transform);
+                Recenter();
             }
         }
         public void DestroyCamera()
@@ -312,10 +310,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (skeleton != null)
             {
                 var b = skeleton[Joint.HEAD];
-                if (!b.HasNaN)
-                {
-                    headCamera.transform.parent.rotation = b.Orientation.Convert();
-                }
+                if (!b.HasNaN) headCamera.transform.parent.rotation = b.Orientation.Convert();
             }
             UnityEngine.VR.InputTracking.Recenter();
         }
