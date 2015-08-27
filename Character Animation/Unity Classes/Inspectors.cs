@@ -49,9 +49,10 @@ namespace QualisysRealTime.Unity.Skeleton {
        }
     }
     [System.Serializable]
-    public class Oculus
+    public class HeadCam
     {
-        public bool UseOculus = false;
+        public bool UseHeadCamera = false;
+        public bool UseVRHeadSetRotation = false;
         public Vector3 CameraOffset = new Vector3(0, .11f, .11f);
     }
 }

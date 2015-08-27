@@ -42,11 +42,6 @@ namespace QualisysRealTime.Unity.Skeleton
                 c.UseIK = !c.UseIK;
                 c.ResetSkeleton();
             }
-            if (EditorGUILayout.Toggle("Use fingers", c.UseFingers) != c.UseFingers)
-            {
-                c.UseFingers = !c.UseFingers;
-                c.ResetSkeleton();
-            }
             if (EditorGUILayout.Toggle("Scale Movement To Size", c.ScaleMovementToSize) != c.ScaleMovementToSize)
             {
                 c.ScaleMovementToSize = !c.ScaleMovementToSize;
@@ -70,24 +65,21 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUI.indentLevel--;
             GUILayout.Space(5);
 
+            EditorGUILayout.BeginVertical();
+            c.headCam.UseHeadCamera = EditorGUILayout.BeginToggleGroup("Use Head Camera", c.headCam.UseHeadCamera);
+            if (c.headCam.UseHeadCamera && !c.headCamera) c.GetCamera();
+            else if (!c.headCam.UseHeadCamera && c.headCamera) c.DestroyCamera();
 
-            if (!Application.isPlaying) GUILayout.Label("Press play to detect VR device");
-            else if (UnityEngine.VR.VRDevice.isPresent)
+            c.headCam.CameraOffset = EditorGUILayout.Vector3Field("Offset from head", c.headCam.CameraOffset);
+
+            c.headCam.UseVRHeadSetRotation = EditorGUILayout.Toggle("Use VR device rotation for head", c.headCam.UseVRHeadSetRotation);
+
+            if (GUILayout.Button("Recenter camera"))
             {
-                EditorGUILayout.BeginVertical();
-                c.oculus.UseOculus = EditorGUILayout.BeginToggleGroup("Use Head Camera", c.oculus.UseOculus);
-                if (c.oculus.UseOculus && !c.headCamera) c.GetCamera();
-                else if (!c.oculus.UseOculus && c.headCamera) c.DestroyCamera();
-                c.oculus.CameraOffset = EditorGUILayout.Vector3Field("Offset from head", c.oculus.CameraOffset);
-                if (GUILayout.Button("Recenter camera"))
-                {
-                    c.Recenter();
-                }
-                EditorGUILayout.EndToggleGroup();
-                EditorGUILayout.EndVertical();
-  
+                c.Recenter();
             }
-            else GUILayout.Label("No VR device detected");
+            EditorGUILayout.EndToggleGroup();
+            EditorGUILayout.EndVertical();
         }
     }
 }
