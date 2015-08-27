@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -30,9 +30,9 @@ namespace QualisysRealTime.Unity.Skeleton
         public IKSolver FABRIK { private get; set; }
 
         public bool Interpolation = false;
-        public IKApplier()
+        public IKApplier(BipedSkeleton firstSkel)
         {
-                lastSkel = new BipedSkeleton();
+                lastSkel = firstSkel;
                 IKSolver = new CCD();
                 FABRIK = new FABRIK();
                 FABRIK.MaxIterations = 100;
@@ -134,9 +134,7 @@ namespace QualisysRealTime.Unity.Skeleton
             ConstraintsBeforeReturn(missingJoint.Parent, false);
             if (iksolved && Interpolation && (missingJoint.Data.IsArm() || missingJoint.Data.IsLeg()))
             {
-                //UnityEngine.Debug.Log("jerking test");
                 JerkingTest(missingJoint.Parent, false, true);
-                //ConstraintsBeforeReturn(missingJoint.Parent);
             }
         }
         /// <summary>
@@ -149,31 +147,7 @@ namespace QualisysRealTime.Unity.Skeleton
             curr.Pos = new Vector3(last.Pos);
             curr.Orientation = new Quaternion(new Vector3(last.Orientation.Xyz), last.Orientation.W);
         }
-        /// <summary>
-        /// Fixes the rotation to always pointh the y-axis towards the next joint 
-        /// </summary>
-        /// <param name="boneTree">The tree of bones</param>
-        /// <param name="endWithEndEffector">If or we should stop fixing when an endeffector is reached</param>
-        /// <returns></returns>
-        private bool FixRotation(TreeNode<Bone> boneTree, bool endWithEndEffector = false)
-        {
-            bool hasChanged = false;
-            foreach (TreeNode<Bone> b in boneTree)
-            {
-                if (!b.Data.Exists) break;
-                if (b.IsRoot || b.Parent.IsRoot || b.Data.ParentPointer != Quaternion.Identity) continue;
-                Vector3 ray2 = (b.Data.Pos - b.Parent.Data.Pos);
-                if (!Vector3Helper.Parallel(b.Parent.Data.GetYAxis(), ray2, 0.01f))
-                {
-                    //UnityEngine.Debug.Log("fixing rot for " + b.Parent.Data.Name);
-                    ray2.NormalizeFast();
-                    b.Parent.Data.RotateTowards(ray2);
-                    hasChanged = true;
-                }
-                if (endWithEndEffector && b.IsLeaf) break;
-            }
-            return hasChanged;
-        }
+
         /// <summary>
         /// Checks wheter all bones is in a legal rotation and position and fixing there rotaion is that is the case
         /// </summary>

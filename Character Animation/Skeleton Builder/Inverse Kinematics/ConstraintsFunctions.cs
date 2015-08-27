@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -63,7 +63,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     inside = twistAngle - leftLimit >= precision || twistAngle - rightLimit <= precision :
                     inside = twistAngle - leftLimit >= precision && twistAngle - rightLimit <= precision;
 
-            if (!inside)//InsideConstraints(twistAngle, startLimit, endLimit)) // not inside constraints 
+            if (!inside) // not inside constraints 
             {
                 // Create a rotation to the closest limit
                 float toLeft = Math.Min(360 - Math.Abs(twistAngle - leftLimit), Math.Abs(twistAngle - leftLimit));
@@ -154,7 +154,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 q = Quadrant.q3;
                 radius = new Vector2(constraints.Z, constraints.W);
             }
-            else /*if (target.X > 0 && target.Y < 0)*/
+            else //if (target.X > 0 && target.Y < 0)
             {
                 q = Quadrant.q4;
                 radius = new Vector2(constraints.Z, constraints.Y);

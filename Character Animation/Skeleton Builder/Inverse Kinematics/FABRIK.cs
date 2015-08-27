@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -78,7 +78,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 Vector3 newPos;
                 float r = (bones[i + 1].Pos - bones[i].Pos).Length;
                 float l = distances[i] / r;
-                // bones[i].Pos = (1 - l) * bones[i + 1].Pos + l * bones[i].Pos;
+
                 newPos = (1 - l) * bones[i + 1].Pos + l * bones[i].Pos;
 
                 bones[i].Pos = newPos;
@@ -110,14 +110,6 @@ namespace QualisysRealTime.Unity.Skeleton
                 newPos = (1 - l) * bones[i].Pos + l * bones[i + 1].Pos;
 
                 Bone prevBone = (i > 0) ? bones[i - 1] : parent;
-                //if (bones[i].HasConstraints)
-                //{
-                //    Vector3 res;
-                //    Quaternion rot;
-                //    newPos =
-                //        constraints.CheckRotationalConstraints(bones[i], prevBone.Orientation, newPos, out res, out rot) ?
-                //        res : newPos;
-                //}
                 bones[i + 1].Pos = newPos;
                 // Orientation
                 bones[i].RotateTowards(bones[i + 1].Pos - bones[i].Pos,bones[i].Stiffness);

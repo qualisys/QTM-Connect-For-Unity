@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -121,9 +121,6 @@ namespace QualisysRealTime.Unity.Skeleton
                 lastRIASknown = markers[m.rightHip];
                 lastLIASknown = markers[m.leftHip];
             }
-            //UnityDebug.DrawLine(markers[m.bodyBase], markers[m.rightHip]);
-            //UnityDebug.DrawLine(markers[m.bodyBase], markers[m.leftHip]);
-            //UnityDebug.DrawLine(markers[m.leftHip], markers[m.rightHip]);
             newMarkers = markers;
         }
         /// <summary>
@@ -211,22 +208,9 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             else // all markers missing
             {
-                //string first = m.FirstOrDefault(mName => (!markers[mName].IsNaN() && !markersLastFrame[mName].IsNaN()));
-                //if (first != null)
-                //{
-                //    UnityEngine.Debug.Log(first);
-                //    Vector3 offset = markers[first] - markersLastFrame[first];
-                //    UnityDebug.DrawVector(markersLastFrame[m.bodyBase], offset);
-                //    markers[m.rightHip] =  markersLastFrame[m.rightHip] + offset;
-                //    markers[m.leftHip] = markersLastFrame[m.leftHip] + offset;
-                //    markers[m.bodyBase] = markersLastFrame[m.bodyBase] + offset;
-                //}
-                //else
-                {
-                    markers[m.rightHip] = markersLastFrame[m.rightHip];
-                    markers[m.leftHip] = markersLastFrame[m.leftHip];
-                    markers[m.bodyBase] = markersLastFrame[m.bodyBase];
-                }
+                markers[m.rightHip] = markersLastFrame[m.rightHip];
+                markers[m.leftHip] = markersLastFrame[m.leftHip];
+                markers[m.bodyBase] = markersLastFrame[m.bodyBase];
             }
         }
 

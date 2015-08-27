@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -199,18 +199,6 @@ namespace QualisysRealTime.Unity.Skeleton
         public static Quaternion GetRotationBetween(Vector3 a, Vector3 b, float stiffness = 1f)
         {
             return RotationBetween(a, b);
-            //if ((a == Vector3.Zero || b == Vector3.Zero) || (a == b) || Vector3Helper.Parallel(a,b,1-precision))
-            //    return Quaternion.Identity; 
-
-            //a.NormalizeFast();
-            //b.NormalizeFast();
-
-            //if (Vector3.Dot(a, b) < -precision) // a and b are opposite
-            //{
-            //    return Quaternion.FromAxisAngle(Vector3.UnitZ, Mathf.PI * stiffness);
-            //}
-
-            //return Quaternion.FromAxisAngle(Vector3.Cross(a, b), Vector3.CalculateAngle(a, b) * stiffness);
         }
 
         /// <summary>

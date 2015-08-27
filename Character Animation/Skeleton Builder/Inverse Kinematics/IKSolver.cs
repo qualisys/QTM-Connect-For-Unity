@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -110,38 +110,5 @@ namespace QualisysRealTime.Unity.Skeleton
                 bones[j].Rotate(rotation);
             }
         }
-
-        
-        /// <summary>
-        /// Returns true if target is located on the chain
-        /// Assumes target is reachable
-        /// </summary>
-        /// <param name="bones">The kinematic chain, an array of bones</param>
-        /// <param name="target">The target</param>
-        /// <returns>True if the target is between the chin</returns>
-        protected bool IsTargetOnChain(ref Bone[] bones, ref Bone target)
-        {
-            // If every joint in the chain (except end effector) has the same direction vector
-            // the chain is straight
-            for (int i = 0; i < bones.Length - 2; i++)
-            {
-                Vector3 y1 = bones[i].GetYAxis();
-                Vector3 y2 = bones[i + 1].GetYAxis();
-                if (y1.X - y2.X > threshold && y1.Y - y2.Y > threshold && y1.Z - y2.Z > threshold)
-                {
-                    return false;
-                }
-            }
-            Vector3 a = bones[bones.Length - 1].Pos; // end effector
-            Vector3 b = 2 * bones[0].Pos - a; // end effector reflected in root (ref = 2*root - endef)
-
-            if (Vector3Helper.Parallel(a - target.Pos, b - target.Pos,0.001f))
-            {
-                // Since target is reachable it is on the line
-                return true;
-            }
-            return false;
-        }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -13,12 +13,14 @@
 #endregion
 
 using UnityEngine;
+using UnityEditor;
+
 
 namespace QualisysRealTime.Unity.Skeleton {
-   [System.Serializable]
-    public class Debugging
+    [System.Serializable]
+    public class Skeleton
     {
-        public bool UseIK = true;
+
         public Vector3 Offset = new Vector3(0, 0, 0);
         public bool showSkeleton = false;
         public Color skelettColor = Color.black;
@@ -31,7 +33,10 @@ namespace QualisysRealTime.Unity.Skeleton {
         public float traceLength = 0.08f;
         public bool showConstraints = false;
         public bool showTwistConstraints = false;
-        
+        [Range(10,500)]
+        public int coneResolution = 50;
+        [Range(0.01f, 0.5f)]
+        public float coneSize = 0.08f;
         public Markers markers;
        [System.Serializable]
        public class Markers
@@ -47,7 +52,6 @@ namespace QualisysRealTime.Unity.Skeleton {
     public class Oculus
     {
         public bool UseOculus = false;
-        public bool Recenter = true;
         public Vector3 CameraOffset = new Vector3(0, .11f, .11f);
     }
 }

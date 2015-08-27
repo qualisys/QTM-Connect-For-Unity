@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -85,7 +85,6 @@ namespace QualisysRealTime.Unity.Skeleton
 
                     if (bones[i].HasConstraints)
                     {
-                        //Vector3 trg = bones[i].Pos + Vector3.Transform(bones[i + 1].Pos - bones[i].Pos, rotation);
                         Vector3 res;
                         Quaternion rot;
                         if (constraints.CheckRotationalConstraints(

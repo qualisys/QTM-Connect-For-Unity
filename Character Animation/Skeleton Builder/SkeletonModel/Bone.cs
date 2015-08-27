@@ -1,4 +1,4 @@
-﻿#region --- LINCENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -145,10 +145,6 @@ namespace QualisysRealTime.Unity.Skeleton
 
         #endregion
         #region rotation methods
-        public void Rotate(float angle, Vector3 axis)
-        {
-            Rotate(Quaternion.FromAxisAngle(axis, angle));
-        }
 
         public void Rotate(Quaternion rotation)
         {
