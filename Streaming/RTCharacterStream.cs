@@ -119,8 +119,8 @@ namespace QualisysRealTime.Unity.Skeleton
                         break;
                     case Joint.HEAD:
                         if (headCam.UseHeadCamera)
-                            SetVRDeviceRotation(b.Data);
-                        if (!headCam.UseVRHeadSetRotation)
+                            SetVRDevice(b.Data);
+                        if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation)
                             SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
                         break;
                     case Joint.HIP_L:
@@ -262,18 +262,17 @@ namespace QualisysRealTime.Unity.Skeleton
         /// If using head rotation from oculus instead of from markers
         /// </summary>
         /// <param name="b">The head bone as defiention what rotation is forward</param>
-        void SetVRDeviceRotation(Bone b)
+        void SetVRDevice(Bone b)
         {
             if (headCamera)
             {
                 var cameraAnchor = headCamera.transform.parent;
                 Vector3 cameraOffset = 
                     headCam.CameraOffset * (scale != 0 && ScaleMovementToSize ? scale : 1);
-                if (headCam.UseVRHeadSetRotation)
+                if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation)
                 {
                     charactersJoints.head.rotation = 
                         headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
-
                 }
                 cameraAnchor.position = 
                     charactersJoints.head.position + (headCamera.transform.rotation * cameraOffset);
