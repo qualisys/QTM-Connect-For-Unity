@@ -16,7 +16,7 @@ namespace QualisysRealTime.Unity
 
         public bool visibleMarkers = true;
 
-        [Range(0.001f, 0.5f)]
+        [Range(0.001f, 1f)]
         public float markerScale = 0.01f;
 
         private bool streaming = false;
