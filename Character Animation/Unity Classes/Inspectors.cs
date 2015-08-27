@@ -52,7 +52,7 @@ namespace QualisysRealTime.Unity.Skeleton {
     public class HeadCam
     {
         public bool UseHeadCamera = false;
-        public bool UseVRHeadSetRotation = false;
+        public bool UseVRHeadSetRotation = true;
         public Vector3 CameraOffset = new Vector3(0, .11f, .11f);
     }
 }
