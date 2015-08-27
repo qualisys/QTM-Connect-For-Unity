@@ -1,4 +1,4 @@
-﻿    #region --- LINCENSE ---
+﻿    #region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -20,24 +20,23 @@ namespace QualisysRealTime.Unity.Skeleton
 {
     class RTCharacterStream : MonoBehaviour
     {
-        public string MarkerPrefix = "";
+        public string ActorMarkersPrefix = "";
         public bool UseFingers = false;
-        public bool ScaleToModel = false;
-        public bool LockPosition = false;
-        public bool SetJointPosition = false;
-        public bool Reset = false;
+        public bool ScaleMovementToSize = false;
+        public bool UseIK = true;
         public CharactersModel model = CharactersModel.Model1;
-        private CharactersModel _model = CharactersModel.Model1;
-        public BoneRotations boneRotatation = new Model1();
+        public BoneRotations boneRotatation;
         public Oculus oculus;
-        public Debugging debug;
 
-        private Camera headCamera;
-        private RTClient rtClient;
-        private Vector3 pos;
-        private List<LabeledMarker> markerData;
+        internal Camera headCamera = new Camera();
+        internal bool jointsFound = true;
+
+        protected RTClient rtClient;
+        protected Vector3 pos;
+        protected List<LabeledMarker> markerData;
+        protected BipedSkeleton skeleton;
+
         private SkeletonBuilder skeletonBuilder;
-        private BipedSkeleton skeleton;
         private CharacterGameObjects charactersJoints = new CharacterGameObjects();
         private float scale = 0;
 
@@ -48,15 +47,12 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             rtClient = RTClient.GetInstance();
             //Find all joints of the characters
-            if (!charactersJoints.SetLimbs(this.transform, UseFingers))
-            {
-                charactersJoints.PrintAll();
-                UnityEngine.Debug.LogError("Could not find all necessary joints");
-            }
-            if (oculus.UseOculus) GetCamera();
+            jointsFound = charactersJoints.SetLimbs(this.transform, UseFingers);
+            if (oculus != null && oculus.UseOculus) GetCamera();
             // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
+            if (boneRotatation == null) SetModelRotation();
         }
         /// <summary>
         /// Updates the rotation and position of the Character
@@ -64,30 +60,28 @@ namespace QualisysRealTime.Unity.Skeleton
         public void Update()
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
-            if (!rtClient.GetStreamingStatus() && !LockPosition) return;
+            if (!rtClient.GetStreamingStatus()) return;
             markerData = rtClient.Markers;
-            if ((markerData == null || markerData.Count == 0) && !LockPosition)
+            if ((markerData == null || markerData.Count == 0))
             {
                 UnityEngine.Debug.LogError("The stream does not contain any markers");
                 return;
             }
-            if (Reset || skeletonBuilder == null)
-            {
-                charactersJoints.SetLimbs(this.transform, UseFingers);
-                scale = 0;
-                skeletonBuilder = new SkeletonBuilder();
-                skeletonBuilder.MarkerPrefix = MarkerPrefix;
-                skeleton = new BipedSkeleton();
-                Reset = false;
-            }
-            if (!LockPosition)
-            {
-                if (debug != null) skeletonBuilder.SolveWithIK = debug.UseIK;
-                skeleton = skeletonBuilder.SolveSkeleton(markerData);
-            }
-            if (ScaleToModel && scale == 0) scale = FindScale(charactersJoints.pelvis);
-            if (_model != model) SetModelRotation();
+            if (skeletonBuilder != null) skeleton = skeletonBuilder.SolveSkeleton(markerData);
+            else ResetSkeleton();
             SetAll();
+        }
+        public void ResetSkeleton()
+        {
+            charactersJoints.SetLimbs(this.transform, UseFingers);
+            skeletonBuilder = new SkeletonBuilder();
+            skeletonBuilder.MarkerPrefix = ActorMarkersPrefix;
+            skeletonBuilder.SolveWithIK = UseIK;
+            if (markerData != null) skeleton = skeletonBuilder.SolveSkeleton(markerData);
+            else skeleton = new BipedSkeleton();
+            if (ScaleMovementToSize) scale = FindScale();
+            else scale = 0;
+            if (boneRotatation == null) SetModelRotation();
         }
 
         /// <summary>
@@ -101,10 +95,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 {
                     case Joint.PELVIS:
                         SetJointRotation(charactersJoints.pelvis, b.Data, boneRotatation.hip);
-                        if (charactersJoints.pelvis && !b.Data.Pos.IsNaN() && !SetJointPosition)
+                        if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
                         {
                             charactersJoints.pelvis.position = transform.position 
-                                        + (ScaleToModel ?
+                                        + ((ScaleMovementToSize && scale > 0)?
                                             (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
                                             : b.Data.Pos.Convert());
                         }
@@ -212,30 +206,30 @@ namespace QualisysRealTime.Unity.Skeleton
                     * b.Orientation.Convert()
                     * Quaternion.Euler(euler)
                     * Quaternion.Euler(boneRotatation.root);
-                if (SetJointPosition) go.position = b.Pos.Convert() + transform.root.position ;
             }
         }
         /// <summary>
         /// Find the scale by which the characters positions should change
         /// </summary>
-        /// <param name="pelvis">The pelvis where the root position change is applied</param>
         /// <returns>A scaling factor to be applied to the poistional vector</returns>
-        private float FindScale(Transform pelvis)
+        private float FindScale()
         {
-            float pelvisHeight = 0;
-            var trans = pelvis;
-            while (trans && trans != this.transform) {
-                pelvisHeight += trans.localPosition.y;
-                trans = trans.parent;
-            }
-            float s = pelvisHeight / skeleton.Root.Data.Pos.Y;
+            var calf = charactersJoints.leftCalf.position;
+            var thigh = charactersJoints.leftThigh.position;
+            var foot = charactersJoints.leftFoot.position;
+            float pelvisHeight = (calf - thigh).magnitude + (thigh - foot).magnitude;
+            var hip = skeleton[Joint.HIP_L].Pos;
+            var knee = skeleton[Joint.KNEE_L].Pos;
+            var footbase = skeleton[Joint.FOOTBASE_L].Pos;
+            float actorPelvisHeight = (hip - knee).Length + (knee - footbase).Length;
+            float s = pelvisHeight / actorPelvisHeight;
             s /= transform.localScale.magnitude;
             return s;
         }
         /// <summary>
         /// Checks whether the model has been changed since last and change the model
         /// </summary>
-        private void SetModelRotation()
+        public void SetModelRotation()
         {
             switch (model)
             {
@@ -266,79 +260,6 @@ namespace QualisysRealTime.Unity.Skeleton
                 default:
                     break;
             }
-            _model = model;
-        }
-        void OnDrawGizmos()
-        {
-            if (Application.isPlaying &&
-                (rtClient.GetStreamingStatus() && debug != null && markerData != null)
-                || LockPosition)
-            {
-                pos = this.transform.position + debug.Offset;
-                if (debug.markers.ShowMarkers)
-                {
-                    foreach (var lb in markerData)
-                    {
-                        Gizmos.color = new Color(lb.Color.r, lb.Color.g, lb.Color.b);
-                        Gizmos.DrawSphere(lb.Position + pos, debug.markers.MarkerScale);
-                    }
-                }
-
-                if (debug.markers.MarkerBones && rtClient.Bones != null)
-                {
-                    foreach (var lb in rtClient.Bones)
-                    {
-                        var from = markerData.Find(md => md.Label == lb.From).Position + pos;
-                        var to = markerData.Find(md => md.Label == lb.To).Position + pos;
-                        Debug.DrawLine(from, to, debug.markers.boneColor);
-                    }
-                }
-
-                if (skeleton != null &&
-                    (debug.showSkeleton || debug.showRotationTrace || debug.showJoints || debug.showConstraints || debug.showTwistConstraints))
-                {
-                    Gizmos.color = debug.jointColor;
-                    foreach (TreeNode<Bone> b in skeleton.Root)
-                    {
-                        if (debug.showSkeleton)
-                        {
-                            foreach (TreeNode<Bone> child in b.Children)
-                            {
-                                UnityEngine.Debug.DrawLine(b.Data.Pos.Convert() + pos, child.Data.Pos.Convert() + pos, debug.skelettColor);
-                            }
-                        }
-                        if (debug.showRotationTrace && (!b.IsLeaf))
-                        {
-                            UnityDebug.DrawRays(b.Data.Orientation, b.Data.Pos.Convert() + pos, debug.traceLength);
-                        }
-                        if (debug.showJoints)
-                        {
-                            Gizmos.DrawSphere(b.Data.Pos.Convert() + pos, debug.jointSize);
-                        }
-                        if ((debug.showConstraints || debug.showTwistConstraints) && b.Data.HasConstraints)
-                        {
-                            OpenTK.Quaternion parentRotation =
-                                b.Parent.Data.Orientation * b.Data.ParentPointer;
-                            OpenTK.Vector3 poss = b.Data.Pos + pos.Convert();
-                            if (debug.showConstraints)
-                            {
-                                UnityDebug.CreateIrregularCone(
-                                    b.Data.Constraints, poss,
-                                    OpenTK.Vector3.NormalizeFast(
-                                        OpenTK.Vector3.Transform(OpenTK.Vector3.UnitY, parentRotation)),
-                                    parentRotation,
-                                    50,//debug.jointsConstrains.coneResolution,
-                                    debug.traceLength//debug.jointsConstrains.coneSize
-                                    );
-                            }
-                            if (debug.showTwistConstraints)
-                            {
-                                UnityDebug.DrawTwistConstraints(b.Data, b.Parent.Data, poss, debug.traceLength);
-                            }
-                        }
-                    }
-                }
-            }
         }
         /// <summary>
         /// If using head rotation from oculus instead of from markers
@@ -349,13 +270,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (headCamera)
             {
                 var cameraAnchor = headCamera.transform.parent;
-                if (oculus.Recenter)
-                {
-                    cameraAnchor.rotation = b.Orientation.Convert();
-                    UnityEngine.VR.InputTracking.Recenter();
-                    oculus.Recenter = false;
-                }
-                Vector3 cameraOffset = oculus.CameraOffset * (scale != 0 && ScaleToModel ? scale : 1);
+                Vector3 cameraOffset = oculus.CameraOffset * (scale != 0 && ScaleMovementToSize ? scale : 1);
                 charactersJoints.head.rotation = headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
                 cameraAnchor.position = charactersJoints.head.position + (headCamera.transform.rotation * cameraOffset);
             }
@@ -364,12 +279,17 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <summary>
         /// Finds the camera and sets the reference
         /// </summary>
-        void GetCamera()
+        public void GetCamera()
         {
             var searchRes = this.transform.Find("Camera");
             if (searchRes)
             {
                 headCamera = searchRes.GetComponent<Camera>();
+            } else
+            {
+                var cameraGO = new GameObject("Camera");
+                cameraGO.AddComponent<Camera>();
+                cameraGO.transform.parent = transform;
             }
             if (headCamera)
             {
@@ -378,7 +298,23 @@ namespace QualisysRealTime.Unity.Skeleton
                 headCamera.transform.position = Vector3.zero;
                 headCamera.transform.SetParent(go.transform);
                 go.transform.SetParent(transform);
-            } else oculus.UseOculus = false;
+            }
+        }
+        public void DestroyCamera()
+        {
+            if (headCamera.transform.parent.gameObject) Destroy(headCamera.transform.parent.gameObject);
+        }
+        public void Recenter()
+        {
+            if (skeleton != null)
+            {
+                var b = skeleton[Joint.HEAD];
+                if (!b.HasNaN)
+                {
+                    headCamera.transform.parent.rotation = b.Orientation.Convert();
+                }
+            }
+            UnityEngine.VR.InputTracking.Recenter();
         }
     }
 }
