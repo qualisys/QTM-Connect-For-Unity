@@ -47,7 +47,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 MarkersNames markersMap;
                 mp = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix); ;
                 joints = new JointLocalization(markersMap);
-                ikApplier = new IKApplier(skeletonBuffer);
+                ikApplier = new IKApplier(skeleton);
             }
             Dictionary<string, OpenTK.Vector3> markers;
             mp.ProcessMarkers(markerData, out markers, MarkerPrefix);
