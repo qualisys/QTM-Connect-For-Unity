@@ -24,33 +24,47 @@ namespace QualisysRealTime.Unity.Skeleton
             if (!c.jointsFound)
             {
                 GUILayout.Space(5);
+
                 GUIStyle warningStyle = new GUIStyle();
                 warningStyle.richText = true;
                 GUILayout.Label("<color=maroon>Warning: Not all character joints was found!</color>", warningStyle);
                 GUILayout.Label("<color=maroon>              Animation may look strange or not work at all.</color>", warningStyle);
+
                 GUILayout.Space(5);
             }
 
-            var text = EditorGUILayout.TextField("Actor Markers Prefix", c.ActorMarkersPrefix);
-            if (text != c.ActorMarkersPrefix)
+            GUILayout.Space(10);
+            var guiContent = new GUIContent();
+            guiContent.text = "Prefix for actors markers";
+            guiContent.tooltip = "To use multiple actors, differient them from each other with a specific prefix on each marker and put the prefix here, e.g. \"Actor1_\"";
+
+            var prefixText = EditorGUILayout.TextField(guiContent, c.ActorMarkersPrefix);
+            if (prefixText != c.ActorMarkersPrefix)
             {
-                c.ActorMarkersPrefix = text;
+                c.ActorMarkersPrefix = prefixText;
                 c.ResetSkeleton();
             }
-            if (EditorGUILayout.Toggle("Use IK", c.UseIK) != c.UseIK)
+
+            GUILayout.Space(5);
+            guiContent.text = "Solve gaps with inverse kinematics";
+            guiContent.tooltip = "When markers are missing, bones might go missing.\nCheck this to use IK to predict bone positions in the skeleton";
+            if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
                 c.ResetSkeleton();
             }
-            if (EditorGUILayout.Toggle("Scale Movement To Size", c.ScaleMovementToSize) != c.ScaleMovementToSize)
+            guiContent.text = "Scale movement to character size";
+            guiContent.tooltip = "If the character is smaller or bigger then the actor, the character will float in the air or sink into the ground and move to much or to little.\nCheck this to scale the movement to the size of the character model.";
+            if (EditorGUILayout.Toggle(guiContent, c.ScaleMovementToSize) != c.ScaleMovementToSize)
             {
                 c.ScaleMovementToSize = !c.ScaleMovementToSize;
                 c.ResetSkeleton();
             }
 
-
             GUILayout.Space(5);
-            CharactersModel m = (CharactersModel)EditorGUILayout.EnumPopup("Unity Character set",c.model);
+            guiContent.text = "Character rotation model";
+            guiContent.tooltip = "Characters have different definition of how each bone rotation, test different models if the character looks strange.\n\nHint: Change in Play mode will not be saved!";
+            CharactersModel m = (CharactersModel)EditorGUILayout.EnumPopup(guiContent, c.model);
             if (m != c.model)
             {
                 c.model = m;
@@ -58,26 +72,39 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             EditorGUI.indentLevel++;
             {
+                guiContent.text = "Character rotations";
+                guiContent.tooltip = "Fix each limb rotation by defining the euler angels here.";
                 EditorGUILayout.PropertyField(boneRotation, 
-                    new GUIContent("Joint Rotations Fix", "Unity characters have different rotation on each limb"), true);
+                    guiContent, true);
                 cSerializedObject.ApplyModifiedProperties();
             }
             EditorGUI.indentLevel--;
             GUILayout.Space(5);
 
             EditorGUILayout.BeginVertical();
-            c.headCam.UseHeadCamera = EditorGUILayout.BeginToggleGroup("Use Head Camera", c.headCam.UseHeadCamera);
-            if (c.headCam.UseHeadCamera && !c.headCamera) c.GetCamera();
-            else if (!c.headCam.UseHeadCamera && c.headCamera) c.DestroyCamera();
 
-            c.headCam.CameraOffset = EditorGUILayout.Vector3Field("Offset from head", c.headCam.CameraOffset);
+            guiContent.text = "Use head camera";
+            guiContent.tooltip = "Attach a camera to the head of the character.";
+            c.headCam.UseHeadCamera = EditorGUILayout.BeginToggleGroup(guiContent, c.headCam.UseHeadCamera);
 
-            c.headCam.UseVRHeadSetRotation = EditorGUILayout.Toggle("Use VR device rotation for head", c.headCam.UseVRHeadSetRotation);
+            EditorGUI.indentLevel++;
 
-            if (GUILayout.Button("Recenter camera"))
+            guiContent.text = "Offset from head";
+            guiContent.tooltip = "The vector offset from the head joint to the camera, if zero, the camera will be placed in the middle of the head.\n\nHint: Change the Field of View in the camera settings in the Inspector under character -> CameraAnchor -> Camera";
+            c.headCam.CameraOffset = EditorGUILayout.Vector3Field(guiContent, c.headCam.CameraOffset);
+
+            guiContent.text = "Use VR device rotation for head";
+            guiContent.tooltip = "Have this checked if using a Oculus Rift or other VR device who rotates the camera, otherwise rotation will be doubled.\n\nHint: No markers on the head is then necessary.";
+            c.headCam.UseVRHeadSetRotation = EditorGUILayout.Toggle(guiContent, c.headCam.UseVRHeadSetRotation);
+
+            guiContent.text = "Recenter camera";
+            guiContent.tooltip = "Recenter camera so that it looks the same way as the character.";
+            if (GUILayout.Button(guiContent))
             {
                 c.Recenter();
             }
+
+            EditorGUI.indentLevel--;
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndVertical();
         }
