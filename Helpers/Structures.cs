@@ -30,5 +30,6 @@ namespace QualisysRealTime.Unity
         public LabeledMarker FromMarker;
         public string To;
         public LabeledMarker ToMarker;
+        public Color Color = Color.yellow;
     }
 }

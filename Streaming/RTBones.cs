@@ -15,9 +15,8 @@ namespace QualisysRealTime.Unity
         private GameObject allBones;
 
         public bool visibleBones = true;
-        [Range(0.001f, 0.5f)]
+        [Range(0.001f, 1f)]
         public float boneScale = 0.01f;
-        public Color color = Color.yellow;
 
         // Use this for initialization
         void Start()
@@ -67,7 +66,7 @@ namespace QualisysRealTime.Unity
 
             var boneData = rtClient.Bones;
 
-            if (boneData == null && boneData.Count == 0) return;
+            if (boneData == null || boneData.Count == 0) return;
 
             if (bones.Count != boneData.Count) InitiateBones();
 
@@ -80,7 +79,7 @@ namespace QualisysRealTime.Unity
                     bones[i].SetPosition(0, boneData[i].FromMarker.Position);
                     bones[i].SetPosition(1, boneData[i].ToMarker.Position);
                     bones[i].SetWidth(boneScale, boneScale);
-                    bones[i].material.color = color;
+                    bones[i].material.color = boneData[i].Color;
                     bones[i].gameObject.SetActive(true);
                 }
                 else

@@ -42,16 +42,21 @@ namespace QTMRealTimeSDK.Settings
     /// <summary> 3D Bone Settings from QTM. </summary>
     public class SettingsBone
     {
-        /// <summary> name of marker bone starts from </summary>
+        /// <summary>Name of marker bone starts from</summary>
         [XmlAttribute("From")]
         public string from;
 
-        /// <summary> name of marker bone ends at</summary>
+        /// <summary>Name of marker bone ends at</summary>
         [XmlAttribute("To")]
         public string to;
 
+        /// <summary>Color of marker bone</summary>
+        [XmlAttribute("Color")]
+        public int color;
+
         SettingsBone()
         {
+            color = 0xEEEEEE;
         }
     }
 
