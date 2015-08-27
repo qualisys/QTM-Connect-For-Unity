@@ -1,7 +1,7 @@
 # [Qualisys](http://www.qualisys.com) [Unity](http://www.unity3d.com) SDK
 
 This is a repository with Unity scripts that lets Qualisys users stream marker, 6dof and user bones to Unity from [Qualisys Track Manager](http://www.qualisys.com/products/software/qtm).
-A complete custom package that can be imported into Unity is available [here](https://github.com/bornold/QTM-Unity-Realtime-Streaming/blob/master/QTMUnityRealtimeStreaming.unitypackage?raw=true).
+A complete custom package that can be imported into Unity is available [here](http://www.qualisys.com/download/QTM-Unity-Realtime-Streaming.unitypackage).
 
 ### Example on how to use
 1. Start QTM and start streaming realtime (either realtime from camera system or from measurement file).
@@ -14,7 +14,7 @@ A complete custom package that can be imported into Unity is available [here](ht
 8. Press Connect and then Unity will receive markers and display them.
 
 #### For character animation, instead of 5:
-1. Go to Window->Asset Store->3D Models->Characters and download and import Character
+1. Go to Window -> Asset Store -> 3D Models -> Characters and download and import Character
 2. Add character to the scene
 3. Drag and drop RTCharacterStream.cs to the character in the Hierarchy.
 Then continue as above at 6.
@@ -27,6 +27,7 @@ These are scripts that can be added to game objects for handling of streaming da
 * RTMarkerStream.cs - Add this script to a Game object to visualize marker positions (using spheres) streamed from Qualisys Track Manager.
 * RTBones.cs - Add this script to a Game object to visualize user defined bones (using line gizmos).
 * RTObject.cs - Add this script to a Game object to get 6DOF object positions and rotations streamed from Qualisys Track Manager.
+* RTCharacterStream.cs - Add this script to a Unity character to animate the character from marker streamed from Qualisys Track Manager.
 
 #### Helpers
 
@@ -41,4 +42,4 @@ The Unity SDK includes a packaged version of the [Realtime client SDK for .Net](
 
 #### Character Animation
 
-Files for building a the animation
+Files for real-time animation of a character.
