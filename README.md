@@ -1,7 +1,7 @@
 # [Qualisys](http://www.qualisys.com) [Unity](http://www.unity3d.com) SDK
 
 This is a repository with Unity scripts that lets Qualisys users stream marker, 6dof and user bones to Unity from [Qualisys Track Manager](http://www.qualisys.com/products/software/qtm).
-A complete custom package that can be imported into Unity is available [here](http://file.qualisys.se/open_downloads/QTMUnityRealtimeStreaming.unitypackage).
+A complete custom package that can be imported into Unity is available [here](http://www.qualisys.com/download/QTMUnityRealtimeStreaming.unitypackage).
 
 ### Example on how to use
 1. Start QTM and start streaming realtime (either realtime from camera system or from measurement file).
