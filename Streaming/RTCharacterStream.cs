@@ -23,7 +23,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public string ActorMarkersPrefix = "";
         public bool ScaleMovementToSize = false;
         public bool UseIK = true;
-        public bool UseFingers = true;
+        public bool UseFingers = false;
         public CharactersModel model = CharactersModel.Model1;
         public BoneRotations boneRotatation;
         public HeadCam headCam;
@@ -128,6 +128,7 @@ namespace QualisysRealTime.Unity.Skeleton
                             charactersJoints.head.rotation =
                                 headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
                         }
+                        else SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
                         break;
                     case Joint.HIP_L:
                         SetJointRotation(charactersJoints.leftThigh, b.Data, boneRotatation.legUpperLeft);
@@ -279,6 +280,12 @@ namespace QualisysRealTime.Unity.Skeleton
                 cameraAnchor.position = 
                     charactersJoints.head.position 
                     + (headCamera.transform.rotation * headCam.CameraOffset);
+                if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
+                {
+                    cameraAnchor = headCamera.transform.parent;
+                    cameraAnchor.rotation = skeleton.Find(Joint.HEAD).Orientation.Convert();
+
+                }
             }
         }
         /// <summary>
