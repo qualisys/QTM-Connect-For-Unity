@@ -23,6 +23,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public string ActorMarkersPrefix = "";
         public bool ScaleMovementToSize = false;
         public bool UseIK = true;
+        public bool UseFingers = true;
         public CharactersModel model = CharactersModel.Model1;
         public BoneRotations boneRotatation;
         public HeadCam headCam;
@@ -46,7 +47,7 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             rtClient = RTClient.GetInstance();
             //Find all joints of the characters
-            jointsFound = charactersJoints.SetLimbs(this.transform, true);
+            jointsFound = charactersJoints.SetLimbs(this.transform, UseFingers);
             // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
@@ -71,7 +72,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
         public void ResetSkeleton()
         {
-            charactersJoints.SetLimbs(this.transform, true);
+            charactersJoints.SetLimbs(this.transform, UseFingers);
             skeletonBuilder = new SkeletonBuilder();
             skeletonBuilder.MarkerPrefix = ActorMarkersPrefix;
             skeletonBuilder.SolveWithIK = UseIK;
@@ -171,20 +172,22 @@ namespace QualisysRealTime.Unity.Skeleton
                         SetJointRotation(charactersJoints.rightHand, b.Data, boneRotatation.handRight);
                         break;
                     case Joint.HAND_L:
-                        if (charactersJoints.fingersLeft != null)
+                        if (UseFingers && charactersJoints.fingersLeft != null)
                             foreach (var fing in charactersJoints.fingersLeft)
                                 SetJointRotation(fing, b.Data, boneRotatation.fingersLeft);
                         break;
                     case Joint.HAND_R:
-                        if (charactersJoints.fingersRight != null)
+                        if (UseFingers && charactersJoints.fingersRight != null)
                             foreach (var fing in charactersJoints.fingersRight)
                                 SetJointRotation(fing, b.Data, boneRotatation.fingersRight);
                         break;
                     case Joint.TRAP_L:
-                        SetJointRotation(charactersJoints.thumbLeft, b.Data, boneRotatation.thumbLeft);
+                        if (UseFingers)
+                            SetJointRotation(charactersJoints.thumbLeft, b.Data, boneRotatation.thumbLeft);
                         break;
                     case Joint.TRAP_R:
-                        SetJointRotation(charactersJoints.thumbRight, b.Data, boneRotatation.thumbRight);
+                        if (UseFingers)
+                            SetJointRotation(charactersJoints.thumbRight, b.Data, boneRotatation.thumbRight);
                         break;
                     case Joint.ANKLE_L:
                     case Joint.ANKLE_R:

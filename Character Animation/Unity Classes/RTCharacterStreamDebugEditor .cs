@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEditor;
 
 namespace QualisysRealTime.Unity.Skeleton
@@ -17,7 +16,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 characterStream.ResetSkeleton();
             }
-            if (GUILayout.Button("Set model Skeleton"))
+            if (GUILayout.Button("Set rotation model"))
             {
                 characterStream.SetModelRotation();
             }

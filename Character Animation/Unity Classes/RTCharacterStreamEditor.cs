@@ -53,6 +53,15 @@ namespace QualisysRealTime.Unity.Skeleton
                 c.UseIK = !c.UseIK;
                 c.ResetSkeleton();
             }
+
+            guiContent.text = "Set fingers rotation to character";
+            guiContent.tooltip = "Map the rotation of the actors fingers to the character in Unity";
+            if (EditorGUILayout.Toggle(guiContent, c.UseFingers) != c.UseFingers)
+            {
+                c.UseFingers = !c.UseFingers;
+                c.ResetSkeleton();
+            }
+
             guiContent.text = "Scale movement to character size";
             guiContent.tooltip = "If the character is smaller or bigger then the actor, the character will float in the air or sink into the ground and move to much or to little.\nCheck this to scale the movement to the size of the character model.";
             if (EditorGUILayout.Toggle(guiContent, c.ScaleMovementToSize) != c.ScaleMovementToSize)
