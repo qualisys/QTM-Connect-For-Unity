@@ -42,7 +42,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (prefixText != c.ActorMarkersPrefix)
             {
                 c.ActorMarkersPrefix = prefixText;
-                c.ResetSkeleton();
+                ResetIfActive(c);
             }
 
             GUILayout.Space(5);
@@ -51,7 +51,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
-                c.ResetSkeleton();
+                ResetIfActive(c);
             }
 
             guiContent.text = "Set fingers rotation to character";
@@ -59,7 +59,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (EditorGUILayout.Toggle(guiContent, c.UseFingers) != c.UseFingers)
             {
                 c.UseFingers = !c.UseFingers;
-                c.ResetSkeleton();
+                ResetIfActive(c);
             }
 
             guiContent.text = "Scale movement to character size";
@@ -67,7 +67,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (EditorGUILayout.Toggle(guiContent, c.ScaleMovementToSize) != c.ScaleMovementToSize)
             {
                 c.ScaleMovementToSize = !c.ScaleMovementToSize;
-                c.ResetSkeleton();
+                ResetIfActive(c);
             }
 
             GUILayout.Space(5);
@@ -116,6 +116,11 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUI.indentLevel--;
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndVertical();
+        }
+        void ResetIfActive(RTCharacterStream c)
+        {
+            if (c.isActiveAndEnabled)
+                c.ResetSkeleton();
         }
     }
 }
