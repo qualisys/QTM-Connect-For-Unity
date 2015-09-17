@@ -6,7 +6,7 @@ A complete custom package that can be imported into Unity is available [here](ht
 ### Example on how to use
 1. Start QTM and start streaming realtime (either realtime from camera system or from measurement file).
 2. Create new project.
-3. Import Package -> Custom Package...
+3. Import Package -> Custom Package... Unity scripts package for QTM realtime streaming using the .Net realtime Sdk (http://www.qualisys.com/download/QTMUnityRealtimeStreaming.unitypackage)
 4. Show the QTM Streaming window using the menu option Window->Qualisys->RTClient.
 5. Create an empty GameObject and the RTMarkerStream.cs script to it.
 6. Press "play" mode
