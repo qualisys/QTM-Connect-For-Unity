@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 
 namespace QualisysRealTime.Unity.Skeleton
@@ -46,15 +47,15 @@ namespace QualisysRealTime.Unity.Skeleton
             }
 
             GUILayout.Space(5);
-            guiContent.text = "Solve gaps with inverse kinematics";
-            guiContent.tooltip = "When markers are missing, bones might go missing.\nCheck this to use IK to predict bone positions in the skeleton";
+            guiContent.text = "Solve gaps using IK";
+            guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
             if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
                 ResetIfActive(c);
             }
 
-            guiContent.text = "Set fingers rotation to character";
+            guiContent.text = "Use finger rotation";
             guiContent.tooltip = "Map the rotation of the actors fingers to the character in Unity";
             if (EditorGUILayout.Toggle(guiContent, c.UseFingers) != c.UseFingers)
             {
@@ -92,17 +93,17 @@ namespace QualisysRealTime.Unity.Skeleton
 
             EditorGUILayout.BeginVertical();
 
-            guiContent.text = "Use head camera";
+            guiContent.text = "Add camera to head";
             guiContent.tooltip = "Attach a camera to the head of the character.";
             c.headCam.UseHeadCamera = EditorGUILayout.BeginToggleGroup(guiContent, c.headCam.UseHeadCamera);
 
             EditorGUI.indentLevel++;
 
-            guiContent.text = "Offset from head";
+            guiContent.text = "Camera offset from head";
             guiContent.tooltip = "The vector offset from the head joint to the camera, if zero, the camera will be placed in the middle of the head.\n\nHint: Change the Field of View in the camera settings in the Inspector under character -> CameraAnchor -> Camera";
             c.headCam.CameraOffset = EditorGUILayout.Vector3Field(guiContent, c.headCam.CameraOffset);
 
-            guiContent.text = "Use VR device rotation for head";
+            guiContent.text = "Set head rotation to VR device";
             guiContent.tooltip = "Have this checked if using a Oculus Rift or other VR device who rotates the camera, otherwise rotation will be doubled.\n\nHint: No markers on the head is then necessary.";
             c.headCam.UseVRHeadSetRotation = EditorGUILayout.Toggle(guiContent, c.headCam.UseVRHeadSetRotation);
 
@@ -124,3 +125,4 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
 }
+#endif

@@ -13,8 +13,6 @@
 #endregion
 
 using UnityEngine;
-using UnityEditor;
-
 
 namespace QualisysRealTime.Unity.Skeleton {
     [System.Serializable]
