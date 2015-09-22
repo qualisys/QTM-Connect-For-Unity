@@ -177,7 +177,8 @@ namespace QualisysRealTime.Unity
         {
             // Send discovery packet
             List<DiscoveryResponse> list = new List<DiscoveryResponse>();
-            if (mProtocol.DiscoverRTServers(1337))
+            ushort randomPort = (ushort)(new System.Random()).Next(1337, 1388);
+            if (mProtocol.DiscoverRTServers(randomPort))
             {
                 if (mProtocol.DiscoveryResponses.Count > 0)
                 {
