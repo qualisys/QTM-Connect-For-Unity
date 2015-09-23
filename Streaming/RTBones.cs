@@ -13,12 +13,11 @@ namespace QualisysRealTime.Unity
         private RTClient rtClient;
         private List<LineRenderer> bones;
         private GameObject allBones;
-
+        private Material material;
         public bool visibleBones = true;
         [Range(0.001f, 1f)]
-        public float boneScale = 0.01f;
+        public float boneScale = 0.02f;
 
-        // Use this for initialization
         void Start()
         {
             rtClient = RTClient.GetInstance();
@@ -26,6 +25,7 @@ namespace QualisysRealTime.Unity
             allBones = new GameObject("Bones");
             allBones.transform.parent = transform;
             allBones.transform.localPosition = Vector3.zero;
+            material = new Material(Shader.Find("Standard"));
         }
 
 
@@ -37,9 +37,10 @@ namespace QualisysRealTime.Unity
             }
 
             bones.Clear();
+
             var boneData = rtClient.Bones;
 
-            Material material = new Material(Shader.Find("Unlit/Color"));
+
             for (int i = 0; i < boneData.Count; i++)
             {
                 LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
@@ -47,12 +48,12 @@ namespace QualisysRealTime.Unity
                 lineRenderer.transform.parent = allBones.transform;
                 lineRenderer.transform.localPosition = Vector3.zero;
                 lineRenderer.material = material;
+                lineRenderer.material.color = boneData[i].Color;
                 lineRenderer.useWorldSpace = false;
                 bones.Add(lineRenderer);
             }
         }
 
-        // Update is called once per frame
         void Update()
         {
             if (!visibleBones)
@@ -61,7 +62,6 @@ namespace QualisysRealTime.Unity
                 return;
             }
             if (rtClient == null) rtClient = RTClient.GetInstance();
-
             if (!rtClient.GetStreamingStatus()) return;
 
             var boneData = rtClient.Bones;
@@ -79,7 +79,6 @@ namespace QualisysRealTime.Unity
                     bones[i].SetPosition(0, boneData[i].FromMarker.Position);
                     bones[i].SetPosition(1, boneData[i].ToMarker.Position);
                     bones[i].SetWidth(boneScale, boneScale);
-                    bones[i].material.color = boneData[i].Color;
                     bones[i].gameObject.SetActive(true);
                 }
                 else

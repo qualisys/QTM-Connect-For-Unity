@@ -1,9 +1,7 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
 //
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity
 {
@@ -17,7 +15,7 @@ namespace QualisysRealTime.Unity
         public bool visibleMarkers = true;
 
         [Range(0.001f, 1f)]
-        public float markerScale = 0.01f;
+        public float markerScale = 0.05f;
 
         private bool streaming = false;
 
