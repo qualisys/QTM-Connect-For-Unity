@@ -16,6 +16,7 @@ namespace QualisysRealTime.Unity
 
         RTProtocol mProtocol;
         private static RTClient mInstance;
+        private ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
 
         private List<SixDOFBody> mBodies;
         public List<SixDOFBody> Bodies { get { return mBodies; } }
@@ -177,8 +178,7 @@ namespace QualisysRealTime.Unity
         {
             // Send discovery packet
             List<DiscoveryResponse> list = new List<DiscoveryResponse>();
-            ushort randomPort = (ushort)(new System.Random()).Next(1337, 1388);
-            if (mProtocol.DiscoverRTServers(randomPort))
+            if (mProtocol.DiscoverRTServers(replyPort))
             {
                 if (mProtocol.DiscoveryResponses.Count > 0)
                 {
