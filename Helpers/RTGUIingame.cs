@@ -22,11 +22,6 @@ namespace QualisysRealTime.Unity
 
         List<DiscoveryResponse> discoveryResponses;
 
-        public void OnEnable()
-        {
-            discoveryResponses = RTClient.GetInstance().GetServers();
-        }
-
         /// This makes sure we only can connect when in playing mode
         void OnInspectorUpdate()
         {
@@ -45,6 +40,8 @@ namespace QualisysRealTime.Unity
             GUI.Box(new Rect(10, 10, 220, 155), "Qualisys Realtime Streamer");
 
             GUI.Label(new Rect(20, 40, 200, 40), "QTM Server:\n(switch with arrow keys)");
+
+            if (discoveryResponses == null) discoveryResponses = RTClient.GetInstance().GetServers();
 
             List<GUIContent> serverSelection = new List<GUIContent>();
             foreach (var discoveryResponse in discoveryResponses)

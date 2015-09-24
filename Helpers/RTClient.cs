@@ -11,8 +11,12 @@ namespace QualisysRealTime.Unity
 {
     public class RTClient : IDisposable
     {
+        const int LOWEST_SUPPORTED_UNITY_MAJOR_VERSION = 1;
+        const int LOWEST_SUPPORTED_UNITY_MINOR_VERSION = 13;
+
         RTProtocol mProtocol;
         private static RTClient mInstance;
+        private ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
 
         private List<SixDOFBody> mBodies;
         public List<SixDOFBody> Bodies { get { return mBodies; } }
@@ -174,7 +178,7 @@ namespace QualisysRealTime.Unity
         {
             // Send discovery packet
             List<DiscoveryResponse> list = new List<DiscoveryResponse>();
-            if (mProtocol.DiscoverRTServers(1337))
+            if (mProtocol.DiscoverRTServers(replyPort))
             {
                 if (mProtocol.DiscoveryResponses.Count > 0)
                 {
@@ -206,12 +210,15 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3d"> if labeled markers should be streamed.</param>
         public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d)
         {
-            if (mProtocol.Connect(discoveryResponse, udpPort))
+            if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
             {
-                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d);
+                if (!mProtocol.Connect(discoveryResponse, udpPort, LOWEST_SUPPORTED_UNITY_MAJOR_VERSION, LOWEST_SUPPORTED_UNITY_MINOR_VERSION))
+                {
+                    Debug.Log("Error Creating Connection to server");
+                    return false;
+                }
             }
-            Debug.Log("Error Creating Connection to server");
-            return false;
+            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d);
         }
 
         /// <summary>
@@ -304,6 +311,9 @@ namespace QualisysRealTime.Unity
                     newMarker.Color.b = (marker.ColorRGB >> 16) & 0xFF;
 
                     newMarker.Color /= 255;
+
+                    newMarker.Color.a = 1F;
+
                     Markers.Add(newMarker);
                 }
 
@@ -320,7 +330,12 @@ namespace QualisysRealTime.Unity
                         bone.FromMarker = GetMarker(settingsBone.from);
                         bone.To = settingsBone.to;
                         bone.ToMarker = GetMarker(settingsBone.to);
-                        Bones.Add(bone);
+                        bone.Color.r = (settingsBone.color) & 0xFF;
+                        bone.Color.g = (settingsBone.color >> 8) & 0xFF;
+                        bone.Color.b = (settingsBone.color >> 16) & 0xFF;
+                        bone.Color /= 255;
+                        bone.Color.a = 1F;
+                        mBones.Add(bone);
                     }
                 }
 
