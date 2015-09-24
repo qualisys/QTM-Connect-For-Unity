@@ -17,14 +17,13 @@ namespace QualisysRealTime.Unity
         // Use this for initialization
         void Start()
         {
+            rtClient = RTClient.GetInstance();
         }
 
         // Update is called once per frame
         void Update()
         {
-            rtClient = RTClient.GetInstance();
-            if (rtClient == null)
-                return;
+            if (rtClient == null) rtClient = RTClient.GetInstance();
 
             SixDOFBody body = rtClient.GetBody(ObjectName);
             if (body != null)
@@ -32,7 +31,9 @@ namespace QualisysRealTime.Unity
                 if (body.Position.magnitude > 0) //just to avoid error when position is NaN
                 {
                     transform.position = body.Position + PositionOffset;
+                    if (transform.parent) transform.position += transform.parent.position;
                     transform.rotation = body.Rotation * Quaternion.Euler(EulerOffset);
+                    if (transform.parent) transform.rotation *= transform.parent.rotation;
                 }
             }
         }

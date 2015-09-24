@@ -1,11 +1,9 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
 //
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 
 namespace QualisysRealTime.Unity
@@ -50,7 +48,7 @@ namespace QualisysRealTime.Unity
 
         void OnGUI()
         {
-            title = "QTM Streaming";
+            titleContent.text = "QTM Streaming";
             GUILayout.Label("Server Settings", EditorStyles.boldLabel);
             if (Application.isPlaying)
             {
@@ -155,3 +153,4 @@ namespace QualisysRealTime.Unity
         }
     }
 }
+#endif
