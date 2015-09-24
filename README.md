@@ -41,5 +41,5 @@ The Unity SDK includes a packaged version of the [Realtime client SDK for .Net](
 Files for real-time animation of a character.
 
 ## Links
-* [Qualisys](http://www.qualisys.com).
-* [Unity](http://madewith.unity.com).
+* [Qualisys](http://www.qualisys.com)
+* [Unity](http://madewith.unity.com)
