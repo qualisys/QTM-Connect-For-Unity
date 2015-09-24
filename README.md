@@ -4,7 +4,7 @@ This is a repository with Unity scripts that lets Qualisys users stream marker, 
 A complete custom package that can be imported into Unity is available [here](http://www.qualisys.com/download/Qualisys-Real-Time-Streaming.unitypackage).
 
 ### Example on how to use
-1. Start QTM and start streaming realtime (either realtime from camera system or from measurement file).
+1. Start QTM and start streaming real-time (either real-time from camera system or from measurement file).
 2. Create new project.
 3. Import Package -> Custom Package...
 4. Show the QTM Streaming window using the menu option Window->Qualisys->RTClient.
@@ -35,7 +35,7 @@ Scripts in this folder are Unity helper scripts used to commuicate with Qualisys
 * RTGUIInGame.cs - This script can be used to show a QTM connection user interface when in Game mode.
 
 #### RTClientSDK.Net
-The Unity SDK includes a packaged version of the [Realtime client SDK for .Net](https://github.com/qualisys/RTClientSDK.Net).
+The Unity SDK includes a packaged version of the [Real-time client SDK for .Net](https://github.com/qualisys/RTClientSDK.Net).
 
 #### Character Animation
 Files for real-time animation of a character.
