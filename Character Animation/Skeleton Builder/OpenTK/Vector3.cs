@@ -1,7 +1,6 @@
 #region --- License ---
 /*
 Copyright (c) 2006 - 2008 The Open Toolkit library.
-Copyright 2013 Xamarin Inc
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -26,10 +25,8 @@ SOFTWARE.
 using System;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
-#pragma warning disable 3021
 namespace OpenTK
 {
-
     /// <summary>
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
@@ -122,12 +119,35 @@ namespace OpenTK
 
         #region Public Members
 
+
+        /// <summary>
+        /// Gets or sets the value at the index of the Vector.
+        /// </summary>
+        public float this[int index]
+        {
+            get
+            {
+                if (index == 0) return X;
+                else if (index == 1) return Y;
+                else if (index == 2) return Z;
+                throw new IndexOutOfRangeException("You tried to access this vector at index: " + index);
+            }
+            set
+            {
+                if (index == 0) X = value;
+                else if (index == 1) Y = value;
+                else if (index == 2) Z = value;
+                else throw new IndexOutOfRangeException("You tried to set this vector at index: " + index);
+            }
+        }
+
         #region Instance
 
         #region public void Add()
 
         /// <summary>Add the Vector passed as parameter to this instance.</summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
+        [CLSCompliant(false)]
         [Obsolete("Use static Add() method instead.")]
         public void Add(Vector3 right)
         {
@@ -153,6 +173,7 @@ namespace OpenTK
 
         /// <summary>Subtract the Vector passed as parameter from this instance.</summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
+        [CLSCompliant(false)]
         [Obsolete("Use static Subtract() method instead.")]
         public void Sub(Vector3 right)
         {
@@ -262,6 +283,16 @@ namespace OpenTK
 
         #endregion
 
+        /// <summary>
+        /// Returns a copy of the Vector3 scaled to unit length.
+        /// </summary>
+        public Vector3 Normalized()
+        {
+            Vector3 v = this;
+            v.Normalize();
+            return v;
+        }
+
         #region public void Normalize()
 
         /// <summary>
@@ -310,6 +341,7 @@ namespace OpenTK
 
         /// <summary>Scales this instance by the given parameter.</summary>
         /// <param name="scale">The scaling of the individual components.</param>
+        [CLSCompliant(false)]
         [Obsolete("Use static Multiply() method instead.")]
         public void Scale(Vector3 scale)
         {
@@ -1101,16 +1133,6 @@ namespace OpenTK
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
         /// <param name="result">The transformed vector</param>
-        public static void Transform(ref Vector3 vec, ref Matrix4 mat, out Vector4 result)
-        {
-            Vector4 v4 = new Vector4(vec.X, vec.Y, vec.Z, 1.0f);
-            Vector4.Transform(ref v4, ref mat, out result);
-        }
-
-        /// <summary>Transform a Vector by the given Matrix</summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
         public static void Transform(ref Vector3 vec, ref Matrix4 mat, out Vector3 result)
         {
             Vector4 v4 = new Vector4(vec.X, vec.Y, vec.Z, 1.0f);
@@ -1187,12 +1209,9 @@ namespace OpenTK
         /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
         public static float CalculateAngle(Vector3 first, Vector3 second)
         {
-            //return (float)System.Math.Acos((Vector3.Dot(first, second)) / (first.Length * second.Length));
-            // This function should not be able to return NaN. Therefore fixed:
-            return (float)System.Math.Acos(
-                Math.Max(Math.Min(
-                (Vector3.Dot(first, second)) / (first.Length * second.Length), 
-                1.0f),-1.0f));
+            float result;
+            CalculateAngle(ref first, ref second, out result);
+            return result;
         }
 
         /// <summary>Calculates the angle (in radians) between two vectors.</summary>
@@ -1204,10 +1223,121 @@ namespace OpenTK
         {
             float temp;
             Vector3.Dot(ref first, ref second, out temp);
-            result = (float)System.Math.Acos(
-                Math.Max(Math.Min(
-                temp / (first.Length * second.Length),
-                1.0f),-1.0f));
+            result = (float)System.Math.Acos(MathHelper.Clamp(temp / (first.Length * second.Length), -1.0, 1.0));
+        }
+
+        #endregion
+
+        #region Project
+
+        /// <summary>
+        /// Projects a vector from object space into screen space.
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X coordinate of the viewport.</param>
+        /// <param name="y">The Y coordinate of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The world-view-projection matrix.</param>
+        /// <returns>The vector in screen space.</returns>
+        /// <remarks>
+        /// To project to normalized device coordinates (NDC) use the following parameters:
+        /// Project(vector, -1, -1, 2, 2, -1, 1, worldViewProjection).
+        /// </remarks>
+        public static Vector3 Project(Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4 worldViewProjection)
+        {
+            Vector4 result;
+
+            result.X =
+                vector.X * worldViewProjection.M11 +
+                vector.Y * worldViewProjection.M21 +
+                vector.Z * worldViewProjection.M31 +
+                worldViewProjection.M41;
+
+            result.Y =
+                vector.X * worldViewProjection.M12 +
+                vector.Y * worldViewProjection.M22 +
+                vector.Z * worldViewProjection.M32 +
+                worldViewProjection.M42;
+
+            result.Z =
+                vector.X * worldViewProjection.M13 +
+                vector.Y * worldViewProjection.M23 +
+                vector.Z * worldViewProjection.M33 +
+                worldViewProjection.M43;
+
+            result.W =
+                vector.X * worldViewProjection.M14 +
+                vector.Y * worldViewProjection.M24 +
+                vector.Z * worldViewProjection.M34 +
+                worldViewProjection.M44;
+
+            result /= result.W;
+
+            result.X = x + (width * ((result.X + 1.0f) / 2.0f));
+            result.Y = y + (height * ((result.Y + 1.0f) / 2.0f));
+            result.Z = minZ + ((maxZ - minZ) * ((result.Z + 1.0f) / 2.0f));
+
+            return new Vector3(result.X, result.Y, result.Z);
+        }
+
+        #endregion
+
+        #region Unproject
+
+        /// <summary>
+        /// Projects a vector from screen space into object space.
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X coordinate of the viewport.</param>
+        /// <param name="y">The Y coordinate of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The inverse of the world-view-projection matrix.</param>
+        /// <returns>The vector in object space.</returns>
+        /// <remarks>
+        /// To project from normalized device coordinates (NDC) use the following parameters:
+        /// Project(vector, -1, -1, 2, 2, -1, 1, inverseWorldViewProjection).
+        /// </remarks>
+        public static Vector3 Unproject(Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4 inverseWorldViewProjection)
+        {
+            Vector4 result;
+
+            result.X = ((((vector.X - x) / width) * 2.0f) - 1.0f);
+            result.Y = ((((vector.Y - y) / height) * 2.0f) - 1.0f);
+            result.Z = (((vector.Z / (maxZ - minZ)) * 2.0f) - 1.0f);
+
+            result.X =
+                result.X * inverseWorldViewProjection.M11 +
+                result.Y * inverseWorldViewProjection.M21 +
+                result.Z * inverseWorldViewProjection.M31 +
+                inverseWorldViewProjection.M41;
+
+            result.Y =
+                result.X * inverseWorldViewProjection.M12 +
+                result.Y * inverseWorldViewProjection.M22 +
+                result.Z * inverseWorldViewProjection.M32 +
+                inverseWorldViewProjection.M42;
+
+            result.Z =
+                result.X * inverseWorldViewProjection.M13 +
+                result.Y * inverseWorldViewProjection.M23 +
+                result.Z * inverseWorldViewProjection.M33 +
+                inverseWorldViewProjection.M43;
+
+            result.W =
+                result.X * inverseWorldViewProjection.M14 +
+                result.Y * inverseWorldViewProjection.M24 +
+                result.Z * inverseWorldViewProjection.M34 +
+                inverseWorldViewProjection.M44;
+
+            result /= result.W;
+
+            return new Vector3(result.X, result.Y, result.Z);
         }
 
         #endregion
@@ -1216,11 +1346,79 @@ namespace OpenTK
 
         #region Swizzle
 
+        #region 2-component
+
         /// <summary>
         /// Gets or sets an OpenTK.Vector2 with the X and Y components of this instance.
         /// </summary>
         [XmlIgnore]
         public Vector2 Xy { get { return new Vector2(X, Y); } set { X = value.X; Y = value.Y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector2 with the X and Z components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector2 Xz { get { return new Vector2(X, Z); } set { X = value.X; Z = value.Y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector2 with the Y and X components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector2 Yx { get { return new Vector2(Y, X); } set { Y = value.X; X = value.Y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector2 with the Y and Z components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector2 Yz { get { return new Vector2(Y, Z); } set { Y = value.X; Z = value.Y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector2 with the Z and X components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector2 Zx { get { return new Vector2(Z, X); } set { Z = value.X; X = value.Y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector2 with the Z and Y components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector2 Zy { get { return new Vector2(Z, Y); } set { Z = value.X; Y = value.Y; } }
+
+        #endregion
+
+        #region 3-component
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector3 with the X, Z, and Y components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector3 Xzy { get { return new Vector3(X, Z, Y); } set { X = value.X; Z = value.Y; Y = value.Z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector3 with the Y, X, and Z components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector3 Yxz { get { return new Vector3(Y, X, Z); } set { Y = value.X; X = value.Y; Z = value.Z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector3 with the Y, Z, and X components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector3 Yzx { get { return new Vector3(Y, Z, X); } set { Y = value.X; Z = value.Y; X = value.Z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector3 with the Z, X, and Y components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector3 Zxy { get { return new Vector3(Z, X, Y); } set { Z = value.X; X = value.Y; Y = value.Z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.Vector3 with the Z, Y, and X components of this instance.
+        /// </summary>
+        [XmlIgnore]
+        public Vector3 Zyx { get { return new Vector3(Z, Y, X); } set { Z = value.X; Y = value.Y; X = value.Z; } }
+
+        #endregion
 
         #endregion
 
@@ -1296,6 +1494,20 @@ namespace OpenTK
         }
 
         /// <summary>
+        /// Component-wise multiplication between the specified instance by a scale vector.
+        /// </summary>
+        /// <param name="scale">Left operand.</param>
+        /// <param name="vec">Right operand.</param>
+        /// <returns>Result of multiplication.</returns>
+        public static Vector3 operator *(Vector3 vec, Vector3 scale)
+        {
+            vec.X *= scale.X;
+            vec.Y *= scale.Y;
+            vec.Z *= scale.Z;
+            return vec;
+        }
+
+        /// <summary>
         /// Divides an instance by a scalar.
         /// </summary>
         /// <param name="vec">The instance.</param>
@@ -1338,13 +1550,14 @@ namespace OpenTK
 
         #region public override string ToString()
 
+        private static string listSeparator = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
         /// <summary>
         /// Returns a System.String that represents the current Vector3.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", X, Y, Z);
+            return String.Format("({0}{3} {1}{3} {2})", X, Y, Z, listSeparator);
         }
 
         #endregion
@@ -1399,3 +1612,4 @@ namespace OpenTK
         #endregion
     }
 }
+

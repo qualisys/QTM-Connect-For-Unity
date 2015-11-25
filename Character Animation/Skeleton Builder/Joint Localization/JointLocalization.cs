@@ -127,14 +127,14 @@ namespace QualisysRealTime.Unity.Skeleton
             markers = markerData;
             // collect data from markers about body proportions
             // this is necessary for shoulder joint localization 
-            // Locate hiporientation, hip orientation is important for IK solver,
+            // Locate hip orientation, hip orientation is important for IK solver,
             bd.CalculateBodyData(markers, ChestOrientation);
             // get all joints
             int i = 0;
             SetJointsRecursive(skeleton.Root, ref i);
         }
         /// <summary>
-        /// Rcursive function to set the new bone position and rotation
+        /// Recursive function to set the new bone position and rotation
         /// </summary>
         /// <param name="currBone">The current bone</param>
         /// <param name="index">The index of where we are in the tree</param>

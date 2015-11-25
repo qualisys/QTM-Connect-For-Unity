@@ -19,7 +19,7 @@ namespace QualisysRealTime.Unity.Skeleton
     /// <summary>
     /// Class responsible for Building a Skeleton from markers
     /// </summary>
-    class SkeletonBuilder
+    public class SkeletonBuilder
     {
         private BipedSkeleton skeleton;
         private BipedSkeleton skeletonBuffer;
@@ -34,7 +34,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         /// <param name="markerData">A list of markers </param>
         /// <returns>A complete skeleton</returns>
-        public BipedSkeleton SolveSkeleton(List<LabeledMarker> markerData)
+        public BipedSkeleton SolveSkeleton(List<Marker> markerData)
         {
             if (   skeleton == null
                 || skeletonBuffer == null

@@ -227,7 +227,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     Quaternion oriInitial = lastFrameBone.Orientation;
                     if (!bone.IsLeaf)
                     {
-                        float quatDiff = QuaternionHelper2.DiffrenceBetween(oriFinal, oriInitial);
+                        float quatDiff = QuaternionHelper2.DifferenceBetween(oriFinal, oriInitial);
                         if (quatDiff > 0.03f)
                         {
                             float slerp = (1 - quatDiff) - (Mathf.Cos((MathHelper.Pi * quatDiff) / 2) - (1 - quatDiff * 0.8f));

@@ -13,6 +13,7 @@
 #endregion
 
 using OpenTK;
+using System;
 
 namespace QualisysRealTime.Unity.Skeleton
 {
@@ -76,6 +77,89 @@ namespace QualisysRealTime.Unity.Skeleton
             return new Quaternion(0.0f, 0.0f, s, c);
         }
 
+        #region FromMatrix
+
+        /// <summary>
+        /// Builds a quaternion from the given rotation matrix
+        /// </summary>
+        /// <param name="matrix">A rotation matrix</param>
+        /// <returns>The equivalent quaternion</returns>
+        public static Quaternion FromMatrix(Matrix4 matrix)
+        {
+            Quaternion result;
+            FromMatrix(ref matrix, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Builds a quaternion from the given rotation matrix
+        /// </summary>
+        /// <param name="matrix">A rotation matrix</param>
+        /// <param name="result">The equivalent quaternion</param>
+        public static void FromMatrix(ref Matrix4 matrix, out Quaternion result)
+        {
+            var xx = matrix.M11;
+            var yx = matrix.M21;
+            var zx = matrix.M31;
+            var xy = matrix.M12;
+            var yy = matrix.M22;
+            var zy = matrix.M32;
+            var xz = matrix.M13;
+            var yz = matrix.M23;
+            var zz = matrix.M33;
+            var trace = ((xx + yy) + zz);
+            result = new Quaternion();
+
+            if (trace > 0)
+            {
+                float s = (float)Math.Sqrt(trace + 1) * 2;
+                float invS = 1f / s;
+
+                result.W = s * 0.25f;
+                result.X = (matrix.Row2.Y - matrix.Row1.Z) * invS;
+                result.Y = (matrix.Row0.Z - matrix.Row2.X) * invS;
+                result.Z = (matrix.Row1.X - matrix.Row0.Y) * invS;
+            }
+            else
+            {
+                float m00 = matrix.Row0.X, m11 = matrix.Row1.Y, m22 = matrix.Row2.Z;
+
+                if (m00 > m11 && m00 > m22)
+                {
+                    float s = (float)Math.Sqrt(1 + m00 - m11 - m22) * 2;
+                    float invS = 1f / s;
+
+                    result.W = (matrix.Row2.Y - matrix.Row1.Z) * invS;
+                    result.X = s * 0.25f;
+                    result.Y = (matrix.Row0.Y + matrix.Row1.X) * invS;
+                    result.Z = (matrix.Row0.Z + matrix.Row2.X) * invS;
+                }
+                else if (m11 > m22)
+                {
+                    float s = (float)Math.Sqrt(1 + m11 - m00 - m22) * 2;
+                    float invS = 1f / s;
+
+                    result.W = (matrix.Row0.Z - matrix.Row2.X) * invS;
+                    result.X = (matrix.Row0.Y + matrix.Row1.X) * invS;
+                    result.Y = s * 0.25f;
+                    result.Z = (matrix.Row1.Z + matrix.Row2.Y) * invS;
+                }
+                else
+                {
+                    float s = (float)Math.Sqrt(1 + m22 - m00 - m11) * 2;
+                    float invS = 1f / s;
+
+                    result.W = (matrix.Row1.X - matrix.Row0.Y) * invS;
+                    result.X = (matrix.Row0.Z + matrix.Row2.X) * invS;
+                    result.Y = (matrix.Row1.Z + matrix.Row2.Y) * invS;
+                    result.Z = s * 0.25f;
+                }
+            }
+        }
+
+        #endregion
+
+/*
         /// <summary>
         /// Quaternion from Matrix4 matrix
         /// </summary>
@@ -173,16 +257,17 @@ namespace QualisysRealTime.Unity.Skeleton
 
             return new Quaternion(qx, qy, qz, qw);
         }
+*/
 
         /// <summary>
         /// Calculates the difference in rotation between two Quaternions
-        /// if result is 0, there is no diffrence between the Quaternions
-        /// if the results is 1, the diffrence is 180 degrees diffrence 
+        /// if result is 0, there is no difference between the Quaternions
+        /// if the results is 1, the difference is 180 degrees difference 
         /// </summary>
         /// <param name="a">The first quaternion</param>
         /// <param name="b">The secound quaternion</param>
         /// <returns>float between 0 and 1, where 0 the Quaternions are the same, and 1 they are at a 180 degrees diffrences</returns>
-        public static float DiffrenceBetween(Quaternion right, Quaternion left)
+        public static float DifferenceBetween(Quaternion right, Quaternion left)
         {
             float dot = left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
             return 1f - Mathf.Sqrt(dot);
@@ -274,6 +359,19 @@ namespace QualisysRealTime.Unity.Skeleton
             Quaternion zRot = Quaternion.FromAxisAngle(Vector3.Cross(Vector3.UnitZ, z), Vector3.CalculateAngle(Vector3.UnitZ, z));
             Vector3 t = Vector3.Transform(Vector3.UnitY, zRot);
             return Quaternion.FromAxisAngle(Vector3.Cross(t, y), Vector3.CalculateAngle(t, y)) * zRot;
+        }
+        public static Vector3 Rotate(Quaternion quaternion, Vector3 vec)
+        {
+            float tmpX, tmpY, tmpZ, tmpW;
+            tmpX = (((quaternion.W * vec.X) + (quaternion.Y * vec.Z)) - (quaternion.Z * vec.Y));
+            tmpY = (((quaternion.W * vec.Y) + (quaternion.Z * vec.X)) - (quaternion.X * vec.Z));
+            tmpZ = (((quaternion.W * vec.Z) + (quaternion.X * vec.Y)) - (quaternion.Y * vec.X));
+            tmpW = (((quaternion.X * vec.X) + (quaternion.Y * vec.Y)) + (quaternion.Z * vec.Z));
+            return new Vector3(
+                ((((tmpW * quaternion.X) + (tmpX * quaternion.W)) - (tmpY * quaternion.Z)) + (tmpZ * quaternion.Y)),
+                ((((tmpW * quaternion.Y) + (tmpY * quaternion.W)) - (tmpZ * quaternion.X)) + (tmpX * quaternion.Z)),
+                ((((tmpW * quaternion.Z) + (tmpZ * quaternion.W)) - (tmpX * quaternion.Y)) + (tmpY * quaternion.X))
+            );
         }
     }
 }

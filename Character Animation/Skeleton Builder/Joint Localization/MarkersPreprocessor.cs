@@ -43,14 +43,14 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="labelMarkers">The list of labelmarkets</param>
         /// <param name="markerNames">A reference to the markers names</param>
         /// <param name="bodyPrefix">Any possible prefix of the markersname</param>
-        public MarkersPreprocessor(List<LabeledMarker> labelMarkers, out MarkersNames markerNames, string bodyPrefix = "")
+        public MarkersPreprocessor(List<Marker> labelMarkers, out MarkersNames markerNames, string bodyPrefix = "")
         {
             this.prefix = bodyPrefix;
             markers = new Dictionary<string, Vector3>();
             //Converting markers
             for (int i = 0; i < labelMarkers.Count; i++)
             {
-                markers.Add(labelMarkers[i].Label, labelMarkers[i].Position.Convert());
+                markers.Add(labelMarkers[i].Label, labelMarkers[i].Position);
             }
             //Finding the markers aliases
             markerNames  = NameSet(markers.Keys);
@@ -77,7 +77,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="labelMarkers">The list of labelmarkets</param>
         /// <param name="newMarkers">a reference to the dictionary to be </param>
         /// <param name="prefix">The possible prefix of all markers</param>
-        public void ProcessMarkers(List<LabeledMarker> labelMarkers, out Dictionary<string,Vector3> newMarkers, string prefix)
+        public void ProcessMarkers(List<Marker> labelMarkers, out Dictionary<string,Vector3> newMarkers, string prefix)
         {
             var temp = markers;
             markers = markersLastFrame;
@@ -85,7 +85,7 @@ namespace QualisysRealTime.Unity.Skeleton
             markers.Clear();
             for (int i = 0; i < labelMarkers.Count; i++)
             {
-                markers.Add(labelMarkers[i].Label, labelMarkers[i].Position.Convert());
+                markers.Add(labelMarkers[i].Label, labelMarkers[i].Position);
             }
 
             foreach (var markername in m)
