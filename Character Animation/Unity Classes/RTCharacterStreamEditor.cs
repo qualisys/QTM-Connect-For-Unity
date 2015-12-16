@@ -17,8 +17,9 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             c = (RTCharacterStream)target;
             cSerializedObject = new SerializedObject(target);
-            boneRotation = cSerializedObject.FindProperty("boneRotatation");
+			boneRotation = cSerializedObject.FindProperty("boneRotation");
         }
+
         public override void OnInspectorGUI()
         {
             cSerializedObject.Update();
@@ -74,8 +75,8 @@ namespace QualisysRealTime.Unity.Skeleton
             GUILayout.Space(5);
             guiContent.text = "Character rotation model";
             guiContent.tooltip = "Characters have different definition of how each bone rotation, test different models if the character looks strange.\n\nHint: Change in Play mode will not be saved!";
-            CharactersModel m = (CharactersModel)EditorGUILayout.EnumPopup(guiContent, c.model);
-            if (m != c.model)
+            CharacterModels m = (CharacterModels)EditorGUILayout.EnumPopup(guiContent, c.model);
+			if (m != c.model)
             {
                 c.model = m;
                 c.SetModelRotation();
@@ -84,8 +85,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 guiContent.text = "Character rotations";
                 guiContent.tooltip = "Fix each limb rotation by defining the euler angels here.";
-                EditorGUILayout.PropertyField(boneRotation, 
-                    guiContent, true);
+                EditorGUILayout.PropertyField(boneRotation, guiContent, true);
                 cSerializedObject.ApplyModifiedProperties();
             }
             EditorGUI.indentLevel--;
@@ -118,6 +118,7 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndVertical();
         }
+
         void ResetIfActive(RTCharacterStream c)
         {
             if (c.isActiveAndEnabled)

@@ -59,6 +59,7 @@ namespace QualisysRealTime.Unity.Skeleton
         HAND_R,
         INDEX_R
     };
+
     public class BipedSkeleton
     {
         protected TreeNode<Bone> root;

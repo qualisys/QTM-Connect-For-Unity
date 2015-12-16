@@ -24,8 +24,8 @@ namespace QualisysRealTime.Unity.Skeleton
         public bool ScaleMovementToSize = false;
         public bool UseIK = true;
         public bool UseFingers = false;
-        public CharactersModel model = CharactersModel.Model1;
-        public BoneRotations boneRotatation;
+        public CharacterModels model = CharacterModels.Model1;
+        public BoneRotations boneRotation;
         public HeadCam headCam;
 
         internal Camera headCamera = new Camera();
@@ -33,7 +33,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
         protected RTClient rtClient;
         protected Vector3 pos;
-        protected List<LabeledMarker> markerData;
+        protected List<Marker> markerData;
         protected BipedSkeleton skeleton;
 
         private SkeletonBuilder skeletonBuilder;
@@ -51,6 +51,9 @@ namespace QualisysRealTime.Unity.Skeleton
             // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
+
+			// E.Wolf, 2015-12-15
+			this.SetModelRotation();
         }
         /// <summary>
         /// Updates the rotation and position of the Character
@@ -59,7 +62,7 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
             if (!rtClient.GetStreamingStatus()) return;
-            markerData = rtClient.Markers;
+			markerData = rtClient.Markers.Convert();
             if ((markerData == null || markerData.Count == 0))
             {
                 Debug.LogError("The stream does not contain any markers");
@@ -92,7 +95,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 switch (b.Data.Name)
                 {
                     case Joint.PELVIS:
-                        SetJointRotation(charactersJoints.pelvis, b.Data, boneRotatation.hip);
+                        SetJointRotation(charactersJoints.pelvis, b.Data, boneRotation.hip);
                         if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
                         {
                             charactersJoints.pelvis.position = transform.position 
@@ -103,92 +106,92 @@ namespace QualisysRealTime.Unity.Skeleton
                         break;
                     case Joint.SPINE0:
                         if (charactersJoints.spine.Length > 0)
-                            SetJointRotation(charactersJoints.spine[0], b.Data, boneRotatation.spine);
+                            SetJointRotation(charactersJoints.spine[0], b.Data, boneRotation.spine);
                         break;
                     case Joint.SPINE1:
                         if (charactersJoints.spine.Length > 1)
-                            SetJointRotation(charactersJoints.spine[1], b.Data, boneRotatation.spine);
+                            SetJointRotation(charactersJoints.spine[1], b.Data, boneRotation.spine);
                         break;
                     case Joint.SPINE3:
                         if (charactersJoints.spine.Length > 2)
-                            SetJointRotation(charactersJoints.spine[2], b.Data, boneRotatation.spine);
+                            SetJointRotation(charactersJoints.spine[2], b.Data, boneRotation.spine);
                         break;
                     case Joint.NECK:
-                        SetJointRotation(charactersJoints.neck, b.Data, boneRotatation.neck);
+                        SetJointRotation(charactersJoints.neck, b.Data, boneRotation.neck);
                         break;
                     case Joint.HEAD:
                         if (headCam.UseHeadCamera)
                             SetCameraPosition(b.Data);
                         if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
                         {
-                            SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
+                            SetJointRotation(charactersJoints.head, b.Data, boneRotation.head);
                         }
                         else if (headCamera)
                         {
                             charactersJoints.head.rotation =
-                                headCamera.transform.rotation * Quaternion.Euler(boneRotatation.headCamera);
+                                headCamera.transform.rotation * Quaternion.Euler(boneRotation.headCamera);
                         }
-                        else SetJointRotation(charactersJoints.head, b.Data, boneRotatation.head);
+                        else SetJointRotation(charactersJoints.head, b.Data, boneRotation.head);
                         break;
                     case Joint.HIP_L:
-                        SetJointRotation(charactersJoints.leftThigh, b.Data, boneRotatation.legUpperLeft);
+                        SetJointRotation(charactersJoints.leftThigh, b.Data, boneRotation.legUpperLeft);
                         break;
                     case Joint.HIP_R:
-                        SetJointRotation(charactersJoints.rightThigh, b.Data, boneRotatation.legUpperRight);
+                        SetJointRotation(charactersJoints.rightThigh, b.Data, boneRotation.legUpperRight);
                         break;
                     case Joint.KNEE_L:
-                        SetJointRotation(charactersJoints.leftCalf, b.Data, boneRotatation.legLowerLeft);
+                        SetJointRotation(charactersJoints.leftCalf, b.Data, boneRotation.legLowerLeft);
                         break;
                     case Joint.KNEE_R:
-                        SetJointRotation(charactersJoints.rightCalf, b.Data, boneRotatation.legLowerRight);
+                        SetJointRotation(charactersJoints.rightCalf, b.Data, boneRotation.legLowerRight);
                         break;
                     case Joint.FOOTBASE_L:
-                        SetJointRotation(charactersJoints.leftFoot, b.Data, boneRotatation.footLeft);
+                        SetJointRotation(charactersJoints.leftFoot, b.Data, boneRotation.footLeft);
                         break;
                     case Joint.FOOTBASE_R:
-                        SetJointRotation(charactersJoints.rightFoot, b.Data, boneRotatation.footRight);
+                        SetJointRotation(charactersJoints.rightFoot, b.Data, boneRotation.footRight);
                         break;
                     case Joint.CLAVICLE_L:
-                        SetJointRotation(charactersJoints.leftClavicle, b.Data, boneRotatation.clavicleLeft);
+                        SetJointRotation(charactersJoints.leftClavicle, b.Data, boneRotation.clavicleLeft);
                         break;
                     case Joint.CLAVICLE_R:
-                        SetJointRotation(charactersJoints.rightClavicle, b.Data, boneRotatation.clavicleRight);
+                        SetJointRotation(charactersJoints.rightClavicle, b.Data, boneRotation.clavicleRight);
                         break;
                     case Joint.SHOULDER_L:
-                        SetJointRotation(charactersJoints.leftUpperArm, b.Data, boneRotatation.armUpperLeft);
+                        SetJointRotation(charactersJoints.leftUpperArm, b.Data, boneRotation.armUpperLeft);
                         break;
                     case Joint.SHOULDER_R:
-                        SetJointRotation(charactersJoints.rightUpperArm, b.Data, boneRotatation.armUpperRight);
+                        SetJointRotation(charactersJoints.rightUpperArm, b.Data, boneRotation.armUpperRight);
                         break;
                     case Joint.ELBOW_L:
-                        SetJointRotation(charactersJoints.leftForearm, b.Data, boneRotatation.armLowerLeft);
+                        SetJointRotation(charactersJoints.leftForearm, b.Data, boneRotation.armLowerLeft);
                         break;
                     case Joint.ELBOW_R:
-                        SetJointRotation(charactersJoints.rightForearm, b.Data, boneRotatation.armLowerRight);
+                        SetJointRotation(charactersJoints.rightForearm, b.Data, boneRotation.armLowerRight);
                         break;
                     case Joint.WRIST_L:
-                        SetJointRotation(charactersJoints.leftHand, b.Data, boneRotatation.handLeft);
+                        SetJointRotation(charactersJoints.leftHand, b.Data, boneRotation.handLeft);
                         break;
                     case Joint.WRIST_R:
-                        SetJointRotation(charactersJoints.rightHand, b.Data, boneRotatation.handRight);
+                        SetJointRotation(charactersJoints.rightHand, b.Data, boneRotation.handRight);
                         break;
                     case Joint.HAND_L:
                         if (UseFingers && charactersJoints.fingersLeft != null)
                             foreach (var fing in charactersJoints.fingersLeft)
-                                SetJointRotation(fing, b.Data, boneRotatation.fingersLeft);
+                                SetJointRotation(fing, b.Data, boneRotation.fingersLeft);
                         break;
                     case Joint.HAND_R:
                         if (UseFingers && charactersJoints.fingersRight != null)
                             foreach (var fing in charactersJoints.fingersRight)
-                                SetJointRotation(fing, b.Data, boneRotatation.fingersRight);
+                                SetJointRotation(fing, b.Data, boneRotation.fingersRight);
                         break;
                     case Joint.TRAP_L:
                         if (UseFingers)
-                            SetJointRotation(charactersJoints.thumbLeft, b.Data, boneRotatation.thumbLeft);
+                            SetJointRotation(charactersJoints.thumbLeft, b.Data, boneRotation.thumbLeft);
                         break;
                     case Joint.TRAP_R:
                         if (UseFingers)
-                            SetJointRotation(charactersJoints.thumbRight, b.Data, boneRotatation.thumbRight);
+                            SetJointRotation(charactersJoints.thumbRight, b.Data, boneRotation.thumbRight);
                         break;
                     case Joint.ANKLE_L:
                     case Joint.ANKLE_R:
@@ -197,6 +200,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 }
             }
         }
+
         /// <summary>
         /// Sets the rotation of the Transform from Bone object to 
         /// </summary>
@@ -211,9 +215,10 @@ namespace QualisysRealTime.Unity.Skeleton
                     transform.rotation
                     * b.Orientation.Convert()
                     * Quaternion.Euler(euler)
-                    * Quaternion.Euler(boneRotatation.root);
+                    * Quaternion.Euler(boneRotation.root);
             }
         }
+
         /// <summary>
         /// Find the scale by which the characters positions should change
         /// </summary>
@@ -232,6 +237,7 @@ namespace QualisysRealTime.Unity.Skeleton
             s /= transform.localScale.magnitude;
             return s;
         }
+
         /// <summary>
         /// Checks whether the model has been changed since last and change the model
         /// </summary>
@@ -239,34 +245,35 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             switch (model)
             {
-                case CharactersModel.Model1:
-                    boneRotatation = new Model1();
+                case CharacterModels.Model1:
+                    boneRotation = new Model1();
                     break;
-                case CharactersModel.Model2:
-                    boneRotatation = new Model2();
+                case CharacterModels.Model2:
+                    boneRotation = new Model2();
                     break;
-                case CharactersModel.Model3:
-                    boneRotatation = new Model3();
+                case CharacterModels.Model3:
+                    boneRotation = new Model3();
                     break;
-                case CharactersModel.Model4:
-                    boneRotatation = new Model4();
+                case CharacterModels.Model4:
+                    boneRotation = new Model4();
                     break;
-                case CharactersModel.Model5:
-                    boneRotatation = new Model5();
+                case CharacterModels.Model5:
+                    boneRotation = new Model5();
                     break;
-                case CharactersModel.Model6:
-                    boneRotatation = new Model6();
+                case CharacterModels.Model6:
+                    boneRotation = new Model6();
                     break;
-                case CharactersModel.Model7:
-                    boneRotatation = new Model7();
+                case CharacterModels.Model7:
+                    boneRotation = new Model7();
                     break;
-                case CharactersModel.EmptyModel:
-                    boneRotatation = new Empty();
+                case CharacterModels.EmptyModel:
+                    boneRotation = new Empty();
                     break;
                 default:
                     break;
             }
         }
+
         /// <summary>
         /// If using head rotation from oculus instead of from markers
         /// </summary>
@@ -288,6 +295,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 }
             }
         }
+
         /// <summary>
         /// Finds the camera and sets the reference
         /// </summary>
@@ -311,10 +319,12 @@ namespace QualisysRealTime.Unity.Skeleton
                 Recenter();
             }
         }
+
         public void DestroyCamera()
         {
             if (headCamera.transform.parent.gameObject) Destroy(headCamera.transform.parent.gameObject);
         }
+
         public void Recenter()
         {
             if (skeleton != null)

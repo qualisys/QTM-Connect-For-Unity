@@ -155,7 +155,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
                     possiblePos1 = Sacrum + transVec1; // add vector from sacrum too lias last frame to this frames' sacrum
                     possiblePos2 = RIAS + transVec2;
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2)); // get mid point of possible positions
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2)); // get mid point of possible positions
 
                 }
                 else if (l) // sacrum  and lias exists, rias missing
@@ -170,12 +170,12 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
                     possiblePos1 = Sacrum + transVec1;
                     possiblePos2 = LIAS + transVec2;
-                    markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2));
+                    markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2));
                 }
                 else // only sacrum exists, lias and rias missing
                 {
-                    markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip] , Sacrum + riasLastFrame - sacrumLastFrame);
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], Sacrum + liasLastFrame - sacrumLastFrame);
+                    markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip] , Sacrum + riasLastFrame - sacrumLastFrame);
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], Sacrum + liasLastFrame - sacrumLastFrame);
                 }
             }
             else if (r) // rias exists, sacrum missing
@@ -193,18 +193,18 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
                     possiblePos1 = RIAS + transVec1;
                     possiblePos2 = LIAS + transVec2;
-                    markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase] ,Vector3Helper.MidPoint(possiblePos1,possiblePos2));
+                    markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase] ,Vector3Helper.MidPoint(possiblePos1,possiblePos2));
                 }
                 else // only rias exists, lias and sacrum missing
                 {
-                    markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase], RIAS + sacrumLastFrame - riasLastFrame);
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], RIAS + liasLastFrame - riasLastFrame);
+                    markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase], RIAS + sacrumLastFrame - riasLastFrame);
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], RIAS + liasLastFrame - riasLastFrame);
                 }
             }
             else if (l) // only lias exists, rias and sacrum missing
             {
-                markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase], LIAS + sacrumLastFrame - liasLastFrame);
-                markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip], LIAS + riasLastFrame - liasLastFrame);
+                markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase], LIAS + sacrumLastFrame - liasLastFrame);
+                markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip], LIAS + riasLastFrame - liasLastFrame);
             }
             else // all markers missing
             {
@@ -348,7 +348,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="from">The position last frame</param>
         /// <param name="to">The position this frame</param>
         /// <returns>this frame if moved by less then 0.02m, 0.02m otherwise</returns>
-        private Vector3 DontMovedToMuch(Vector3 from, Vector3 to)
+        private Vector3 DidntMovedToMuch(Vector3 from, Vector3 to)
         {
             Vector3 move = (to - from);
             if (move.Length > 0.02f)

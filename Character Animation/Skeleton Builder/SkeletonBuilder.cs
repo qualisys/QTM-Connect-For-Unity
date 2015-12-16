@@ -26,9 +26,14 @@ namespace QualisysRealTime.Unity.Skeleton
         private MarkersPreprocessor mp;
         private JointLocalization joints;
         private IKApplier ikApplier;
-        public string MarkerPrefix;
+
+		private ŚegmentTracking st;
+        
+		public string MarkerPrefix;
+
         public bool SolveWithIK = true;
         public bool Interpolation = false;
+
         /// <summary>
         /// Build a skeleton according to the markers
         /// </summary>
@@ -45,19 +50,32 @@ namespace QualisysRealTime.Unity.Skeleton
                 skeleton = new BipedSkeleton();
                 skeletonBuffer = new BipedSkeleton();
                 MarkersNames markersMap;
-                mp = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix); ;
+                mp = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix);
                 joints = new JointLocalization(markersMap);
                 ikApplier = new IKApplier(skeleton);
+
+				// Set segment tracking markers for virtual marker construction
+				st = new ŚegmentTracking(skeleton, markersMap, markerData);
             }
+
             Dictionary<string, OpenTK.Vector3> markers;
             mp.ProcessMarkers(markerData, out markers, MarkerPrefix);
-            var temp = skeleton;
+
+			var temp = skeleton;
             skeleton = skeletonBuffer;
             skeletonBuffer = temp;
             joints.GetJointLocation(markers, ref skeleton);
+
+			// Try to reconstruct virtual markers
+			if (st.ProcessMarkers(skeleton, markerData, ref markers, MarkerPrefix))
+			{
+				joints.GetJointLocation(markers, ref skeleton);
+			}
+
             ikApplier.Interpolation = Interpolation;
             if (SolveWithIK) ikApplier.ApplyIK(ref skeleton);
-            return skeleton;
+            
+			return skeleton;
         }
     }
 }

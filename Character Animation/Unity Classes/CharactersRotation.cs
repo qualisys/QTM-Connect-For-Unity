@@ -17,7 +17,7 @@ using UnityEngine;
 namespace QualisysRealTime.Unity.Skeleton
 {
     [System.Serializable]
-    public enum CharactersModel
+    public enum CharacterModels
     {
         Model1, Model2, Model3, Model4, Model5, Model6, Model7, EmptyModel
     }
@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity.Skeleton
     public class BoneRotations
     {
         public Vector3
-            root = new Vector3(0f, 0f, 270f),
+        root = new Vector3(0f, 0f, 270f),
         hip = new Vector3(0f, 270f, 0f),
         spine = new Vector3(0f, 270f, 0f),
         neck = new Vector3(0f, 270f, 0f),

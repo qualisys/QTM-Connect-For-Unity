@@ -39,7 +39,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public Vector3 lowerLegUpRight;
         public Vector3 rightHipPos;
         public Vector3 leftHipPos;
-        public Vector3 sternumClacicle;
+        public Vector3 sternumClavicle;
         public Vector3 spine1;
         public Vector3 head;
         public Vector3 shoulderRight;
@@ -55,6 +55,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public Vector3 kneeRight;
         public Vector3 kneeLeft;
     }
+
     class JointLocalization
     {
         private Values o = new Values();
@@ -81,7 +82,7 @@ namespace QualisysRealTime.Unity.Skeleton
             this.m = markers;
             bd = new BodyData(m);
             jcFuncs = new List<Action<Bone>>() {
-                    (b) => Plevis(b),
+                    (b) => Pelvis(b),
                     (b) => SpineRoot(b),
                     (b) => MidSpine(b),
                     (b) => SpineEnd(b),
@@ -463,7 +464,7 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             get
             {
-                if (o.sternumClacicle == ZeroVector3)
+                if (o.sternumClavicle == ZeroVector3)
                 {
                     Vector3 back = markers[m.neck];
                     Vector3 front = markers[m.chest];
@@ -487,9 +488,9 @@ namespace QualisysRealTime.Unity.Skeleton
                         neckPos =
                             Vector3Helper.MidPoint(markers[m.leftShoulder], markers[m.rightShoulder]);
                     }
-                    o.sternumClacicle = neckPos;
+                    o.sternumClavicle = neckPos;
                 }
-                return o.sternumClacicle;
+                return o.sternumClavicle;
             }
         }
         private Vector3 Spine1
@@ -787,7 +788,7 @@ namespace QualisysRealTime.Unity.Skeleton
         // Functions for filling bones
         #region Funcions
         #region pelsvis too head getters
-        private void Plevis(Bone b)
+        private void Pelvis(Bone b)
         {
             b.Pos = Vector3Helper.MidPoint(HipJointRight, HipJointLeft); 
             b.Orientation = HipOrientation;

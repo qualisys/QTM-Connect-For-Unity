@@ -1,6 +1,8 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
 //
 using UnityEngine;
+using System.Collections.Generic;
+using QualisysRealTime.Unity.Skeleton;
 
 namespace QualisysRealTime.Unity
 {
@@ -32,4 +34,19 @@ namespace QualisysRealTime.Unity
         public LabeledMarker ToMarker;
         public Color Color = Color.yellow;
     }
+
+	public static class MarkerConverter 
+	{
+		public static List<Marker> Convert(this List<LabeledMarker> list)
+		{
+			var newList = new List<Marker>();
+			foreach (LabeledMarker lm in list) {
+				var m = new Marker();
+				m.Label = lm.Label;
+				m.Position = lm.Position.Convert();
+				newList.Add(m);
+			}
+			return newList;
+		}
+	}
 }
