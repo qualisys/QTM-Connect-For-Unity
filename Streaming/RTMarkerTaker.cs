@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+//#IISCI
 //Script for marker coordinates transfer to it's parent by marker name.
 
 namespace QualisysRealTime.Unity
@@ -37,7 +37,9 @@ namespace QualisysRealTime.Unity
 			{
 				streaming = false;
 			}
-
+			
+			//Seeking fo desired marker name
+			
 			markerData = rtClient.Markers;
 			if (markerData == null && markerData.Count == 0)
 				return;
@@ -45,6 +47,8 @@ namespace QualisysRealTime.Unity
 			{
 					if (markerData[i].Label == markerName)
 					{
+						//Transfering marker position to parented object
+						
 						markerPosition = markerData[i].Position;
 						transform.position = markerPosition;
 					}
