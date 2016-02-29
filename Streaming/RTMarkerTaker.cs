@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+//Script for marker coordinates transfer to it's parent by marker name.
+
 namespace QualisysRealTime.Unity
 {
 
