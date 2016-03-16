@@ -27,41 +27,51 @@ namespace QualisysRealTime.Unity.Skeleton
         public readonly static float MarkerToSpineDist = 0.08f; // m
         public readonly static float MidHeadToHeadJoint = 0.04f; // m
         public readonly static float SpineLength = 0.0236f; // m
-        public readonly static float BMI = 24;
+        public readonly static float BMI = 24; // default
+        
+        // E.Wolf, 2016-03-16
+        public readonly static float defaultHeight = 175; // cm
+        public readonly static float defaultMass = 75; // kg
+        public readonly static float defaultShoulderWidth = 200; // mm
         #endregion
+
         #region The collected body data
-        public float Height { get; private set; }
-        public float Mass { get; private set; }
-        public Vector3 NeckToChestVector { get; private set; }
+        public float Height { get; set; }
+        public float Mass { get; set; }
         public float ShoulderWidth { get; private set; }
+        public Vector3 NeckToChestVector { get; private set; }
         public float ChestDepth
         {
             get
             {
                 if (NeckToChestVector != Vector3.Zero)
                 {
-                    return NeckToChestVector.Length * 1000;
+                   return NeckToChestVector.Length * 1000; // mm
                 }
                 else
                 {
-                    return 170f;
+                    return 170f; // in mm, 17cm
                 }
             }
         }
         #endregion
-        #region private frameCounters
+
+        #region Frame Counters
         private uint chestsFrames = 0;
         private uint shoulderFrames = 0;
         private uint heightFrames = 0;
         #endregion
+
         private MarkersNames m;
+
         public BodyData(MarkersNames m)
         {
             this.m = m;
-            Height = 175; // cm
-            Mass = 75; //kg
-            ShoulderWidth = 400; //mm
+            Height = 0; // cm
+            Mass = 0; // kg
+            ShoulderWidth = 0; // mm
         }
+
         /// <summary>
         /// Using a markerset, calculates the needed data
         /// </summary>
@@ -69,7 +79,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="chestOrientation">An quaternion representing the orientation of the chest</param>
         public void CalculateBodyData(Dictionary<string, Vector3> markers, Quaternion chestOrientation)
         {
-            // set chest depth
+            // Set chest depth
             var currentNeckToChestVector = (markers[m.chest] - markers[m.neck]);
             if (!currentNeckToChestVector.IsNaN() && !chestOrientation.IsNaN())
             {
@@ -79,21 +89,31 @@ namespace QualisysRealTime.Unity.Skeleton
                     / (++chestsFrames);
             }
 
-            // set shoulder width
-            float tmp = (markers[m.leftShoulder] - markers[m.rightShoulder]).Length * 500; // to mm half the width
-            if (!float.IsNaN(tmp))// && tmp < 500)
+            // Set shoulder width
+            float shoulderWidth = (markers[m.leftShoulder] - markers[m.rightShoulder]).Length * 500; // to mm half the width
+            if (!float.IsNaN(shoulderWidth)) // && shoulderWidth < 500)
             {
-                ShoulderWidth = (ShoulderWidth * shoulderFrames + tmp) / (++shoulderFrames);
+                ShoulderWidth = ( (ShoulderWidth == 0 ? defaultShoulderWidth : ShoulderWidth) * shoulderFrames + shoulderWidth) / (++shoulderFrames);
             }
-            // height and mass
-            tmp = ( (markers[m.rightOuterAnkle] - markers[m.rightOuterKnee]).LengthFast +
+
+            // Estimate height if not set
+            if (Height == 0) {
+                float height = ( 
+                    (markers[m.rightOuterAnkle] - markers[m.rightOuterKnee]).LengthFast +
                     (markers[m.rightOuterKnee] - markers[m.rightHip]).LengthFast +
                     (markers[m.bodyBase] - markers[m.neck]).LengthFast +
                     (markers[m.neck] - markers[m.head]).LengthFast
-                  ) * 100; // cm
-            if (!float.IsNaN(tmp) && tmp < 250)
+                    // + 0.3f // 30 cm (neck to head)
+                 ) * 100; // to cm
+
+                if(!float.IsNaN(height) &&  height < 250) {
+                    Height = (defaultHeight * heightFrames + height) / (++heightFrames);
+                }
+            }
+
+            // Estimate mass if not set
+            if (Mass == 0)
             {
-                Height = (Height * heightFrames + tmp) / (++heightFrames);
                 Mass = (Height / 100) * (Height / 100) * BMI; // BMI
             }
         }

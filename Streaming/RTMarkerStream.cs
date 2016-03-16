@@ -66,7 +66,7 @@ namespace QualisysRealTime.Unity
 
             markerData = rtClient.Markers;
 
-            if (markerData == null && markerData.Count == 0)
+            if (markerData == null || markerData.Count == 0)
                 return;
 
             if (markers.Count != markerData.Count)

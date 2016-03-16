@@ -113,7 +113,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 || markers[m.rightHip].IsNaN()
                 || markers[m.bodyBase].IsNaN())
             {
-                MissingEssientialMarkers(markers);
+                MissingEssentialMarkers(markers);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// If any of the hip markers are missing, we predict them using the last position
         /// </summary>
         /// <param name="markers">The dictionary of markers</param>
-        private void MissingEssientialMarkers(Dictionary<string,Vector3> markers)
+        private void MissingEssentialMarkers(Dictionary<string,Vector3> markers)
         {
             Vector3 dirVec1, dirVec2, possiblePos1, possiblePos2,
                     sacrumLastFrame = lastSACRUMknown,
@@ -330,6 +330,7 @@ namespace QualisysRealTime.Unity.Skeleton
             #endregion
             return m;
         }
+
         /// <summary>
         /// Search for an alias of a marker and set it to that name
         /// </summary>
@@ -342,6 +343,7 @@ namespace QualisysRealTime.Unity.Skeleton
             var quary = alias.FirstOrDefault(n => markerNames.Contains(prefix + n));
             name = ((quary == null) ? name : prefix + quary);
         }
+
         /// <summary>
         /// Makes sure a makers cant move to fast when predicting the hipmarkers
         /// </summary>

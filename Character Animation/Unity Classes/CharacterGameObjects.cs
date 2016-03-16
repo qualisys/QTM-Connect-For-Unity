@@ -507,6 +507,7 @@ namespace QualisysRealTime.Unity.Skeleton {
                 foreach (var f in fingersRight) 
                     yield return f;
         }
+
         public void PrintAll()
         {
             UnityEngine.Debug.LogFormat("root {0}", root);

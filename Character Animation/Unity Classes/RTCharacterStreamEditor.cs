@@ -37,6 +37,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
             GUILayout.Space(10);
             var guiContent = new GUIContent();
+
             guiContent.text = "Prefix for actors markers";
             guiContent.tooltip = "To use multiple actors, differient them from each other with a specific prefix on each marker and put the prefix here, e.g. \"Actor1_\"";
 
@@ -48,11 +49,47 @@ namespace QualisysRealTime.Unity.Skeleton
             }
 
             GUILayout.Space(5);
+
+            guiContent.text = "Actor Height";
+            guiContent.tooltip = "... in cm";
+            var actorHeight = EditorGUILayout.IntField(guiContent, c.actorHeight);
+            if (actorHeight != c.actorHeight)
+            {
+                c.actorHeight = actorHeight;
+                //ResetIfActive(c);
+            }
+
+            guiContent.text = "Actor Mass";
+            guiContent.tooltip = "... in kg";
+            var actorMass = EditorGUILayout.IntField(guiContent, c.actorMass);
+            if (actorMass != c.actorMass)
+            {
+                c.actorMass = actorMass;
+                //ResetIfActive(c);
+            }
+
+            guiContent.text = "Calibrate Character";
+            guiContent.tooltip = "...";
+            if (GUILayout.Button(guiContent))
+            {
+                c.Calibrate();
+            }
+
+            GUILayout.Space(5);
+
             guiContent.text = "Solve gaps using IK";
             guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
             if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
+                ResetIfActive(c);
+            }
+
+            guiContent.text = "Use Tracking Markers";
+            //guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
+            if (EditorGUILayout.Toggle(guiContent, c.UseTrackingMarkers) != c.UseTrackingMarkers)
+            {
+                c.UseTrackingMarkers = !c.UseTrackingMarkers;
                 ResetIfActive(c);
             }
 

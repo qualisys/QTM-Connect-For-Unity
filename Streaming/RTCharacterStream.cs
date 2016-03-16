@@ -1,4 +1,4 @@
-﻿    #region --- LICENSE ---
+﻿#region --- LICENSE ---
 /*
     The MIT License (MIT)
 
@@ -21,8 +21,14 @@ namespace QualisysRealTime.Unity.Skeleton
     class RTCharacterStream : MonoBehaviour
     {
         public string ActorMarkersPrefix = "";
+
+        // Actors body sizes
+        public int actorHeight = 0; // cm
+        public int actorMass = 0; // kg
+
         public bool ScaleMovementToSize = false;
         public bool UseIK = true;
+        public bool UseTrackingMarkers = true;
         public bool UseFingers = false;
         public CharacterModels model = CharacterModels.Model1;
         public BoneRotations boneRotation;
@@ -40,6 +46,9 @@ namespace QualisysRealTime.Unity.Skeleton
         private CharacterGameObjects charactersJoints = new CharacterGameObjects();
         private float scale = 0;
 
+        private Vector3 defaultPelvisPosition = Vector3.zero;
+        private Vector3 footOffset = Vector3.zero;
+
         /// <summary>
         /// Locating the joints of the character and find the scale by which the position should be applied to
         /// </summary>
@@ -52,8 +61,9 @@ namespace QualisysRealTime.Unity.Skeleton
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
 
-			// E.Wolf, 2015-12-15
-			this.SetModelRotation();
+            // E.Wolf, 2015-12-15
+            this.SetModelRotation();
+            ////
         }
         /// <summary>
         /// Updates the rotation and position of the Character
@@ -62,27 +72,44 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
             if (!rtClient.GetStreamingStatus()) return;
-			markerData = rtClient.Markers.Convert();
+            markerData = rtClient.Markers.Convert();
             if ((markerData == null || markerData.Count == 0))
             {
                 Debug.LogError("The stream does not contain any markers");
                 return;
             }
-            if (skeletonBuilder != null) skeleton = skeletonBuilder.SolveSkeleton(markerData);
-            else ResetSkeleton();
+            if (skeletonBuilder != null)
+                skeleton = skeletonBuilder.SolveSkeleton(markerData);
+            else
+                ResetSkeleton();
             SetAll();
-            if (!headCam.UseHeadCamera && headCamera) DestroyCamera();
+            if (!headCam.UseHeadCamera && headCamera)
+                DestroyCamera();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void ResetSkeleton()
         {
+            Debug.Log("Reset Skeleton...");
+
             charactersJoints.SetLimbs(this.transform, UseFingers);
+
             skeletonBuilder = new SkeletonBuilder();
             skeletonBuilder.MarkerPrefix = ActorMarkersPrefix;
+            skeletonBuilder.SetBodyData(actorHeight, actorMass);
             skeletonBuilder.SolveWithIK = UseIK;
-            if (markerData != null) skeleton = skeletonBuilder.SolveSkeleton(markerData);
-            else skeleton = new BipedSkeleton();
-            if (ScaleMovementToSize) scale = FindScale();
-            else scale = 0;
+            skeletonBuilder.UseTrackingMarkers = UseTrackingMarkers;
+
+            if (markerData != null)
+                skeleton = skeletonBuilder.SolveSkeleton(markerData);
+            else
+                skeleton = new BipedSkeleton();
+            if (ScaleMovementToSize)
+                scale = FindScale();
+            else
+                scale = 0;
         }
 
         /// <summary>
@@ -98,10 +125,13 @@ namespace QualisysRealTime.Unity.Skeleton
                         SetJointRotation(charactersJoints.pelvis, b.Data, boneRotation.hip);
                         if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
                         {
-                            charactersJoints.pelvis.position = transform.position 
-                                        + ((ScaleMovementToSize && scale > 0)?
-                                            (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
-                                            : b.Data.Pos.Convert());
+                            if (defaultPelvisPosition == Vector3.zero)
+                                defaultPelvisPosition = charactersJoints.pelvis.position;
+
+                            charactersJoints.pelvis.position = transform.position + footOffset + transform.rotation *
+                                ((ScaleMovementToSize && scale > 0) ?
+                                (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
+                                : b.Data.Pos.Convert());
                         }
                         break;
                     case Joint.SPINE0:
@@ -222,7 +252,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <summary>
         /// Find the scale by which the characters positions should change
         /// </summary>
-        /// <returns>A scaling factor to be applied to the poistional vector</returns>
+        /// <returns>A scaling factor to be applied to the positional vector</returns>
         private float FindScale()
         {
             var calf = charactersJoints.leftCalf.position;
@@ -236,6 +266,25 @@ namespace QualisysRealTime.Unity.Skeleton
             float s = pelvisHeight / actorPelvisHeight;
             s /= transform.localScale.magnitude;
             return s;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Calibrate()
+        {
+            Debug.Log("Calibrate character...");
+
+            // Calculate offset between characters hip height and actors hip height
+            charactersJoints.pelvis.position -= footOffset;
+            footOffset = (defaultPelvisPosition - charactersJoints.pelvis.position).y * Vector3.up;
+
+            Debug.Log("Set Foot Offset to " + footOffset);
+
+            // Calculate Body Data
+            skeletonBuilder.SetBodyData(actorHeight, actorMass);
+
+            Debug.Log("Set Body Height to " + actorHeight + "cm and Mass to " + actorMass + "kg");
         }
 
         /// <summary>
@@ -280,18 +329,17 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="b">The head bone as defiention what rotation is forward</param>
         void SetCameraPosition(Bone b)
         {
-            if(!headCamera) GetCamera();
+            if (!headCamera) GetCamera();
             if (headCamera)
             {
                 var cameraAnchor = headCamera.transform.parent;
-                cameraAnchor.position = 
-                    charactersJoints.head.position 
+                cameraAnchor.position =
+                    charactersJoints.head.position
                     + (headCamera.transform.rotation * headCam.CameraOffset);
                 if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
                 {
                     cameraAnchor = headCamera.transform.parent;
                     cameraAnchor.rotation = skeleton.Find(Joint.HEAD).Orientation.Convert();
-
                 }
             }
         }
@@ -311,7 +359,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             if (headCamera)
             {
-                headCamera.nearClipPlane = 0.03f; 
+                headCamera.nearClipPlane = 0.03f;
                 var go = new GameObject("CameraAnchor");
                 headCamera.transform.position = Vector3.zero;
                 headCamera.transform.SetParent(go.transform);
