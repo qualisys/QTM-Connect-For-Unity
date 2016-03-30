@@ -11,7 +11,7 @@ namespace QualisysRealTime.Unity
         public bool visibleMarkers = true;
 
         [Range(0.001f, 1f)]
-        public float markerScale = 0.05f;
+        public float markerScale = 0.012f;
 
         public Vector3 RelativePosition
         {
@@ -32,10 +32,10 @@ namespace QualisysRealTime.Unity
         /// 
         /// </summary>
         /// <param name="body"></param>
-        public override void applyBody(SixDOFBody body)
+        public override void applyBody()
         {
             if (useObjectOrientation)
-                base.applyBody(body);
+                base.applyBody();
 
             // Avoid position is NaN
             if (body.Position.magnitude > 0)

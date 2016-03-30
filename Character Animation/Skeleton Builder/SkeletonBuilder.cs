@@ -63,16 +63,16 @@ namespace QualisysRealTime.Unity.Skeleton
                 st = new ŚegmentTracking(skeleton, markersMap, markerData);
             }
 
-            Dictionary<string, OpenTK.Vector3> markers;
-            mp.ProcessMarkers(markerData, out markers, MarkerPrefix);
-
-			var temp = skeleton;
+            var temp = skeleton;
             skeleton = skeletonBuffer;
             skeletonBuffer = temp;
 
+            Dictionary<string, OpenTK.Vector3> markers;
+            mp.UpdateMarkerList(markerData, out markers);
+            mp.ProcessMarkers(out markers);
+
             joints.BodyData.Height = bodyHeight;
             joints.BodyData.Mass = bodyMass;
-
             joints.GetJointLocations(markers, ref skeleton);
 
             // Try to reconstruct virtual markers
@@ -80,6 +80,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 if (st.ProcessMarkers(skeleton, markerData, ref markers, MarkerPrefix))
                 {
+                    mp.ProcessMarkers(out markers);
                     joints.GetJointLocations(markers, ref skeleton);
                 }
             }

@@ -87,7 +87,7 @@ namespace QualisysRealTime.Unity
                 }
                 else
                 {
-                    //hide markers if we cant find them.
+                    // Hide markers if we cant find them
                     markers[i].SetActive(false);
                 }
             }

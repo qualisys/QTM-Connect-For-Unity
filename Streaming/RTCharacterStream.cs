@@ -55,8 +55,10 @@ namespace QualisysRealTime.Unity.Skeleton
         public void Start()
         {
             rtClient = RTClient.GetInstance();
+
             //Find all joints of the characters
             jointsFound = charactersJoints.SetLimbs(this.transform, UseFingers);
+
             // disable the animation
             var animation = this.GetComponent<Animation>();
             if (animation) animation.enabled = false;
@@ -282,9 +284,12 @@ namespace QualisysRealTime.Unity.Skeleton
             Debug.Log("Set Foot Offset to " + footOffset);
 
             // Calculate Body Data
-            skeletonBuilder.SetBodyData(actorHeight, actorMass);
+            if (skeletonBuilder != null)
+                skeletonBuilder.SetBodyData(actorHeight, actorMass);
 
             Debug.Log("Set Body Height to " + actorHeight + "cm and Mass to " + actorMass + "kg");
+
+            UnityEngine.VR.InputTracking.Recenter();
         }
 
         /// <summary>
@@ -349,7 +354,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         public void GetCamera()
         {
-            var searchRes = this.transform.Find("Camera");
+            var searchRes = this.transform.Find("FPS_Camera");
             if (searchRes) headCamera = searchRes.GetComponent<Camera>();
             else
             {

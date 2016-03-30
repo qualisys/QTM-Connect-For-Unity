@@ -131,8 +131,8 @@ namespace QualisysRealTime.Unity.Skeleton
 		bodyBasebetween = new List<string[]>() {
 			new string[] { "R_IPS", "L_IPS" },
 			new string[] { "RPSIS", "LPSIS" },
-			new string[] { "Rt Lower PSIS", "Lt Lower PSIS" },
-			new string[] { "R_PSIS", "L_PSIS" },
+            new string[] { "R_PSIS", "L_PSIS" },
+            new string[] { "Rt Lower PSIS", "Lt Lower PSIS" },
 			new string[] { "L_Sacrum", "R_Sacrum" },
 			new string[] { "RBWT", "LBWT"} 
 		},
@@ -193,14 +193,14 @@ namespace QualisysRealTime.Unity.Skeleton
 		#region lefthand
 		leftWristAKA = new List<string>() { "L_USP", "L_ULNA", "LEFT_WRIST_INNER", "L_WRIST_MED", "Lt Wrist Ulna", "LT Ulna", "LWRB", "L_HAND_M", "LMWRIST", "L_ULN" /* E. Wolf, 2015-12-01 */ },
 		leftWristRadiusAKA = new List<string>() { "L_RSP", "L_RADUIS", "LEFT_WRIST_OUTER", "L_WRIST_LAT", "Lt Wrist Radius", "Lt Radius", "LWRA", "L_HAND_L", "LLWRIST", "L_RAD" /* E. Wolf, 2015-12-01 */ },
-		leftHandAKA = new List<string>() { "L_HM2", "Lt 3rd Digita", "LFIN", "LHAND", "L_HND_PRX" /* E. Wolf, 2015-12-01 */ },
+		leftHandAKA = new List<string>() { "L_HM2", "Lt 3rd Digita", "LFIN", "LHAND", "L_HND" /* E. Wolf, 2015-12-01 */ },
 		leftIndexAKA = new List<string>() { "L_Index", "L_INDEX1", "L_MC1" },
 		leftThumbAKA = new List<string>() { "L_Thumb","L_THUMB" },
 		#endregion
 		#region right hand
 		rightWristAKA = new List<string>() { "R_USP", "R_ULNA", "RIGHT_WRIST_INNER", "R_WRIST_MED", "Rt Wrist Ulna", "RT Ulna", "RWRB", "R_HAND_M","RMWRIST", "R_ULN" /* E. Wolf, 2015-12-01 */ },
 		rightWristRadiusAKA = new List<string>() {"R_RSP", "R_RADUIS", "RIGHT_WRIST_OUTER", "R_WRIST_LAT", "Rt Wrist Radius" ,"RT Radius", "RWRA", "R_HAND_L", "RLWRIST", "R_RAD" /* E. Wolf, 2015-12-01 */ },
-		rightHandAKA = new List<string>() { "R_HM2", "Rt 3rd Digita", "RFIN", "RHAND", "R_HND_PRX" /* E. Wolf, 2015-12-01 */ },
+		rightHandAKA = new List<string>() { "R_HM2", "Rt 3rd Digita", "RFIN", "RHAND", "R_HND" /* E. Wolf, 2015-12-01 */ },
 		rightIndexAKA = new List<string>() { "R_Index", "R_INDEX1", "R_MC1" },
 		rightThumbAKA = new List<string>() { "R_Thumb", "R_THUMB" },
 		#endregion

@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="front">forward vector</param>
         /// <param name="up">up vector</param>
         /// <param name="right">right vector</param>
-        /// <returns>matrix with cooridnate system based on vectors</returns>
+        /// <returns>matrix with coordinate system based on vectors</returns>
         public static Matrix4 GetMatrix(Vector3 position, Vector3 front, Vector3 up, Vector3 right)
         {
             return new Matrix4(

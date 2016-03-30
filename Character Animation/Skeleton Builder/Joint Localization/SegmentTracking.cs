@@ -49,6 +49,16 @@ namespace QualisysRealTime.Unity.Skeleton
 			// Add the tracking markers for the joints / segments
 			string[] labels;
 
+            // Hips
+            labels = new string[] {
+                markerNames.bodyBase,
+                markerNames.leftHip,
+                markerNames.rightHip,
+                "L_PSIS", // Additional Tracking Marker
+                "R_PSIS"  // Additional Tracking Marker
+			};
+            this.addTrackingMarkers(Joint.PELVIS, labels);
+
             // Chest
             labels = new string[] {
                 markerNames.neck,
@@ -56,7 +66,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 markerNames.chest,
                 "STRN" // Additional Tracking Marker
 			};
-            this.addTrackingMarkers(Joint.NECK, labels);
+            this.addTrackingMarkers(Joint.SPINE3, labels);
 
             // Left Upper Arm
             labels = new string[] {
@@ -185,9 +195,8 @@ namespace QualisysRealTime.Unity.Skeleton
 					}
                     else if (unavailableMarkers.Count == 0)
                     {
-                        // Update segment tracking markers 
-                        // everytime all markers are available 
-                        // to increase accuracy
+                        // Update segment tracking markers everytime all markers
+                        // are available to increase accuracy
                         updateTrackingMarkers(segment);
                     }
 
@@ -275,76 +284,47 @@ namespace QualisysRealTime.Unity.Skeleton
 			}
 		}
 
-		/// <summary>
-		/// Creates the virtual marker.
-		/// </summary>
-		/// <param name="segment">Segment.</param>
-		/// <param name="availableMarkers">Available markers.</param>
-		/// <param name="unavailableMarker">Unavailable marker.</param>
-		private void createVirtualMarker(Joint segment, List<string> availableMarkers, string unavailableMarker)
-		{	
-			UnityEngine.Debug.Log("Create virtual marker " + unavailableMarker + " for segment " + segment);
+        /// <summary>
+        /// Creates the virtual marker.
+        /// </summary>
+        /// <param name="segment">Segment.</param>
+        /// <param name="availableMarkers">Available markers.</param>
+        /// <param name="unavailableMarker">Unavailable marker.</param>
+        private void createVirtualMarker(Joint segment, List<string> availableMarkers, string unavailableMarker)
+        {
+            UnityEngine.Debug.Log("Create virtual marker " + unavailableMarker + " for segment " + segment);
 
-			//UnityEngine.Debug.Log("availableMarkers[0] " + availableMarkers[0] + " availableMarkers[1] " + availableMarkers[1]);
-			//UnityEngine.Debug.Log("unavailableMarker " + unavailableMarker);
+            //UnityEngine.Debug.Log("availableMarkers[0] " + availableMarkers[0] + " availableMarkers[1] " + availableMarkers[1]);
+            //UnityEngine.Debug.Log("unavailableMarker " + unavailableMarker);
 
-			var trackingMarkers = this.segments[segment];
+            var trackingMarkers = this.segments[segment];
 
-			UnityEngine.Vector3 tcs, vAxis, xAxis, yAxis, zAxis, locPos, vPos;
-			
-			// Create world to local matrix
-			tcs = trackingMarkers[ORIGIN].Convert();
-			xAxis = (tcs - trackingMarkers[availableMarkers[1]].Convert()).normalized;
-			vAxis = (trackingMarkers[availableMarkers[1]].Convert() - trackingMarkers[availableMarkers[0]].Convert()).normalized;
-			yAxis = UnityEngine.Vector3.Cross(xAxis, vAxis);
-			zAxis = UnityEngine.Vector3.Cross(yAxis, xAxis);
-			
-			UnityEngine.Matrix4x4 worldToLocal = getMatrix(tcs, xAxis, yAxis, zAxis).inverse;
-			locPos = worldToLocal.MultiplyPoint3x4(trackingMarkers[unavailableMarker].Convert());
+            Vector3 tcs, vAxis, xAxis, yAxis, zAxis, locPos, vPos;
 
-			//UnityEngine.Debug.Log("tcs " + tcs.Convert());
-			//UnityEngine.Debug.Log("trackingMarkers[availableMarkers[0]] " + trackingMarkers[availableMarkers[0]]);
-			//UnityEngine.Debug.Log("trackingMarkers[availableMarkers[1]] " + trackingMarkers[availableMarkers[1]]);
-			//UnityEngine.Debug.Log("trackingMarkers[unavailableMarker] " + trackingMarkers[unavailableMarker]);
-			//UnityEngine.Debug.Log("locPos " + locPos);
+            // Create world to local matrix
+            tcs = (availableMarkers.Count > 2) ? trackingMarkers[availableMarkers[2]] : trackingMarkers[ORIGIN];
+            xAxis = (tcs - trackingMarkers[availableMarkers[0]]).Normalized();
+            vAxis = (trackingMarkers[availableMarkers[0]] - trackingMarkers[availableMarkers[1]]).Normalized();
+            yAxis = Vector3.Cross(xAxis, vAxis);
+            zAxis = Vector3.Cross(yAxis, xAxis);
 
-			// Create local to world matrix
-			tcs = this.skeleton.Find(segment).Pos.Convert();
-			xAxis = (tcs - this.markers[availableMarkers[1]].Convert()).normalized;
-			vAxis = (this.markers[availableMarkers[1]].Convert() - this.markers[availableMarkers[0]].Convert()).normalized;
-			yAxis = UnityEngine.Vector3.Cross(xAxis, vAxis);
-			zAxis = UnityEngine.Vector3.Cross(yAxis, xAxis);
-			
-			UnityEngine.Matrix4x4 localToWorld = getMatrix(tcs, xAxis, yAxis, zAxis);
-			vPos = localToWorld.MultiplyPoint3x4(locPos);
-			
-			// Set new marker position
-			this.markers[unavailableMarker] = vPos.Convert();
-		}
+            var worldToLocal = Matrix4x4Helper.GetMatrix(tcs.Convert(), zAxis.Convert(), yAxis.Convert(), xAxis.Convert()).inverse;
+            locPos = worldToLocal.MultiplyPoint3x4(trackingMarkers[unavailableMarker].Convert()).Convert();
+            
+            //UnityEngine.Debug.Log("locPos " + locPos);
 
-		/// <summary>
-		/// Create matrix from position and three vectors
-		/// </summary>
-		/// <param name="position">position</param>
-		/// <param name="forward">forward vector</param>
-		/// <param name="up">up vector</param>
-		/// <param name="right">right vector</param>
-		/// <returns>matrix with cooridnate system based on vectors</returns>
-		private UnityEngine.Matrix4x4 getMatrix(UnityEngine.Vector3 position, UnityEngine.Vector3 right, UnityEngine.Vector3 up, UnityEngine.Vector3 forward)
-		{
-			UnityEngine.Matrix4x4 mat = UnityEngine.Matrix4x4.identity;
-			
-			mat.SetTRS(position, UnityEngine.Quaternion.identity, UnityEngine.Vector3.one);
-			
-			UnityEngine.Vector4 up4v = new UnityEngine.Vector4(up.x, up.y, up.z, 0),
-				forward4v = new UnityEngine.Vector4(forward.x, forward.y, forward.z, 0),
-				right4v   = new UnityEngine.Vector4(right.x, right.y, right.z, 0);
-			
-			mat.SetColumn(0, right4v);
-			mat.SetColumn(1, up4v);
-			mat.SetColumn(2, forward4v);
-			
-			return mat;	
-		}
-	}
+            // Create local to world matrix
+            tcs = (availableMarkers.Count > 2) ? this.markers[availableMarkers[2]] : this.skeleton.Find(segment).Pos;
+            xAxis = (tcs - this.markers[availableMarkers[0]]).Normalized();
+            vAxis = (this.markers[availableMarkers[0]] - this.markers[availableMarkers[1]]).Normalized();
+            yAxis = Vector3.Cross(xAxis, vAxis);
+            zAxis = Vector3.Cross(yAxis, xAxis);
+
+            var localToWorld = Matrix4x4Helper.GetMatrix(tcs.Convert(), zAxis.Convert(), yAxis.Convert(), xAxis.Convert());
+            vPos = localToWorld.MultiplyPoint3x4(locPos.Convert()).Convert();
+
+            // Set new marker position
+            this.markers[unavailableMarker] = vPos;
+        }
+    }
 }
