@@ -46,9 +46,6 @@ namespace QualisysRealTime.Unity.VR
 
         #region Private properties
 
-        // Camera rig component
-        private OVRCameraRig ovrCameraRig;
-
         // ...
         private CharacterGameObjects characterJoints;
         private CharacterGameObjects mirroredCharacterJoints;
@@ -76,21 +73,13 @@ namespace QualisysRealTime.Unity.VR
             if (cameraRig == null)
                 return;
 
-            if (ovrCameraRig == null)
-            {
-                ovrCameraRig = cameraRig.GetComponent<OVRCameraRig>() as OVRCameraRig;
-            }
-            if (ovrCameraRig != null)
-            {
-                //ovrCameraRig.OrientationUpdated += riftOrientationChanged;
-            }
             if (renderers == null)
             {
                 renderers = this.transform.GetComponentsInChildren<SkinnedMeshRenderer>();
             }
             if (eyeAnchor == null)
             {
-                eyeAnchor = cameraRig.transform;
+                eyeAnchor = cameraRig.transform.Find("TrackingSpace/CenterEyeAnchor");
             }
             characterJoints = new CharacterGameObjects();
         }
@@ -100,19 +89,12 @@ namespace QualisysRealTime.Unity.VR
         /// </summary>
         public void OnDisable()
         {
-            if (ovrCameraRig != null)
-            {
-                //ovrCameraRig.OrientationUpdated -= riftOrientationChanged;
-            }
+
         }
 
         // Use this for initialization
         void Start()
         {
-            // Cancel if no camera found
-            if (ovrCameraRig == null)
-                return;
-
             // Find and set character joints
             characterJoints.SetLimbs(this.transform, false);
 
@@ -157,10 +139,13 @@ namespace QualisysRealTime.Unity.VR
         // Update is called once per frame
         void Update()
         {
-            if (ovrCameraRig == null)
-                return;
+            OVRPlugin.position = false;
 
-            // ...
+            // Deactivate internal tracking
+            if (!useInternalTracking)
+            {
+                OVRPlugin.rotation = false;
+            }            
         }
 
         /// <summary>
@@ -168,8 +153,7 @@ namespace QualisysRealTime.Unity.VR
         /// </summary>
         void LateUpdate()
         {
-            // Cancel if no camera rig found
-            if (ovrCameraRig == null)
+            if (eyeAnchor == null)
                 return;
 
             // Get streamed rigid body definition of rift
@@ -192,8 +176,9 @@ namespace QualisysRealTime.Unity.VR
                         Debug.Log("Anchor rotation " + eyeAnchor.localEulerAngles);
 
                         // Align the camera rig coordinate system to the QTM coordinate system by a rotation over the y-axis
-                        offsetAngle = eyeAnchor.localEulerAngles.y + sixDOFBodyRotation.eulerAngles.y + 180; // 180 cause of the rigid body axes
-                        //(360 - eyeAnchor.eulerAngles.y) + sixDOFBodyRotation.eulerAngles.y;
+                        //offsetAngle = (360 - eyeAnchor.eulerAngles.y) + sixDOFBodyRotation.eulerAngles.y;
+                        //offsetAngle = eyeAnchor.localEulerAngles.y + sixDOFBodyRotation.eulerAngles.y + 180; // 180 cause of the rigid body axes
+                        offsetAngle = 180 + sixDOFBodyRotation.eulerAngles.y - eyeAnchor.localEulerAngles.y;
 
                         // Enable avatar mesh
                         foreach (SkinnedMeshRenderer renderer in renderers)
@@ -232,8 +217,9 @@ namespace QualisysRealTime.Unity.VR
             {
                 cameraRig.transform.eulerAngles = new Vector3(0, this.transform.eulerAngles.y + offsetAngle, 0);
                 head.rotation = eyeAnchor.rotation;
-                cameraRig.transform.position = head.position + cameraRig.transform.rotation * cameraOffset;
                 //cameraRig.transform.position = head.position + head.rotation * cameraOffset;
+                //cameraRig.transform.localPosition = head.position + cameraRig.transform.rotation * cameraOffset;
+                cameraRig.transform.localPosition = head.position + eyeAnchor.rotation * cameraOffset;
             }
             else
             {
@@ -241,36 +227,12 @@ namespace QualisysRealTime.Unity.VR
             }
 
             // Draw debug ray in look direction
-            Debug.DrawRay(cameraRig.transform.position, lookAt, Color.green);
+            Debug.DrawRay(eyeAnchor.position, lookAt, Color.green);
 
             // Set pose of the mirrored avatar
             if (showMirror)
             {
                 setMirroredAvatarPose();
-            }
-        }
-
-        /// <summary>
-        /// Is triggered when rift orientation changes.
-        /// </summary>
-        /// <param name="monoscopic">If set to <c>true</c> monoscopic.</param>
-        /// <param name="centerEyeAnchor">Center eye anchor.</param>
-        /// <param name="leftEyeAnchor">Left eye anchor.</param>
-        /// <param name="rightEyeAnchor">Right eye anchor.</param>
-        private void riftOrientationChanged(bool monoscopic, Transform centerEyeAnchor, Transform leftEyeAnchor, Transform rightEyeAnchor)
-        {
-            // Set camera anchor
-            this.eyeAnchor = centerEyeAnchor;
-
-            // Avoid clipping of the own body
-            //centerEyeAnchor.GetComponent<Camera>().nearClipPlane = 0.01f;
-
-            // Set camera anchor orientations (if internal tracking is activated)
-            if (useInternalTracking)
-            {
-                centerEyeAnchor.localRotation = UVR.InputTracking.GetLocalRotation(UVR.VRNode.CenterEye);
-                leftEyeAnchor.localRotation = monoscopic ? centerEyeAnchor.localRotation : UVR.InputTracking.GetLocalRotation(UVR.VRNode.LeftEye);
-                rightEyeAnchor.localRotation = monoscopic ? centerEyeAnchor.localRotation : UVR.InputTracking.GetLocalRotation(UVR.VRNode.RightEye);
             }
         }
 
