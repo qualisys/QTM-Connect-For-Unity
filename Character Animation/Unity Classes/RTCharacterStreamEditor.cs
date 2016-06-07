@@ -154,6 +154,12 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUI.indentLevel--;
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndVertical();
+
+            guiContent.text = "DEBUG";
+            if (EditorGUILayout.Toggle(guiContent, DEBUG.enabled) != DEBUG.enabled)
+            {
+                DEBUG.enabled = !DEBUG.enabled;
+            }
         }
 
         void ResetIfActive(RTCharacterStream c)

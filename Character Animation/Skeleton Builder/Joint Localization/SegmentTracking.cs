@@ -292,7 +292,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="unavailableMarker">Unavailable marker.</param>
         private void createVirtualMarker(Joint segment, List<string> availableMarkers, string unavailableMarker)
         {
-            UnityEngine.Debug.Log("Create virtual marker " + unavailableMarker + " for segment " + segment);
+            if (DEBUG.enabled) UnityEngine.Debug.Log("Create virtual marker " + unavailableMarker + " for segment " + segment);
 
             //UnityEngine.Debug.Log("availableMarkers[0] " + availableMarkers[0] + " availableMarkers[1] " + availableMarkers[1]);
             //UnityEngine.Debug.Log("unavailableMarker " + unavailableMarker);

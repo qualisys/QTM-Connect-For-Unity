@@ -142,10 +142,10 @@ namespace QualisysRealTime.Unity.VR
             OVRPlugin.position = false;
 
             // Deactivate internal tracking
-            if (!useInternalTracking)
-            {
+            if (useInternalTracking)
+                OVRPlugin.rotation = true;
+            else
                 OVRPlugin.rotation = false;
-            }            
         }
 
         /// <summary>
@@ -215,11 +215,16 @@ namespace QualisysRealTime.Unity.VR
             // Set head orientation to rift orientation and position the camera rig in front of the head
             if (useInternalTracking)
             {
-                cameraRig.transform.eulerAngles = new Vector3(0, this.transform.eulerAngles.y + offsetAngle, 0);
                 head.rotation = eyeAnchor.rotation;
+                cameraRig.transform.eulerAngles = new Vector3(0, this.transform.eulerAngles.y + offsetAngle, 0);
                 //cameraRig.transform.position = head.position + head.rotation * cameraOffset;
                 //cameraRig.transform.localPosition = head.position + cameraRig.transform.rotation * cameraOffset;
-                cameraRig.transform.localPosition = head.position + eyeAnchor.rotation * cameraOffset;
+                //cameraRig.transform.localPosition = head.position + eyeAnchor.rotation * cameraOffset;
+                // Need to substract the position of the eye anchor
+                cameraRig.transform.localPosition = 
+                    head.position
+                    - cameraRig.transform.rotation * eyeAnchor.localPosition 
+                    + eyeAnchor.rotation * cameraOffset;
             }
             else
             {

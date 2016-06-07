@@ -44,6 +44,10 @@ namespace QualisysRealTime.Unity.Skeleton
 
         private SkeletonBuilder skeletonBuilder;
         private CharacterGameObjects charactersJoints = new CharacterGameObjects();
+        public CharacterGameObjects Joints
+        {
+            get { return charactersJoints; }
+        }
         private float scale = 0;
 
         private Vector3 defaultPelvisPosition = Vector3.zero;
@@ -94,9 +98,10 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         public void ResetSkeleton()
         {
-            Debug.Log("Reset Skeleton...");
+            if (DEBUG.enabled) Debug.Log("Reset Skeleton...");
 
             charactersJoints.SetLimbs(this.transform, UseFingers);
+            //charactersJoints.PrintAll();
 
             skeletonBuilder = new SkeletonBuilder();
             skeletonBuilder.MarkerPrefix = ActorMarkersPrefix;
@@ -275,21 +280,19 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         public void Calibrate()
         {
-            Debug.Log("Calibrate character...");
+            if (DEBUG.enabled) Debug.Log("Calibrate character...");
 
             // Calculate offset between characters hip height and actors hip height
             charactersJoints.pelvis.position -= footOffset;
             footOffset = (defaultPelvisPosition - charactersJoints.pelvis.position).y * Vector3.up;
 
-            Debug.Log("Set Foot Offset to " + footOffset);
+            if (DEBUG.enabled) Debug.Log("Set Foot Offset to " + footOffset);
 
             // Calculate Body Data
             if (skeletonBuilder != null)
                 skeletonBuilder.SetBodyData(actorHeight, actorMass);
 
-            Debug.Log("Set Body Height to " + actorHeight + "cm and Mass to " + actorMass + "kg");
-
-            UnityEngine.VR.InputTracking.Recenter();
+            if (DEBUG.enabled) Debug.Log("Set Body Height to " + actorHeight + "cm and Mass to " + actorMass + "kg");
         }
 
         /// <summary>
@@ -319,6 +322,9 @@ namespace QualisysRealTime.Unity.Skeleton
                     break;
                 case CharacterModels.Model7:
                     boneRotation = new Model7();
+                    break;
+                case CharacterModels.Model8:
+                    boneRotation = new Model8();
                     break;
                 case CharacterModels.EmptyModel:
                     boneRotation = new Empty();

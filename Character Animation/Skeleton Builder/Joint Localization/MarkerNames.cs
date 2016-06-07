@@ -140,8 +140,9 @@ namespace QualisysRealTime.Unity.Skeleton
 			new string[] { "Lt Up Back", "Rt Up Back" } },
 		headBetween = new List<string[]>() {   
 			new string[] {"head_left_front", "head_right_front"},
-			new string[] {"RFHD", "LFHD"}
-		},
+			new string[] {"RFHD", "LFHD"},
+            new string[] {"R_FHD", "L_FHD"}
+        },
 		rightToe2Between = new List<string[]>() { 
 			new string[] { "FM1", "FM5" }, 
 			new string[] { "TOE_1_MET", "TOE_5_MET" }, 
@@ -171,9 +172,9 @@ namespace QualisysRealTime.Unity.Skeleton
 		#endregion
 		
 		#region head
-		headAKA = new List<string>() {"SGL", "Front of Head", "F_HEAD", "FOREHEAD" },
-		leftHeadAKA = new List<string>() { "L_HEAD", "HEAD_LEFT_FRONT", "Left Head", "L_HEAD", "LBHD", "HEAD2", "LTEMP" },
-		rightHeadAKA = new List<string>() { "R_HEAD", "HEAD_RIGHT_FRONT", "Right Head", "R_HEAD", "RBHD", "HEAD1", "RTEMP" },
+		headAKA = new List<string>() {"SGL", "Front of Head", "F_HEAD", "FOREHEAD", "F_HD" /* E. Wolf, 2016-04-28 */ },
+		leftHeadAKA = new List<string>() { "L_HEAD", "HEAD_LEFT_FRONT", "Left Head", "L_HEAD", "LBHD", "HEAD2", "LTEMP", "L_BHD" /* E. Wolf, 2016-04-28 */ },
+		rightHeadAKA = new List<string>() { "R_HEAD", "HEAD_RIGHT_FRONT", "Right Head", "R_HEAD", "RBHD", "HEAD1", "RTEMP", "R_BHD" /* E. Wolf, 2016-04-28 */ },
 		#endregion
 		
 		#region elbow

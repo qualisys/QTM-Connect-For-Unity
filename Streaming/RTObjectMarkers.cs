@@ -8,7 +8,7 @@ namespace QualisysRealTime.Unity
         public bool useObjectOrientation;
         public string objectMarkerSuffix = "_";
         public uint numberOfObjectMarkers = 4;
-        public bool visibleMarkers = true;
+        public bool visibleMarkers;
 
         [Range(0.001f, 1f)]
         public float markerScale = 0.012f;
@@ -61,7 +61,7 @@ namespace QualisysRealTime.Unity
                 // Show and update existing markers
                 if (marker != null && marker.Position.magnitude > 0)
                 {
-                    markerGO.transform.localPosition = bodyRotation * (marker.Position - bodyPosition);
+                    markerGO.transform.localPosition = Quaternion.Inverse(bodyRotation) * (marker.Position - bodyPosition);
                     markerGO.transform.localScale = Vector3.one * markerScale;
                     markerGO.SetActive(true);
                     markerGO.GetComponent<Renderer>().enabled = visibleMarkers;

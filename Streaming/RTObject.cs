@@ -26,7 +26,7 @@ namespace QualisysRealTime.Unity
             {
                 transform.position = body.Position + PositionOffset;
                 if (transform.parent) transform.position += transform.parent.position;
-                transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
+                //transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
                 if (transform.parent) transform.rotation *= transform.parent.rotation;
             }
         }
