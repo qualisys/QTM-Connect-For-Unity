@@ -20,7 +20,7 @@ namespace QualisysRealTime.Unity.Skeleton
 {
     class RTCharacterStream : MonoBehaviour
     {
-        public string ActorMarkersPrefix = "";
+        public string ActorMarkerPrefix = "";
 
         // Actors body sizes
         public int actorHeight = 0; // cm
@@ -94,7 +94,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
 
         /// <summary>
-        /// 
+        /// ...
         /// </summary>
         public void ResetSkeleton()
         {
@@ -104,7 +104,7 @@ namespace QualisysRealTime.Unity.Skeleton
             //charactersJoints.PrintAll();
 
             skeletonBuilder = new SkeletonBuilder();
-            skeletonBuilder.MarkerPrefix = ActorMarkersPrefix;
+            skeletonBuilder.MarkerPrefix = ActorMarkerPrefix;
             skeletonBuilder.SetBodyData(actorHeight, actorMass);
             skeletonBuilder.SolveWithIK = UseIK;
             skeletonBuilder.UseTrackingMarkers = UseTrackingMarkers;
@@ -113,6 +113,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 skeleton = skeletonBuilder.SolveSkeleton(markerData);
             else
                 skeleton = new BipedSkeleton();
+
             if (ScaleMovementToSize)
                 scale = FindScale();
             else

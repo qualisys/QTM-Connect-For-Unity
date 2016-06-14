@@ -41,10 +41,10 @@ namespace QualisysRealTime.Unity.Skeleton
             guiContent.text = "Prefix for actors markers";
             guiContent.tooltip = "To use multiple actors, differient them from each other with a specific prefix on each marker and put the prefix here, e.g. \"Actor1_\"";
 
-            var prefixText = EditorGUILayout.TextField(guiContent, c.ActorMarkersPrefix);
-            if (prefixText != c.ActorMarkersPrefix)
+            var prefixText = EditorGUILayout.TextField(guiContent, c.ActorMarkerPrefix);
+            if (prefixText != c.ActorMarkerPrefix)
             {
-                c.ActorMarkersPrefix = prefixText;
+                c.ActorMarkerPrefix = prefixText;
                 ResetIfActive(c);
             }
 
@@ -73,6 +73,13 @@ namespace QualisysRealTime.Unity.Skeleton
             if (GUILayout.Button(guiContent))
             {
                 c.Calibrate();
+            }
+
+            guiContent.text = "Reset Character";
+            guiContent.tooltip = "...";
+            if (GUILayout.Button(guiContent))
+            {
+                c.ResetSkeleton();
             }
 
             GUILayout.Space(5);
