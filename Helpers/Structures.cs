@@ -32,4 +32,13 @@ namespace QualisysRealTime.Unity
         public LabeledMarker ToMarker;
         public Color Color = Color.yellow;
     }
+
+    // Class for gaze vectors
+    public class GazeVector
+    {
+        public GazeVector() { }
+        public Vector3 Position;
+        public Vector3 Direction;
+    }
+
 }

@@ -27,6 +27,9 @@ namespace QualisysRealTime.Unity
         private List<Bone> mBones;
         public List<Bone> Bones { get { return mBones; } }
 
+        private List<GazeVector> mGazeVectors;
+        public List<GazeVector> GazeVectors { get { return mGazeVectors; } }
+
         private Axis mUpAxis;
         private Quaternion mCoordinateSystemChange;
         private RTPacket mPacket;
@@ -41,6 +44,7 @@ namespace QualisysRealTime.Unity
 
             List<Q6DOF> bodyData = packet.Get6DOFData();
             List<Q3D> markerData = packet.Get3DMarkerData();
+            List<QTMRealTimeSDK.Data.GazeVector> gazeVectorData = packet.GetGazeVectors();
 
             if (bodyData != null)
             {
@@ -79,6 +83,31 @@ namespace QualisysRealTime.Unity
 
                 }
             }
+
+
+            if (gazeVectorData != null)
+            {
+                while(mGazeVectors.Count < gazeVectorData.Count)
+                {
+                    mGazeVectors.Add(new GazeVector());
+                }
+
+                for (int i = 0; i < gazeVectorData.Count; i++)
+                {
+                    QTMRealTimeSDK.Data.GazeVector gazeVector = gazeVectorData[i];
+
+                    Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
+                    position /= 1000;
+                    mGazeVectors[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    mGazeVectors[i].Position.z *= -1;
+
+                    Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
+                    mGazeVectors[i].Direction = QuaternionHelper.Rotate(mCoordinateSystemChange, direction);
+                    mGazeVectors[i].Direction.z *= -1;
+
+                }
+            }
+
         }
 
         // called every time a event is broad casted from QTM server.
@@ -114,6 +143,8 @@ namespace QualisysRealTime.Unity
             mMarkers = new List<LabeledMarker>();
             //list of bones
             mBones = new List<Bone>();
+            //list of gaze vectors
+            mGazeVectors = new List<GazeVector>();
 
             mStreamingStatus = false;
 
@@ -208,7 +239,8 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d"> if 6DOF data should be streamed.</param>
         /// <param name="stream3d"> if labeled markers should be streamed.</param>
-        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d)
+        /// <param name="streamgaze"> if gaze data should be streamed.</param>
+        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
         {
             if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
             {
@@ -218,7 +250,7 @@ namespace QualisysRealTime.Unity
                     return false;
                 }
             }
-            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d);
+            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamgaze);
         }
 
         /// <summary>
@@ -228,11 +260,12 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d"> if 6DOF data should be streamed.</param>
         /// <param name="stream3d"> if labeled markers should be streamed.</param>
-        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d)
+        /// <param name="streamgaze"> if gaze data should be streamed.</param>
+        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
         {
             if (mProtocol.Connect(IpAddress, udpPort))
             {
-                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d);
+                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamgaze);
             }
             Debug.Log("Error Creating Connection to server");
             return false;
@@ -344,13 +377,15 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d)
+        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool streamgaze)
         {
             List<ComponentType> streamedTypes = new List<ComponentType>();
             if (stream3d)
                 streamedTypes.Add(ComponentType.Component3d);
             if (stream6d)
                 streamedTypes.Add(ComponentType.Component6d);
+            if (streamgaze)
+                streamedTypes.Add(ComponentType.ComponentGazeVector);
 
             //Start streaming and get the settings
             if (mProtocol.StreamFrames(streamRate, -1, false, streamedTypes, udpPort))
@@ -403,5 +438,6 @@ namespace QualisysRealTime.Unity
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
     }
 }

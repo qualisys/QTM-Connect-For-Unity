@@ -18,6 +18,7 @@ namespace QualisysRealTime.Unity
         bool connected = false;
         bool stream6d = true;
         bool stream3d = true;
+        bool streamgaze = true;
 
         private List<SixDOFBody> availableBodies;
         private List<DiscoveryResponse> discoveryResponses;
@@ -85,6 +86,7 @@ namespace QualisysRealTime.Unity
             portUDP = (short)EditorGUILayout.IntField("UDP Port:", portUDP);
             stream3d = EditorGUILayout.Toggle("3D Labeled Markers", stream3d);
             stream6d = EditorGUILayout.Toggle("6DOF Objects", stream6d);
+            streamgaze = EditorGUILayout.Toggle("Gaze vectors", streamgaze);
             GUI.enabled = true;
 
             if (Application.isPlaying)
@@ -138,7 +140,7 @@ namespace QualisysRealTime.Unity
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d);
+                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, streamgaze);
             }
 
             if (connected)
