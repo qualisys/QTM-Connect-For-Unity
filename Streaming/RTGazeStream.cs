@@ -9,10 +9,16 @@ namespace QualisysRealTime.Unity
     {
         private List<GazeVector> gazeVectorData;
         private RTClient rtClient;
+
+        private List<LineRenderer> gazeVectors;
         private GameObject gazeRoot;
+        private Material material;
 
         [Range(0.1f, 10f)]
-        public float gazeVectorLength = 1;
+        public float gazeVectorLength;
+
+        [Range(0.001f, 0.1f)]
+        public float gazeVectorWidth;
 
         private bool streaming = false;
 
@@ -20,12 +26,38 @@ namespace QualisysRealTime.Unity
         void Start()
         {
             rtClient = RTClient.GetInstance();
-            gazeRoot = gameObject;
+
+            gazeVectors = new List<LineRenderer>();
+            gazeRoot = new GameObject("GazeVectors");
+            gazeRoot.transform.parent = transform;
+            gazeRoot.transform.localPosition = Vector3.zero;
+            material = new Material(Shader.Find("Standard"));
+
+            gazeVectorLength = 1;
+            gazeVectorWidth = 0.01f;
         }
 
         private void InitiateGazeVectors()
         {
+            foreach (var gazeVector in gazeVectors)
+            {
+                Destroy(gazeVector.gameObject);
+            }
+
+            gazeVectors.Clear();
             gazeVectorData = rtClient.GazeVectors;
+
+            for (int i = 0; i < gazeVectorData.Count; i++)
+            {
+                LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
+                lineRenderer.transform.parent = gazeRoot.transform;
+                lineRenderer.transform.localPosition = Vector3.zero;
+                lineRenderer.material = material;
+                lineRenderer.material.color = Color.red;
+                lineRenderer.useWorldSpace = false;
+                lineRenderer.name = "GazeVector";
+                gazeVectors.Add(lineRenderer);
+            }
         }
 
         // Update is called once per frame
@@ -46,15 +78,30 @@ namespace QualisysRealTime.Unity
             gazeVectorData = rtClient.GazeVectors;
 
             if (gazeVectorData == null && gazeVectorData.Count == 0)
+            {
                 return;
+            }
 
+            if (gazeVectors.Count != gazeVectorData.Count)
+            {
+                InitiateGazeVectors();
+            }
+
+
+            gazeRoot.SetActive(true);
             for (int i = 0; i < gazeVectorData.Count; i++)
             {
                 if (gazeVectorData[i].Position.magnitude > 0)
                 {
-                    var start = gazeRoot.transform.TransformPoint(gazeVectorData[i].Position);
-                    var direction = gazeRoot.transform.TransformDirection(gazeVectorData[i].Direction * gazeVectorLength);
-                    Debug.DrawRay(start, direction, Color.red, 0);
+                    gazeVectors[i].SetPosition(0, gazeVectorData[i].Position);
+                    gazeVectors[i].SetPosition(1, gazeVectorData[i].Position + gazeVectorData[i].Direction * gazeVectorLength);
+                    gazeVectors[i].startWidth = gazeVectorWidth;
+                    gazeVectors[i].endWidth = gazeVectorWidth;
+                    gazeVectors[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    gazeVectors[i].gameObject.SetActive(true);
                 }
             }
         }
