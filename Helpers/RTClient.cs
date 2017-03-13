@@ -87,11 +87,6 @@ namespace QualisysRealTime.Unity
 
             if (gazeVectorData != null)
             {
-                while(mGazeVectors.Count < gazeVectorData.Count)
-                {
-                    mGazeVectors.Add(new GazeVector());
-                }
-
                 for (int i = 0; i < gazeVectorData.Count; i++)
                 {
                     QTMRealTimeSDK.Data.GazeVector gazeVector = gazeVectorData[i];
@@ -296,6 +291,29 @@ namespace QualisysRealTime.Unity
             mProtocol.Disconnect();
         }
 
+        private bool GetGazeVectorSettings()
+        {
+            bool getStatus = mProtocol.GetGazeVectorSettings();
+
+            if (getStatus)
+            {
+                mGazeVectors.Clear();
+                SettingsGazeVector settings = mProtocol.GazeVectorSettings;
+                foreach (var gazeVector in settings.gazeVectorList)
+                {
+                    var newGazeVector = new GazeVector();
+                    newGazeVector.Name = gazeVector.name;
+                    newGazeVector.Position = Vector3.zero;
+                    newGazeVector.Direction = Vector3.zero;
+                    mGazeVectors.Add(newGazeVector);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         private bool Get6DOFSettings()
         {
             // Get settings and information for streamed bodies
@@ -405,6 +423,15 @@ namespace QualisysRealTime.Unity
                     if (!Get6DOFSettings())
                     {
                         Debug.Log("Error retrieving settings");
+                        return false;
+                    }
+                }
+
+                if (streamgaze)
+                {
+                    if(!GetGazeVectorSettings())
+                    {
+                        Debug.Log("Error retrieving gaze settings");
                         return false;
                     }
                 }

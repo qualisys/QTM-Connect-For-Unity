@@ -55,7 +55,7 @@ namespace QualisysRealTime.Unity
                 lineRenderer.material = material;
                 lineRenderer.material.color = Color.red;
                 lineRenderer.useWorldSpace = false;
-                lineRenderer.name = "GazeVector";
+                lineRenderer.name = gazeVectorData[i].Name;
                 gazeVectors.Add(lineRenderer);
             }
         }

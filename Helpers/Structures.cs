@@ -37,6 +37,7 @@ namespace QualisysRealTime.Unity
     public class GazeVector
     {
         public GazeVector() { }
+        public string Name;
         public Vector3 Position;
         public Vector3 Direction;
     }
