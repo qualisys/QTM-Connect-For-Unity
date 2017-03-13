@@ -78,7 +78,9 @@ namespace QualisysRealTime.Unity
                 {
                     bones[i].SetPosition(0, boneData[i].FromMarker.Position);
                     bones[i].SetPosition(1, boneData[i].ToMarker.Position);
-                    bones[i].SetWidth(boneScale, boneScale);
+                    bones[i].startWidth = boneScale;
+                    bones[i].endWidth = boneScale;
+
                     bones[i].gameObject.SetActive(true);
                 }
                 else
