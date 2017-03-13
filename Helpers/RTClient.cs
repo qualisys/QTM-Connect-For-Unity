@@ -289,6 +289,7 @@ namespace QualisysRealTime.Unity
             mBodies.Clear();
             mMarkers.Clear();
             mBones.Clear();
+            mGazeVectors.Clear();
             mStreamingStatus = false;
             mProtocol.StreamFramesStop();
             mProtocol.StopStreamListen();
