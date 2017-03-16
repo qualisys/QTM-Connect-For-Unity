@@ -133,6 +133,8 @@ namespace QTMRealTimeSDK.Settings
     {
         [XmlElement("Name")]
         public string name;
+        [XmlElement("Frequency")]
+        public float frequency;
     }
 
     /// <summary> Gaze vector Settings from QTM. </summary>
