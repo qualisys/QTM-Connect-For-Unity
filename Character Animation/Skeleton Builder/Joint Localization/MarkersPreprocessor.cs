@@ -28,15 +28,16 @@ namespace QualisysRealTime.Unity.Skeleton
 
         private string[] sacrumBetweenMarkers;
         private string[] frontHeadBetweenMarkers;
+
         /// <summary>
         /// The ma
         /// </summary>
-        private Vector3
-            lastSACRUMknown = Vector3Helper.MidPoint(new Vector3(0.0774f, 1.0190f, -0.1151f), new Vector3(-0.0716f, 1.0190f, -0.1138f)),
-            lastRIASknown = new Vector3(0.0925f, 0.9983f, 0.1052f),
-            lastLIASknown = new Vector3(-0.0887f, 1.0021f, 0.1112f);
+        private Vector3 lastSACRUMknown = Vector3Helper.MidPoint(new Vector3(0.0774f, 1.0190f, -0.1151f), new Vector3(-0.0716f, 1.0190f, -0.1138f));
+        private Vector3 lastRIASknown = new Vector3(0.0925f, 0.9983f, 0.1052f);
+        private Vector3 lastLIASknown = new Vector3(-0.0887f, 1.0021f, 0.1112f);
 
         private MarkersNames m;
+
         /// <summary>
         /// Constructor sets the markers name in the MarkesName class used for joint localization
         /// </summary>
@@ -71,18 +72,14 @@ namespace QualisysRealTime.Unity.Skeleton
             markersLastFrame[m.leftHip] = lastLIASknown;
             markersLastFrame[m.rightHip] = lastRIASknown;
         }
-        /// <summary>
-        /// Prepare the markerset for Joint localization, predicts the 
-        /// </summary>
-        /// <param name="labelMarkers">The list of labelmarkets</param>
-        /// <param name="newMarkers">a reference to the dictionary to be </param>
-        /// <param name="prefix">The possible prefix of all markers</param>
-        public void ProcessMarkers(List<Marker> labelMarkers, out Dictionary<string,Vector3> newMarkers, string prefix)
+
+        public void UpdateMarkerList(List<Marker> labelMarkers, out Dictionary<string, Vector3> newMarkers)
         {
             var temp = markers;
             markers = markersLastFrame;
             markersLastFrame = temp;
             markers.Clear();
+
             for (int i = 0; i < labelMarkers.Count; i++)
             {
                 markers.Add(labelMarkers[i].Label, labelMarkers[i].Position);
@@ -95,6 +92,18 @@ namespace QualisysRealTime.Unity.Skeleton
                     markers.Add(markername, Vector3Helper.NaN);
                 }
             }
+
+            newMarkers = markers;
+        }
+
+        /// <summary>
+        /// Prepare the markerset for joint localization
+        /// </summary>
+        /// <param name="labelMarkers">The list of labeled markers</param>
+        /// <param name="newMarkers">a reference to the dictionary to be </param>
+        /// <param name="prefix">Optional prefix of all markers</param>
+        public void ProcessMarkers(out Dictionary<string, Vector3> newMarkers)
+        { 
             // sacrum can be defined by two markers
             if (sacrumBetween)
             {
@@ -102,6 +111,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3Helper.MidPoint(markers[sacrumBetweenMarkers[0]],
                                             markers[sacrumBetweenMarkers[1]]);
             }
+
             // 
             if (frontHeadBetween)
             {
@@ -109,11 +119,12 @@ namespace QualisysRealTime.Unity.Skeleton
                         Vector3Helper.MidPoint(markers[frontHeadBetweenMarkers[0]],
                                             markers[frontHeadBetweenMarkers[1]]);
             }
+
             if (markers[m.leftHip].IsNaN()
                 || markers[m.rightHip].IsNaN()
-                || markers[m.bodyBase].IsNaN())
-            {
-                MissingEssientialMarkers(markers);
+                || markers[m.bodyBase].IsNaN()
+            ) {
+                MissingEssentialMarkers(markers);
             }
             else
             {
@@ -123,24 +134,26 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             newMarkers = markers;
         }
+
         /// <summary>
         /// If any of the hip markers are missing, we predict them using the last position
         /// </summary>
         /// <param name="markers">The dictionary of markers</param>
-        private void MissingEssientialMarkers(Dictionary<string,Vector3> markers)
+        private void MissingEssentialMarkers(Dictionary<string, Vector3> markers)
         {
             Vector3 dirVec1, dirVec2, possiblePos1, possiblePos2,
-                    sacrumLastFrame = lastSACRUMknown,
-                    liasLastFrame   = lastLIASknown,
-                    riasLastFrame   = lastRIASknown;
+                sacrumLastFrame = lastSACRUMknown,
+                liasLastFrame   = lastLIASknown,
+                riasLastFrame   = lastRIASknown;
 
-            Vector3
-                Sacrum = markers[m.bodyBase],
+            Vector3 Sacrum = markers[m.bodyBase],
                 RIAS = markers[m.rightHip],
                 LIAS = markers[m.leftHip];
+
             bool s = !Sacrum.IsNaN(),
                  r = !RIAS.IsNaN(),
                  l = !LIAS.IsNaN();
+
             if (s) // sacrum exists
             {
                 if (r) // sacrum and rias exist, lias missing
@@ -153,10 +166,9 @@ namespace QualisysRealTime.Unity.Skeleton
                                 );
                     Vector3 transVec1 = Vector3.Transform(dirVec1, (between));
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
-                    possiblePos1 = Sacrum + transVec1; // add vector from sacrum too lias last frame to this frames' sacrum
+                    possiblePos1 = Sacrum + transVec1; // add vector from sacrum to lias last frame to this frames sacrum
                     possiblePos2 = RIAS + transVec2;
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2)); // get mid point of possible positions
-
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2)); // get mid point of possible positions
                 }
                 else if (l) // sacrum  and lias exists, rias missing
                 {
@@ -170,12 +182,12 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
                     possiblePos1 = Sacrum + transVec1;
                     possiblePos2 = LIAS + transVec2;
-                    markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2));
+                    markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip], Vector3Helper.MidPoint(possiblePos1, possiblePos2));
                 }
                 else // only sacrum exists, lias and rias missing
                 {
-                    markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip] , Sacrum + riasLastFrame - sacrumLastFrame);
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], Sacrum + liasLastFrame - sacrumLastFrame);
+                    markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip] , Sacrum + riasLastFrame - sacrumLastFrame);
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], Sacrum + liasLastFrame - sacrumLastFrame);
                 }
             }
             else if (r) // rias exists, sacrum missing
@@ -188,29 +200,29 @@ namespace QualisysRealTime.Unity.Skeleton
                     Quaternion between = Quaternion.Invert(
                         QuaternionHelper2.GetRotationBetween(
                         (LIAS - RIAS), (liasLastFrame - riasLastFrame))
-                        );
+                    );
                     Vector3 transVec1 = Vector3.Transform(dirVec1, (between));
                     Vector3 transVec2 = Vector3.Transform(dirVec2, (between));
                     possiblePos1 = RIAS + transVec1;
                     possiblePos2 = LIAS + transVec2;
-                    markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase] ,Vector3Helper.MidPoint(possiblePos1,possiblePos2));
+                    markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase] ,Vector3Helper.MidPoint(possiblePos1,possiblePos2));
                 }
                 else // only rias exists, lias and sacrum missing
                 {
-                    markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase], RIAS + sacrumLastFrame - riasLastFrame);
-                    markers[m.leftHip] = DontMovedToMuch(markersLastFrame[m.leftHip], RIAS + liasLastFrame - riasLastFrame);
+                    markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase], RIAS + sacrumLastFrame - riasLastFrame);
+                    markers[m.leftHip] = DidntMovedToMuch(markersLastFrame[m.leftHip], RIAS + liasLastFrame - riasLastFrame);
                 }
             }
             else if (l) // only lias exists, rias and sacrum missing
             {
-                markers[m.bodyBase] = DontMovedToMuch(markersLastFrame[m.bodyBase], LIAS + sacrumLastFrame - liasLastFrame);
-                markers[m.rightHip] = DontMovedToMuch(markersLastFrame[m.rightHip], LIAS + riasLastFrame - liasLastFrame);
+                markers[m.bodyBase] = DidntMovedToMuch(markersLastFrame[m.bodyBase], LIAS + sacrumLastFrame - liasLastFrame);
+                markers[m.rightHip] = DidntMovedToMuch(markersLastFrame[m.rightHip], LIAS + riasLastFrame - liasLastFrame);
             }
             else // all markers missing
             {
+            	markers[m.bodyBase] = markersLastFrame[m.bodyBase];
                 markers[m.rightHip] = markersLastFrame[m.rightHip];
                 markers[m.leftHip] = markersLastFrame[m.leftHip];
-                markers[m.bodyBase] = markersLastFrame[m.bodyBase];
             }
         }
 
@@ -223,8 +235,8 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             MarkersNames m = new MarkersNames();
             #region hip
-            var quary = MarkerNames.bodyBaseAKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
-            if (quary == null)
+            var query = MarkerNames.bodyBaseAKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+            if (query == null)
             {
                 var q2 = MarkerNames.bodyBasebetween.FirstOrDefault(n => markersNames.Contains(prefix + n[0]) && markersNames.Contains(prefix + n[1]));
                 if (q2 != null)
@@ -238,7 +250,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             else
             {
-                m.bodyBase = prefix + quary;
+                m.bodyBase = prefix + query;
             }
             SetName(markersNames, MarkerNames.leftHipAKA, ref m.leftHip, prefix);
             SetName(markersNames, MarkerNames.rightHipAKA, ref m.rightHip, prefix);
@@ -253,8 +265,8 @@ namespace QualisysRealTime.Unity.Skeleton
             #endregion
 
             #region head
-            quary = MarkerNames.headAKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
-            if (quary == null)
+            query = MarkerNames.headAKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+            if (query == null)
             {
                 var q2 = MarkerNames.headBetween.FirstOrDefault(n => markersNames.Contains(prefix + n[0]) && markersNames.Contains(prefix + n[1]));
                 if (q2 != null)
@@ -264,7 +276,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     frontHeadBetweenMarkers[0] = prefix + q2[0];
                     frontHeadBetweenMarkers[1] = prefix + q2[1];
                 }
-            } else m.head = prefix + quary;
+            } else m.head = prefix + query;
 
             SetName(markersNames, MarkerNames.leftHeadAKA, ref m.leftHead, prefix);
 
@@ -292,19 +304,19 @@ namespace QualisysRealTime.Unity.Skeleton
             SetName(markersNames, MarkerNames.leftHeelAKA, ref m.leftHeel, prefix);
             SetName(markersNames, MarkerNames.rightHeelAKA, ref m.rightHeel, prefix);
 
-            quary = MarkerNames.leftToe2AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
-            if (quary == null)
+            query = MarkerNames.leftToe2AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+            if (query == null)
             {
-                quary = MarkerNames.leftToe1AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+                query = MarkerNames.leftToe1AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
             }
-            m.leftToe2 = ((quary == null) ? m.leftToe2 :prefix + quary);
+            m.leftToe2 = ((query == null) ? m.leftToe2 :prefix + query);
 
-            quary = MarkerNames.rightToe2AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
-            if (quary == null)
+            query = MarkerNames.rightToe2AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+            if (query == null)
             {
-                quary = MarkerNames.rightToe1AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
+                query = MarkerNames.rightToe1AKA.FirstOrDefault(n => markersNames.Contains(prefix + n));
             }
-            m.rightToe2 = ((quary == null) ? m.rightToe2 :prefix + quary);
+            m.rightToe2 = ((query == null) ? m.rightToe2 :prefix + query);
             #endregion
 
             #region arms
@@ -330,6 +342,7 @@ namespace QualisysRealTime.Unity.Skeleton
             #endregion
             return m;
         }
+
         /// <summary>
         /// Search for an alias of a marker and set it to that name
         /// </summary>
@@ -342,13 +355,14 @@ namespace QualisysRealTime.Unity.Skeleton
             var quary = alias.FirstOrDefault(n => markerNames.Contains(prefix + n));
             name = ((quary == null) ? name : prefix + quary);
         }
+
         /// <summary>
         /// Makes sure a makers cant move to fast when predicting the hipmarkers
         /// </summary>
         /// <param name="from">The position last frame</param>
         /// <param name="to">The position this frame</param>
         /// <returns>this frame if moved by less then 0.02m, 0.02m otherwise</returns>
-        private Vector3 DontMovedToMuch(Vector3 from, Vector3 to)
+        private Vector3 DidntMovedToMuch(Vector3 from, Vector3 to)
         {
             Vector3 move = (to - from);
             if (move.Length > 0.02f)

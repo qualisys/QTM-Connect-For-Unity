@@ -39,7 +39,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public Vector3 lowerLegUpRight;
         public Vector3 rightHipPos;
         public Vector3 leftHipPos;
-        public Vector3 sternumClacicle;
+        public Vector3 sternumClavicle;
         public Vector3 spine1;
         public Vector3 head;
         public Vector3 shoulderRight;
@@ -55,6 +55,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public Vector3 kneeRight;
         public Vector3 kneeLeft;
     }
+
     class JointLocalization
     {
         private Values o = new Values();
@@ -63,8 +64,10 @@ namespace QualisysRealTime.Unity.Skeleton
         private List<Action<Bone>> jcFuncs;
         private Dictionary<string, Vector3> markers;
         private MarkersNames m;
-        #region varible necessary to estimate joints
+
+        #region Data necessary to estimate joints
         private BodyData bd;
+        public BodyData BodyData { get { return bd; } }
         private Quaternion prevChestOri = Quaternion.Identity;
         private Vector3 ZeroVector3 = Vector3.Zero;
         private Quaternion ZeroQuaternion = QuaternionHelper2.Zero;
@@ -72,16 +75,18 @@ namespace QualisysRealTime.Unity.Skeleton
         private Vector3 UnitY = Vector3.UnitY;
         private Vector3 UnitZ = Vector3.UnitZ;
         #endregion
+
         /// <summary>
         /// Setting up for joint localization
         /// </summary>
         /// <param name="markers">The aliases of the marker names</param>
-        public JointLocalization(MarkersNames markers)
+        public JointLocalization(MarkersNames markerNames)
         {
-            this.m = markers;
+            this.m = markerNames;
             bd = new BodyData(m);
+
             jcFuncs = new List<Action<Bone>>() {
-                    (b) => Plevis(b),
+                    (b) => Pelvis(b),
                     (b) => SpineRoot(b),
                     (b) => MidSpine(b),
                     (b) => SpineEnd(b),
@@ -116,23 +121,26 @@ namespace QualisysRealTime.Unity.Skeleton
                     (b) => GetFootRight(b),
                 };
         }
+
         /// <summary>
         /// Fills in the skeleton with the joint positions given the set of markers
         /// </summary>
         /// <param name="markerData">The dictionary contaiing the markers and their position</param>
         /// <param name="skeleton">The skeleton to be filled in</param>
-        public void GetJointLocation(Dictionary<string, Vector3> markerData, ref BipedSkeleton skeleton)
+        public void GetJointLocations(Dictionary<string, Vector3> markerData, ref BipedSkeleton skeleton)
         {
             o = new Values(); // reset joint pos and orientations
             markers = markerData;
-            // collect data from markers about body proportions
-            // this is necessary for shoulder joint localization 
-            // Locate hip orientation, hip orientation is important for IK solver,
+
+            // Collect data from markers about body proportions,
+            // this is necessary for shoulder joint localization. 
             bd.CalculateBodyData(markers, ChestOrientation);
+
             // get all joints
             int i = 0;
             SetJointsRecursive(skeleton.Root, ref i);
         }
+
         /// <summary>
         /// Recursive function to set the new bone position and rotation
         /// </summary>
@@ -143,6 +151,7 @@ namespace QualisysRealTime.Unity.Skeleton
             jcFuncs[index++](currBone.Data);
             if (!currBone.IsLeaf) SetJointsRecursive(currBone.Children, ref index);
         }
+
         /// <summary>
         /// Helper function
         /// </summary>
@@ -155,7 +164,9 @@ namespace QualisysRealTime.Unity.Skeleton
                 SetJointsRecursive(b, ref index);
             }
         }
+
         #region Getters and Setters used for joint localization
+
         /// <summary>
         /// The orientation of the hip
         /// </summary>
@@ -174,6 +185,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.hipOrientation;
             }
         }
+
         /// <summary>
         /// The orientation of the chest / upper body
         /// </summary>
@@ -192,7 +204,8 @@ namespace QualisysRealTime.Unity.Skeleton
                     Vector3 mid = Vector3Helper.MidPoint(rightShoulderPos, leftShoulderPos);
                     Quaternion rotation;
                     bool slearp = true;// mid.IsNaN() || leftShoulderPos.IsNaN() || rightShoulderPos.IsNaN();
-                    // Find Y axis
+
+                    // Calculate y-axis
                     if (!mid.IsNaN())
                     {
                         Yaxis = mid - markers[m.bodyBase];
@@ -214,6 +227,8 @@ namespace QualisysRealTime.Unity.Skeleton
                     {
                         Yaxis = Vector3.Transform(UnitY, Quaternion.Slerp(prevChestOri, HipOrientation, 0.5f));
                     }
+
+                    // Calculate x-axis
                     if (!rightShoulderPos.IsNaN() || !leftShoulderPos.IsNaN())
                     {
                         if (!rightShoulderPos.IsNaN() && !leftShoulderPos.IsNaN()) // prio 1, use left and right scapula
@@ -241,6 +256,7 @@ namespace QualisysRealTime.Unity.Skeleton
                     {
                         Xaxis = -Vector3.Transform(UnitX, Quaternion.Slerp(prevChestOri, HipOrientation, 0.5f));
                     }
+
                     rotation = slearp ? 
                         Quaternion.Slerp(QuaternionHelper2.GetOrientationFromYX(Yaxis, Xaxis), prevChestOri, 0.8f) : 
                         QuaternionHelper2.GetOrientationFromYX(Yaxis, Xaxis);
@@ -250,6 +266,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.chestOrientation;
             }
         }
+
         /// <summary>
         /// The orientation of the head
         /// </summary>
@@ -264,6 +281,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.headOrientation;
             }
         }
+
         /// <summary>
         /// The vector defining forward of the hip
         /// </summary>
@@ -276,6 +294,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.hipForward;
             }
         }
+
         /// <summary>
         ///  The vector defining forward of the chest / upper body
         /// </summary>
@@ -290,6 +309,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.chestForward;
             }
         }
+
         /// <summary>
         /// The position of the left Upper Arm, commonly known as shoulder
         /// </summary>
@@ -306,6 +326,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.upperArmForwardLeft;
             }
         }
+
         /// <summary>
         /// The position of the left Upper Arm, commonly known as shoulder
         /// </summary>
@@ -321,6 +342,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.upperArmForwardRight;
             }
         }
+
         /// <summary>
         /// The position of the left lower Arm, commonly known as elbow
         /// </summary>
@@ -335,6 +357,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.lowerArmForwardLeft;
             }
         }
+
         /// <summary>
         /// The position of the right lower Arm, commonly known as elbow
         /// </summary>
@@ -349,6 +372,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.lowerArmForwardRight;
             }
         }
+
         /// <summary>
         /// The vector defining the forward of the left knee
         /// </summary>
@@ -363,6 +387,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.kneeForwardLeft;
             }
         }
+
         /// <summary>
         /// The vector defining the forward of the right knee
         /// </summary>
@@ -377,6 +402,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.kneeForwardRight;
             }
         }
+
         /// <summary>
         /// The vector defing whats up with the lower left leg
         /// </summary>
@@ -406,6 +432,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.lowerLegUpLeft;
             }
         }
+
         /// <summary>
         /// The vector defing whats up with the lower right leg.
         /// wazzup leg?
@@ -436,8 +463,14 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.lowerLegUpRight;
             }
         }
+
         #endregion
+
         #region Special joints position
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 HipJointRight
         {
             get {
@@ -448,6 +481,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.rightHipPos;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 HipJointLeft
         {
             get
@@ -459,11 +496,15 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.leftHipPos;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 SternumClavicle
         {
             get
             {
-                if (o.sternumClacicle == ZeroVector3)
+                if (o.sternumClavicle == ZeroVector3)
                 {
                     Vector3 back = markers[m.neck];
                     Vector3 front = markers[m.chest];
@@ -484,14 +525,17 @@ namespace QualisysRealTime.Unity.Skeleton
                     }
                     else
                     {
-                        neckPos =
-                            Vector3Helper.MidPoint(markers[m.leftShoulder], markers[m.rightShoulder]);
+                        neckPos = Vector3Helper.MidPoint(markers[m.leftShoulder], markers[m.rightShoulder]);
                     }
-                    o.sternumClacicle = neckPos;
+                    o.sternumClavicle = neckPos;
                 }
-                return o.sternumClacicle;
+                return o.sternumClavicle;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 Spine1
         {
             get {
@@ -520,6 +564,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.spine1;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 Head
         {
             get
@@ -537,6 +585,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.head;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 ShoulderLeft
         {
             get
@@ -548,6 +600,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.shoulderLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 ShoulderRight
         {
             get
@@ -559,6 +615,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.shoulderRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 ElbowLeft
         {
             get
@@ -570,6 +630,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.elbowLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 ElbowRight
         {
             get
@@ -581,6 +645,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.elbowRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 WristLeft
         {
             get
@@ -592,6 +660,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.handLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 WristRight
         {
             get
@@ -603,6 +675,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.handRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 KneeRight
         {
             get
@@ -621,6 +697,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.kneeRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 KneeLeft
         {
             get
@@ -639,6 +719,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.kneeLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 AnkleLeft
         {
             get
@@ -657,6 +741,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.ankleLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 AnkleRight
         {
             get
@@ -675,6 +763,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.ankleRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 FootBaseLeft
         {
             get
@@ -686,6 +778,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.footBaseLeft;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private Vector3 FootBaseRight
         {
             get
@@ -697,21 +793,33 @@ namespace QualisysRealTime.Unity.Skeleton
                 return o.footBaseRight;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isRightHip"></param>
+        /// <returns></returns>
         private Vector3 GetHipJoint(bool isRightHip)
         {
-            // as described by Harrington et al. 2006
+            // As described by Harrington et al. 2006
             // Prediction of the hip joint centre in adults, children, and patients with
             // cerebral palsy based on magnetic resonance imaging
             Vector3 ASISMid = Vector3Helper.MidPoint(markers[m.rightHip], markers[m.leftHip]);
             float Z, X, Y,
                 pelvisDepth = (ASISMid - markers[m.bodyBase]).Length * 1000,
                 pelvisWidth = (markers[m.leftHip] - markers[m.rightHip]).Length * 1000;
-            X = 0.33f * pelvisWidth - 7.3f;
+            X =  0.33f * pelvisWidth -  7.3f;
             Y = -0.30f * pelvisWidth - 10.9f;
-            Z = -0.24f * pelvisDepth - 9.9f;
+            Z = -0.24f * pelvisDepth -  9.9f;
             if (!isRightHip) X = -X;
             return ASISMid + Vector3.Transform((new Vector3(X, Y, Z) / 1000), HipOrientation);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isRightShoulder"></param>
+        /// <returns></returns>
         private Vector3 GetUpperarmJoint(bool isRightShoulder)
         {
             // as described by Campbell et al. 2009 in 
@@ -728,6 +836,12 @@ namespace QualisysRealTime.Unity.Skeleton
             res += isRightShoulder ? markers[m.rightShoulder] : markers[m.leftShoulder];
             return res;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isRightKnee"></param>
+        /// <returns></returns>
         private Vector3 GetKneePos(bool isRightKnee)
         {
             Vector3 x, z, M1, M2, M3, negateY = new Vector3(1f, -1f, 1f);
@@ -754,6 +868,12 @@ namespace QualisysRealTime.Unity.Skeleton
             if (isRightKnee) Vector3.Multiply(ref trans, ref negateY, out trans);
             return Vector3.TransformVector(trans, R) + M1;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isRightAnkle"></param>
+        /// <returns></returns>
         private Vector3 GetAnklePos(bool isRightAnkle)
         {
             //Stolen from Visual3d
@@ -781,34 +901,37 @@ namespace QualisysRealTime.Unity.Skeleton
                 -0.02741f * scalefactor);
             if (!isRightAnkle) Vector3.Multiply(ref trans, ref negateY, out trans);
             return Vector3.TransformVector(trans, R) + M2;
-        } 
+        }
+
         #endregion
 
-        // Functions for filling bones
-        #region Funcions
-        #region pelsvis too head getters
-        private void Plevis(Bone b)
+        #region Getters - Pelvis to Head
+        private void Pelvis(Bone b)
         {
             b.Pos = Vector3Helper.MidPoint(HipJointRight, HipJointLeft); 
             b.Orientation = HipOrientation;
         }
+
         private void SpineRoot(Bone b)
         {
-            Vector3 target = Spine1.IsNaN() ? SternumClavicle : Spine1;
+            Vector3 target = !Spine1.IsNaN() ? Spine1 : SternumClavicle;
             Vector3 pos = markers[m.bodyBase] + HipForward * BodyData.MarkerToSpineDist;
             b.Pos = pos;
             b.Orientation = QuaternionHelper2.LookAtUp(pos, target, HipForward);
         }
+
         private void MidSpine(Bone b)
         {
             b.Pos = Spine1;
             b.Orientation = QuaternionHelper2.LookAtRight(Spine1, SternumClavicle,  HipJointLeft - HipJointRight);
         }
+
         private void SpineEnd(Bone b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = ChestOrientation;
         }
+
         private void Neck(Bone b)
         {
             Vector3 up = Vector3.Transform(UnitY, ChestOrientation);
@@ -816,38 +939,44 @@ namespace QualisysRealTime.Unity.Skeleton
             b.Pos = pos;
             b.Orientation = QuaternionHelper2.LookAtUp(pos, Head, ChestForward);
         }
+
         private void GetHead(Bone b)
         {
             b.Pos = Head;
             b.Orientation = HeadOrientation;
         }
+
         private void GetHeadTop(Bone b)
         {
             b.Pos = Head + Vector3.Transform(UnitY, HeadOrientation) * (BodyData.MidHeadToHeadJoint * 2);
-        }
-        
+        }        
         #endregion
-        #region leg getters
+
+        #region Getters - Legs
         private void UpperLegLeft(Bone b)
         {
             b.Pos = HipJointLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(HipJointLeft, KneeLeft, HipJointRight-HipJointLeft );
         }
+
         private void UpperLegRight(Bone b)
         {
             b.Pos = HipJointRight;
             b.Orientation = QuaternionHelper2.LookAtRight(HipJointRight, KneeRight, HipJointRight - HipJointLeft);
         }
+
         private void LowerLegLeft(Bone b)
         {
             b.Pos = KneeLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(KneeLeft, AnkleLeft, KneeForwardLeft); 
         }
+
         private void LowerLegRight(Bone b)
         {
             b.Pos = KneeRight;
             b.Orientation = QuaternionHelper2.LookAtRight(KneeRight, AnkleRight, KneeForwardRight);
         }
+
         private void GetAnkleLeft(Bone b)
         {
             b.Pos = AnkleLeft;
@@ -862,6 +991,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 b.Orientation = QuaternionHelper2.LookAtRight(AnkleLeft, FootBaseLeft, right);
             }
         }
+
         private void GetAnkleRight(Bone b)
         {
             b.Pos = AnkleRight;
@@ -876,68 +1006,80 @@ namespace QualisysRealTime.Unity.Skeleton
                 b.Orientation = QuaternionHelper2.LookAtRight(AnkleRight, FootBaseRight, right);
             }
         }
+
         private void GetFootBaseLeft(Bone b)
         {
             b.Pos = FootBaseLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(b.Pos, markers[m.leftToe2], LowerLegUpLeft);
         }
+
         private void GetFootBaseRight(Bone b)
         {
             b.Pos = FootBaseRight;
             b.Orientation = QuaternionHelper2.LookAtUp(b.Pos, markers[m.rightToe2], LowerLegUpRight);
         }
+
         private void GetFootLeft(Bone b)
         {
             b.Pos = markers[m.leftToe2];
         }
+
         private void GetFootRight(Bone b)
         {
             b.Pos = markers[m.rightToe2];
-        }
-        
+        }        
         #endregion
-        #region arm getters
+
+        #region Getters - Arms
         private void GetShoulderLeft(Bone b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = QuaternionHelper2.LookAtUp(SternumClavicle, ShoulderLeft, ChestForward);
         }
+
         private void GetShoulderRight(Bone b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = QuaternionHelper2.LookAtUp(SternumClavicle, ShoulderRight, ChestForward);
         }
+
         private void GetUpperArmLeft(Bone b)
         {
             b.Pos = ShoulderLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(ShoulderLeft, ElbowLeft, markers[m.leftInnerElbow] - markers[m.leftOuterElbow]);
         }
+
         private void GetUpperArmRight(Bone b)
         {
             b.Pos = ShoulderRight;
             b.Orientation = QuaternionHelper2.LookAtRight(ShoulderRight, ElbowRight, markers[m.rightOuterElbow] - markers[m.rightInnerElbow]);
         }
+
         private void GetLowerArmLeft(Bone b)
         {
             b.Pos = ElbowLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(ElbowLeft, WristLeft, LowerArmForwardLeft);
         }
+
         private void GetLowerArmRight(Bone b)
         {
             b.Pos = ElbowRight;
             b.Orientation = QuaternionHelper2.LookAtUp(ElbowRight, WristRight, LowerArmForwardRight);
         }
+
         private void GetWristLeft(Bone b)
         {
             b.Pos = WristLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(WristLeft, markers[m.leftHand], LowerArmForwardLeft);
         }
+
         private void GetWristRight(Bone b)
         {
             b.Pos = WristRight;
             b.Orientation = QuaternionHelper2.LookAtUp(WristRight, markers[m.rightHand], LowerArmForwardRight);
         }
-        #region hand getters
+
+        #region Getters - Hands
         private void GetTrapLeft(Bone b)
         {
             b.Pos = WristLeft;
@@ -975,7 +1117,7 @@ namespace QualisysRealTime.Unity.Skeleton
             b.Pos = markers[m.rightIndex];
         }
         #endregion
-        #endregion
+
         #endregion
     }
 }

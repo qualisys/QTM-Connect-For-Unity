@@ -10,9 +10,26 @@ namespace QualisysRealTime.Unity
     {
         public string ObjectName = "Put QTM 6DOF object name here";
         public Vector3 PositionOffset = new Vector3(0, 0, 0);
-        public Vector3 EulerOffset = new Vector3(0, 0, 0);
+        public Vector3 RotationOffset = new Vector3(0, 0, 0);
 
-        private RTClient rtClient;
+        protected RTClient rtClient;
+        protected SixDOFBody body;
+
+        public bool hasBody()
+        {
+            return body != null;
+        }
+
+        public virtual void applyBody()
+        {
+            if (body.Position.magnitude > 0) //just to avoid error when position is NaN
+            {
+                transform.position = body.Position + PositionOffset;
+                if (transform.parent) transform.position += transform.parent.position;
+                //transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
+                if (transform.parent) transform.rotation *= transform.parent.rotation;
+            }
+        }
 
         // Use this for initialization
         void Start()
@@ -25,16 +42,10 @@ namespace QualisysRealTime.Unity
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
 
-            SixDOFBody body = rtClient.GetBody(ObjectName);
+            body = rtClient.GetBody(ObjectName);
             if (body != null)
             {
-                if (body.Position.magnitude > 0) //just to avoid error when position is NaN
-                {
-                    transform.position = body.Position + PositionOffset;
-                    if (transform.parent) transform.position += transform.parent.position;
-                    transform.rotation = body.Rotation * Quaternion.Euler(EulerOffset);
-                    if (transform.parent) transform.rotation *= transform.parent.rotation;
-                }
+                this.applyBody();
             }
         }
     }

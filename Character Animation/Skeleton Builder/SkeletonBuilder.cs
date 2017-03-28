@@ -26,9 +26,19 @@ namespace QualisysRealTime.Unity.Skeleton
         private MarkersPreprocessor mp;
         private JointLocalization joints;
         private IKApplier ikApplier;
-        public string MarkerPrefix;
+
+        private ŚegmentTracking st;
+        
+		public string MarkerPrefix;
+
+        public int bodyHeight = 0;
+        public int bodyMass = 0;
+
         public bool SolveWithIK = true;
         public bool Interpolation = false;
+
+        public bool UseTrackingMarkers = true;
+
         /// <summary>
         /// Build a skeleton according to the markers
         /// </summary>
@@ -36,7 +46,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <returns>A complete skeleton</returns>
         public BipedSkeleton SolveSkeleton(List<Marker> markerData)
         {
-            if (   skeleton == null
+            if (skeleton == null
                 || skeletonBuffer == null
                 || mp == null
                 || joints == null
@@ -45,19 +55,53 @@ namespace QualisysRealTime.Unity.Skeleton
                 skeleton = new BipedSkeleton();
                 skeletonBuffer = new BipedSkeleton();
                 MarkersNames markersMap;
-                mp = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix); ;
+                mp = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix);
                 joints = new JointLocalization(markersMap);
                 ikApplier = new IKApplier(skeleton);
+
+                // Set segment tracking markers for virtual marker construction
+                st = new ŚegmentTracking(skeleton, markersMap, markerData);
             }
-            Dictionary<string, OpenTK.Vector3> markers;
-            mp.ProcessMarkers(markerData, out markers, MarkerPrefix);
+
             var temp = skeleton;
             skeleton = skeletonBuffer;
             skeletonBuffer = temp;
-            joints.GetJointLocation(markers, ref skeleton);
+
+            Dictionary<string, OpenTK.Vector3> markers;
+            mp.UpdateMarkerList(markerData, out markers);
+            mp.ProcessMarkers(out markers);
+
+            joints.BodyData.Height = bodyHeight;
+            joints.BodyData.Mass = bodyMass;
+            joints.GetJointLocations(markers, ref skeleton);
+
+            // Try to reconstruct virtual markers
+            if (UseTrackingMarkers)
+            {
+                if (st.ProcessMarkers(skeleton, markerData, ref markers, MarkerPrefix))
+                {
+                    mp.ProcessMarkers(out markers);
+                    joints.GetJointLocations(markers, ref skeleton);
+                }
+            }
+
             ikApplier.Interpolation = Interpolation;
             if (SolveWithIK) ikApplier.ApplyIK(ref skeleton);
-            return skeleton;
+            
+			return skeleton;
+        }
+
+        /// <summary>
+        /// E.Wolf, 2016-03-16
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="mass"></param>
+        public void SetBodyData(int height, int mass)
+        {
+            if (height > 0)
+                bodyHeight = height;
+            if (mass > 0)
+              bodyMass = mass;
         }
     }
 }

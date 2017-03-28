@@ -343,8 +343,7 @@ namespace QualisysRealTime.Unity.Skeleton {
                 if (!leftForearm) leftForearm = results[1];
                 if (!leftHand) leftHand = results[2];
             }
-            else foreach (var res in results) UnityEngine.Debug.Log(res);
-
+            //else foreach (var res in results) UnityEngine.Debug.Log(res);
         }
         /// <summary>
         /// Finding and adding right arm
@@ -360,6 +359,13 @@ namespace QualisysRealTime.Unity.Skeleton {
                 if (!rightForearm) rightForearm = results[2];
                 if (!rightHand) rightHand = results[3];
             }
+            else if (results.Length == 3)
+            {
+                if (!rightUpperArm) rightUpperArm = results[0];
+                if (!rightForearm) rightForearm = results[1];
+                if (!rightHand) rightHand = results[2];
+            }
+            //else foreach (var res in results) UnityEngine.Debug.Log(res);
         }
         /// <summary>
         /// Finding and adding left leg
@@ -507,6 +513,7 @@ namespace QualisysRealTime.Unity.Skeleton {
                 foreach (var f in fingersRight) 
                     yield return f;
         }
+
         public void PrintAll()
         {
             UnityEngine.Debug.LogFormat("root {0}", root);

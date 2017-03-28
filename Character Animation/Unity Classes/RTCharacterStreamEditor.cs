@@ -17,8 +17,9 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             c = (RTCharacterStream)target;
             cSerializedObject = new SerializedObject(target);
-            boneRotation = cSerializedObject.FindProperty("boneRotatation");
+			boneRotation = cSerializedObject.FindProperty("boneRotation");
         }
+
         public override void OnInspectorGUI()
         {
             cSerializedObject.Update();
@@ -36,22 +37,66 @@ namespace QualisysRealTime.Unity.Skeleton
 
             GUILayout.Space(10);
             var guiContent = new GUIContent();
+
             guiContent.text = "Prefix for actors markers";
             guiContent.tooltip = "To use multiple actors, differient them from each other with a specific prefix on each marker and put the prefix here, e.g. \"Actor1_\"";
 
-            var prefixText = EditorGUILayout.TextField(guiContent, c.ActorMarkersPrefix);
-            if (prefixText != c.ActorMarkersPrefix)
+            var prefixText = EditorGUILayout.TextField(guiContent, c.ActorMarkerPrefix);
+            if (prefixText != c.ActorMarkerPrefix)
             {
-                c.ActorMarkersPrefix = prefixText;
+                c.ActorMarkerPrefix = prefixText;
                 ResetIfActive(c);
             }
 
             GUILayout.Space(5);
+
+            guiContent.text = "Actor Height";
+            guiContent.tooltip = "... in cm";
+            var actorHeight = EditorGUILayout.IntField(guiContent, c.actorHeight);
+            if (actorHeight != c.actorHeight)
+            {
+                c.actorHeight = actorHeight;
+                //ResetIfActive(c);
+            }
+
+            guiContent.text = "Actor Mass";
+            guiContent.tooltip = "... in kg";
+            var actorMass = EditorGUILayout.IntField(guiContent, c.actorMass);
+            if (actorMass != c.actorMass)
+            {
+                c.actorMass = actorMass;
+                //ResetIfActive(c);
+            }
+
+            guiContent.text = "Calibrate Character";
+            guiContent.tooltip = "...";
+            if (GUILayout.Button(guiContent))
+            {
+                c.Calibrate();
+            }
+
+            guiContent.text = "Reset Character";
+            guiContent.tooltip = "...";
+            if (GUILayout.Button(guiContent))
+            {
+                c.ResetSkeleton();
+            }
+
+            GUILayout.Space(5);
+
             guiContent.text = "Solve gaps using IK";
             guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
             if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
+                ResetIfActive(c);
+            }
+
+            guiContent.text = "Use Tracking Markers";
+            //guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
+            if (EditorGUILayout.Toggle(guiContent, c.UseTrackingMarkers) != c.UseTrackingMarkers)
+            {
+                c.UseTrackingMarkers = !c.UseTrackingMarkers;
                 ResetIfActive(c);
             }
 
@@ -74,8 +119,8 @@ namespace QualisysRealTime.Unity.Skeleton
             GUILayout.Space(5);
             guiContent.text = "Character rotation model";
             guiContent.tooltip = "Characters have different definition of how each bone rotation, test different models if the character looks strange.\n\nHint: Change in Play mode will not be saved!";
-            CharactersModel m = (CharactersModel)EditorGUILayout.EnumPopup(guiContent, c.model);
-            if (m != c.model)
+            CharacterModels m = (CharacterModels)EditorGUILayout.EnumPopup(guiContent, c.model);
+			if (m != c.model)
             {
                 c.model = m;
                 c.SetModelRotation();
@@ -84,8 +129,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 guiContent.text = "Character rotations";
                 guiContent.tooltip = "Fix each limb rotation by defining the euler angels here.";
-                EditorGUILayout.PropertyField(boneRotation, 
-                    guiContent, true);
+                EditorGUILayout.PropertyField(boneRotation, guiContent, true);
                 cSerializedObject.ApplyModifiedProperties();
             }
             EditorGUI.indentLevel--;
@@ -117,7 +161,14 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUI.indentLevel--;
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndVertical();
+
+            guiContent.text = "DEBUG";
+            if (EditorGUILayout.Toggle(guiContent, DEBUG.enabled) != DEBUG.enabled)
+            {
+                DEBUG.enabled = !DEBUG.enabled;
+            }
         }
+
         void ResetIfActive(RTCharacterStream c)
         {
             if (c.isActiveAndEnabled)

@@ -50,6 +50,7 @@ namespace QualisysRealTime.Unity.Skeleton
             get { return orientation; }
             set { orientation = value != QuaternionHelper2.Zero ?  Quaternion.Normalize(value) : value; }
         }
+
         #region constraints getters and setters
 
         // An orientational constraint is the twist of the bone around its own direction vector
@@ -144,6 +145,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
 
         #endregion
+
         #region rotation methods
 
         public void Rotate(Quaternion rotation)
@@ -156,6 +158,7 @@ namespace QualisysRealTime.Unity.Skeleton
             Rotate(QuaternionHelper2.GetRotationBetween(GetYAxis(), v, stiffness = this.stiffness));
         }
         #endregion
+
         public bool Equals(Bone other)
         {
             return name.Equals(other.Name) && orientation.Equals(other.Orientation) && pos.Equals(other.Pos);
@@ -165,6 +168,7 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             return string.Format("{0} at position: {1} with orientation: {2}", name, pos, orientation);
         }
+
         public bool IsArm()
         {
             return
@@ -177,15 +181,16 @@ namespace QualisysRealTime.Unity.Skeleton
                 name == Joint.HAND_L ||
                 name == Joint.HAND_R;
         }
+
         public bool IsLeg()
         {
             return
+                name == Joint.HIP_L ||
+                name == Joint.HIP_R ||
                 name == Joint.KNEE_L ||
                 name == Joint.KNEE_R ||
                 name == Joint.ANKLE_L ||
-                name == Joint.ANKLE_R ||
-                name == Joint.HIP_L ||
-                name == Joint.HIP_R;
+                name == Joint.ANKLE_R;
         }
     }
 }

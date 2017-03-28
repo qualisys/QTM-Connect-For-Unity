@@ -66,7 +66,7 @@ namespace QualisysRealTime.Unity
 
             markerData = rtClient.Markers;
 
-            if (markerData == null && markerData.Count == 0)
+            if (markerData == null || markerData.Count == 0)
                 return;
 
             if (markers.Count != markerData.Count)
@@ -87,7 +87,7 @@ namespace QualisysRealTime.Unity
                 }
                 else
                 {
-                    //hide markers if we cant find them.
+                    // Hide markers if we cant find them
                     markers[i].SetActive(false);
                 }
             }

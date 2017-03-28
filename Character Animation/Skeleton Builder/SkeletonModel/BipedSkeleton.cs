@@ -59,6 +59,7 @@ namespace QualisysRealTime.Unity.Skeleton
         HAND_R,
         INDEX_R
     };
+
     public class BipedSkeleton
     {
         protected TreeNode<Bone> root;
@@ -77,6 +78,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 if (b.Data.Name == key) return b.Data;
             return null;
         }
+
         public Bone this[Joint key]
         {
             get
