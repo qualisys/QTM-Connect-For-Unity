@@ -274,7 +274,18 @@ namespace QTMRealTimeSDK.Network
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            IPAddress broadcastAddress = ip.Address.GetBroadcastAddress(ip.IPv4Mask);
+                            // Workaround if IPv4Mask is not implemented (e.g. Unity on Mac)
+                            IPAddress ipMask;
+                            try
+                            {
+                                ipMask = ip.IPv4Mask;
+                            }
+                            catch (NotImplementedException ex)
+                            {
+                                ipMask = IPAddress.Parse("255.255.255.0");
+                            }
+                            
+                            IPAddress broadcastAddress = ip.Address.GetBroadcastAddress(ipMask);
                             if (broadcastAddress == null)
                                 continue;
 
