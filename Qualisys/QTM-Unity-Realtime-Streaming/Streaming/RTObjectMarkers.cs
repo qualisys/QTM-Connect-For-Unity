@@ -5,10 +5,10 @@ namespace QualisysRealTime.Unity
 {
     class RTObjectMarkers : RTObject
     {
-        public bool useObjectOrientation;
+        public bool useObjectOrientation = false;
         public string objectMarkerSuffix = "_";
         public uint numberOfObjectMarkers = 4;
-        public bool visibleMarkers;
+        public bool visibleMarkers = false;
 
         [Range(0.001f, 1f)]
         public float markerScale = 0.012f;
@@ -80,7 +80,8 @@ namespace QualisysRealTime.Unity
         /// </summary>
         private void InitiateMarkers()
         {
-            if (markerGOs == null) markerGOs = new List<GameObject>();
+            if (markerGOs == null)
+                markerGOs = new List<GameObject>();
             foreach (var markerGO in markerGOs)
             {
                 Destroy(markerGO);

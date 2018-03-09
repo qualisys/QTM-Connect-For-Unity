@@ -1,4 +1,4 @@
-﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
 using System.Collections;
@@ -25,9 +25,11 @@ namespace QualisysRealTime.Unity
             if (body.Position.magnitude > 0) //just to avoid error when position is NaN
             {
                 transform.position = body.Position + PositionOffset;
-                if (transform.parent) transform.position += transform.parent.position;
-                //transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
-                if (transform.parent) transform.rotation *= transform.parent.rotation;
+                if (transform.parent)
+                {
+                    transform.position += transform.parent.position;
+                    transform.rotation *= transform.parent.rotation;
+                }
             }
         }
 

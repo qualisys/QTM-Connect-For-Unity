@@ -1,4 +1,4 @@
-﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
 using System.Collections.Generic;
@@ -44,18 +44,19 @@ namespace QualisysRealTime.Unity
         public Vector3 Direction;
     }
 
-	public static class MarkerConverter 
-	{
-		public static List<Marker> Convert(this List<LabeledMarker> list)
-		{
-			var newList = new List<Marker>();
-			foreach (LabeledMarker lm in list) {
-				var m = new Marker();
-				m.Label = lm.Label;
-				m.Position = lm.Position.Convert();
-				newList.Add(m);
-			}
-			return newList;
-		}
-	}
+    public static class MarkerConverter
+    {
+        public static List<Marker> Convert(this List<LabeledMarker> labeledMarkers)
+        {
+            var newList = new List<Marker>();
+            foreach (var labeledMarker in labeledMarkers)
+            {
+                var m = new Marker();
+                m.Label = labeledMarker.Label;
+                m.Position = labeledMarker.Position.Convert();
+                newList.Add(m);
+            }
+            return newList;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
 using System.Collections.Generic;
@@ -15,10 +15,10 @@ namespace QualisysRealTime.Unity
         private Material material;
 
         [Range(0.1f, 10f)]
-        public float gazeVectorLength;
+        public float gazeVectorLength = 2.0;
 
         [Range(0.001f, 0.1f)]
-        public float gazeVectorWidth;
+        public float gazeVectorWidth = 0.015;
 
         private bool streaming = false;
 

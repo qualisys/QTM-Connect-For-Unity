@@ -1,4 +1,4 @@
-// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
@@ -44,7 +44,7 @@ namespace QualisysRealTime.Unity
 
             List<Q6DOF> bodyData = packet.Get6DOFData();
             List<Q3D> markerData = packet.Get3DMarkerData();
-            List<QTMRealTimeSDK.Data.GazeVector> gazeVectorData = packet.GetGazeVectors();
+            List<QTMRealTimeSDK.Data.GazeVector> gazeVectorData = packet.GetGazeVectorData();
 
             if (bodyData != null)
             {
@@ -84,7 +84,6 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-
             if (gazeVectorData != null)
             {
                 for (int i = 0; i < gazeVectorData.Count; i++)
@@ -102,29 +101,41 @@ namespace QualisysRealTime.Unity
 
                 }
             }
-
         }
 
-        // called every time a event is broad casted from QTM server.
+        // called every time a event is broadcasted from QTM server.
         public void Events(RTPacket packet)
         {
             QTMEvent currentEvent = packet.GetEvent();
             Debug.Log("Event occurred! : " + currentEvent);
 
-            if (currentEvent == QTMEvent.EventRTFromFileStarted)
+            if (currentEvent == QTMEvent.EventRTFromFileStarted ||
+                currentEvent == QTMEvent.EventConnected ||
+                currentEvent == QTMEvent.EventCaptureStarted ||
+                currentEvent == QTMEvent.EventCalibrationStarted)
             {
                 // reload settings when we start streaming to get proper settings
-                Debug.Log("Reloading Settings");
+                Debug.Log("Reloading settings from QTM");
 
                 Get3DSettings();
                 Get6DOFSettings();
+                GetGazeVectorSettings();
             }
         }
 
-        // get frame from latest packet
+        // Get frame number from latest packet
         public int GetFrame()
         {
             return mPacket.Frame;
+        }
+
+        public int GetFrequency()
+        {
+            if (mProtocol.GeneralSettings == null)
+            {
+                mProtocol.GetGeneralSettings();
+            }
+            return mProtocol.GeneralSettings.CaptureFrequency;
         }
 
         // Constructor
@@ -227,14 +238,19 @@ namespace QualisysRealTime.Unity
             return list;
         }
 
+        public bool IsConnected()
+        {
+            return mProtocol.IsConnected();
+        }
+
         /// <summary>
         /// Connect the specified pickedServer.
         /// </summary>
         /// <param name="pickedServer">Picked server.</param>
         /// <param name="udpPort">UDP port streaming should occur on.</param>
-        /// <param name="stream6d"> if 6DOF data should be streamed.</param>
-        /// <param name="stream3d"> if labeled markers should be streamed.</param>
-        /// <param name="streamgaze"> if gaze data should be streamed.</param>
+        /// <param name="stream6d">if 6DOF data should be streamed.</param>
+        /// <param name="stream3d">if labeled markers should be streamed.</param>
+        /// <param name="streamgaze">if gaze vectors should be streamed.</param>
         public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
         {
             if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
@@ -253,9 +269,9 @@ namespace QualisysRealTime.Unity
         /// </summary>
         /// <param name="IpAddress">IP adress</param>
         /// <param name="udpPort">UDP port streaming should occur on.</param>
-        /// <param name="stream6d"> if 6DOF data should be streamed.</param>
-        /// <param name="stream3d"> if labeled markers should be streamed.</param>
-        /// <param name="streamgaze"> if gaze data should be streamed.</param>
+        /// <param name="stream6d">if 6DOF data should be streamed.</param>
+        /// <param name="stream3d">if labeled markers should be streamed.</param>
+        /// <param name="streamgaze">if gaze vectors should be streamed.</param>
         public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
         {
             if (mProtocol.Connect(IpAddress, udpPort))
@@ -298,11 +314,11 @@ namespace QualisysRealTime.Unity
             if (getStatus)
             {
                 mGazeVectors.Clear();
-                SettingsGazeVector settings = mProtocol.GazeVectorSettings;
-                foreach (var gazeVector in settings.gazeVectorList)
+                SettingsGazeVectors settings = mProtocol.GazeVectorSettings;
+                foreach (var gazeVector in settings.GazeVectors)
                 {
                     var newGazeVector = new GazeVector();
-                    newGazeVector.Name = gazeVector.name;
+                    newGazeVector.Name = gazeVector.Name;
                     newGazeVector.Position = Vector3.zero;
                     newGazeVector.Direction = Vector3.zero;
                     mGazeVectors.Add(newGazeVector);
@@ -317,13 +333,13 @@ namespace QualisysRealTime.Unity
         private bool Get6DOFSettings()
         {
             // Get settings and information for streamed bodies
-            bool getstatus = mProtocol.Get6DSettings();
+            bool getstatus = mProtocol.Get6dSettings();
 
             if (getstatus)
             {
                 mBodies.Clear();
                 Settings6D settings = mProtocol.Settings6DOF;
-                foreach (Settings6DOF body in settings.bodies)
+                foreach (Settings6DOF body in settings.Bodies)
                 {
                     SixDOFBody newbody = new SixDOFBody();
                     newbody.Name = body.Name;
@@ -341,10 +357,10 @@ namespace QualisysRealTime.Unity
 
         private bool Get3DSettings()
         {
-            bool getstatus = mProtocol.Get3Dsettings();
+            bool getstatus = mProtocol.Get3dSettings();
             if (getstatus)
             {
-                mUpAxis = mProtocol.Settings3D.axisUpwards;
+                mUpAxis = mProtocol.Settings3D.AxisUpwards;
 
                 Rotation.ECoordinateAxes xAxis, yAxis, zAxis;
                 Rotation.GetCalibrationAxesOrder(mUpAxis, out xAxis, out yAxis, out zAxis);
@@ -353,7 +369,7 @@ namespace QualisysRealTime.Unity
 
                 // Save marker settings
                 mMarkers.Clear();
-                foreach (Settings3DLabel marker in mProtocol.Settings3D.labels3D)
+                foreach (Settings3DLabel marker in mProtocol.Settings3D.Labels)
                 {
                     LabeledMarker newMarker = new LabeledMarker();
                     newMarker.Label = marker.Name;
@@ -370,21 +386,21 @@ namespace QualisysRealTime.Unity
                 }
 
                 // Save bone settings
-                if (mProtocol.Settings3D.bones != null)
+                if (mProtocol.Settings3D.Bones != null)
                 {
                     Bones.Clear();
 
                     //Save bone settings
-                    foreach (var settingsBone in mProtocol.Settings3D.bones)
+                    foreach (var settingsBone in mProtocol.Settings3D.Bones)
                     {
                         Bone bone = new Bone();
-                        bone.From = settingsBone.from;
-                        bone.FromMarker = GetMarker(settingsBone.from);
-                        bone.To = settingsBone.to;
-                        bone.ToMarker = GetMarker(settingsBone.to);
-                        bone.Color.r = (settingsBone.color) & 0xFF;
-                        bone.Color.g = (settingsBone.color >> 8) & 0xFF;
-                        bone.Color.b = (settingsBone.color >> 16) & 0xFF;
+                        bone.From = settingsBone.From;
+                        bone.FromMarker = GetMarker(settingsBone.From);
+                        bone.To = settingsBone.To;
+                        bone.ToMarker = GetMarker(settingsBone.To);
+                        bone.Color.r = (settingsBone.Color) & 0xFF;
+                        bone.Color.g = (settingsBone.Color >> 8) & 0xFF;
+                        bone.Color.b = (settingsBone.Color >> 16) & 0xFF;
                         bone.Color /= 255;
                         bone.Color.a = 1F;
                         mBones.Add(bone);
@@ -406,41 +422,48 @@ namespace QualisysRealTime.Unity
             if (streamgaze)
                 streamedTypes.Add(ComponentType.ComponentGazeVector);
 
-            //Start streaming and get the settings
-            if (mProtocol.StreamFrames(streamRate, -1, false, streamedTypes, udpPort))
+
+            if (!mProtocol.GetGeneralSettings())
             {
-                if (stream3d)
+                Debug.Log("Error retrieving general QTM streaming settings");
+                return false;
+            }
+
+            if (stream3d)
+            {
+                if (!Get3DSettings())
                 {
-                    if (!Get3DSettings())
-                    {
-                        Debug.Log("Error retrieving settings");
-                        return false;
-                    }
+                    Debug.Log("Error retrieving 3d settings from stream");
+                    return false;
                 }
+            }
 
-                if (stream6d)
+            if (stream6d)
+            {
+                if (!Get6DOFSettings())
                 {
-                    if (!Get6DOFSettings())
-                    {
-                        Debug.Log("Error retrieving settings");
-                        return false;
-                    }
+                    Debug.Log("Error retrieving 6dof settings from stream");
+                    return false;
                 }
+            }
 
-                if (streamgaze)
+            if (streamgaze)
+            {
+                if (!GetGazeVectorSettings())
                 {
-                    if(!GetGazeVectorSettings())
-                    {
-                        Debug.Log("Error retrieving gaze settings");
-                        return false;
-                    }
+                    // Don't fail too hard since gaze only has been available for a short while... but still give an error in the log.
+                    Debug.Log("Error retrieving gaze settings from stream");
                 }
+            }
 
-                // we register our function "process" as a callback for when protocol receives real time data packets
-                // (eventDataCallback is also available to listen to events)
-                mProtocol.RealTimeDataCallback += Process;
-                mProtocol.EventDataCallback += Events;
+            // we register our function "process" as a callback for when protocol receives real time data packets
+            // (eventDataCallback is also available to listen to events)
+            mProtocol.RealTimeDataCallback += Process;
+            mProtocol.EventDataCallback += Events;
 
+            //Start streaming and get the settings
+            if (mProtocol.StreamFrames(streamRate, -1, streamedTypes, udpPort))
+            {
                 //Tell protocol to start listening to real time data
                 mProtocol.ListenToStream();
                 mStreamingStatus = true;
@@ -448,16 +471,20 @@ namespace QualisysRealTime.Unity
             }
             else
             {
-                Debug.Log("Error Creating Connection to server");
+                Debug.Log("Error creating connection to server");
             }
             return false;
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposed)
             {
-                Disconnect();
+                if (disposing)
+                {
+                    Disconnect();
+                }
+                disposed = true;
             }
         }
 
@@ -467,5 +494,6 @@ namespace QualisysRealTime.Unity
             GC.SuppressFinalize(this);
         }
 
+        private bool disposed = false;
     }
 }

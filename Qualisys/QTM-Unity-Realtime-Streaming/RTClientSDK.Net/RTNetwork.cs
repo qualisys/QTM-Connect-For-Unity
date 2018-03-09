@@ -1,4 +1,4 @@
-﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2017 Qualisys AB
 //
 using System.Net;
 using System.Net.Sockets;
@@ -145,6 +145,98 @@ namespace QTMRealTimeSDK.Network
             }
         }
 
+        internal int ReceiveBroadcast(ref byte[] receivebuffer, int bufferSize, ref EndPoint remoteEP, int timeout)
+        {
+            if (mUDPBroadcastClient == null)
+                return -1;
+
+            try
+            {
+                List<Socket> receiveList = new List<Socket>();
+                List<Socket> errorList = new List<Socket>();
+
+                if (mUDPBroadcastClient != null)
+                {
+                    receiveList.Add(mUDPBroadcastClient.Client);
+                    errorList.Add(mUDPBroadcastClient.Client);
+                }
+
+                Socket.Select(receiveList, null, errorList, timeout);
+
+                if (mUDPBroadcastClient != null && errorList.Contains(mUDPBroadcastClient.Client))
+                {
+                    // Error from broadcast socket
+                    mErrorString = "Error reading from Broadcast UDP socket";
+                }
+                else if (mUDPBroadcastClient != null && receiveList.Contains(mUDPBroadcastClient.Client))
+                {
+                    // Receive data from broadcast socket
+                    return mUDPBroadcastClient.Client.ReceiveFrom(receivebuffer, bufferSize, SocketFlags.None, ref remoteEP);
+                }
+            }
+            catch (SocketException exception)
+            {
+                // Ignore and return
+                mErrorString = exception.Message;
+            }
+            return -1;
+        }
+        internal int Receive(ref byte[] receivebuffer, int offset, int bufferSize, bool header, int timeout)
+        {
+            try
+            {
+                List<Socket> receiveList = new List<Socket>();
+                List<Socket> errorList = new List<Socket>();
+
+                if (mTCPClient != null)
+                {
+                    receiveList.Add(mTCPClient.Client);
+                    errorList.Add(mTCPClient.Client);
+                }
+
+                if (mUDPClient != null)
+                {
+                    receiveList.Add(mUDPClient.Client);
+                    errorList.Add(mUDPClient.Client);
+                }
+
+                if (receiveList.Count == 0)
+                {
+                    receivebuffer = null;
+                    return 0;
+                }
+
+                Socket.Select(receiveList, null, errorList, timeout);
+
+                if (mTCPClient != null && errorList.Contains(mTCPClient.Client))
+                {
+                    // Error from TCP socket
+                    mErrorString = "Error reading from TCP socket";
+                }
+                else if (mTCPClient != null && receiveList.Contains(mTCPClient.Client))
+                {
+                    // Receive data from TCP socket
+                    return mTCPClient.Client.Receive(receivebuffer, offset, header ? RTProtocol.Constants.PACKET_HEADER_SIZE : bufferSize, SocketFlags.None);
+                }
+                else if (mUDPClient != null && errorList.Contains(mUDPClient.Client))
+                {
+                    // Error from UDP socket
+                    mErrorString = "Error reading from UDP socket";
+                }
+                else if (mUDPClient != null && receiveList.Contains(mUDPClient.Client))
+                {
+                    // Receive data from UDP socket
+                    return mUDPClient.Client.Receive(receivebuffer, offset, bufferSize, SocketFlags.None);
+                }
+            }
+            catch (SocketException exception)
+            {
+                // Ignore and return
+                mErrorString = exception.Message;
+            }
+            return -1;
+        }
+/*
         /// <summary>
         /// Receive data from sockets. Order is TCP, UDP then broadcast.
         /// </summary>
@@ -226,7 +318,7 @@ namespace QTMRealTimeSDK.Network
             receivebuffer = null;
             return -1;
         }
-
+*/
         /// <summary>
         /// Send data from TCP socket.
         /// </summary>
@@ -274,18 +366,7 @@ namespace QTMRealTimeSDK.Network
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            // Workaround if IPv4Mask is not implemented (e.g. Unity on Mac)
-                            IPAddress ipMask;
-                            try
-                            {
-                                ipMask = ip.IPv4Mask;
-                            }
-                            catch (NotImplementedException ex)
-                            {
-                                ipMask = IPAddress.Parse("255.255.255.0");
-                            }
-                            
-                            IPAddress broadcastAddress = ip.Address.GetBroadcastAddress(ipMask);
+                            IPAddress broadcastAddress = ip.Address.GetBroadcastAddress(ip.IPv4Mask);
                             if (broadcastAddress == null)
                                 continue;
 
@@ -324,9 +405,13 @@ namespace QTMRealTimeSDK.Network
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposed)
             {
-                Disconnect();
+                if (disposing)
+                {
+                    Disconnect();
+                }
+                disposed = true;
             }
         }
 
@@ -335,6 +420,8 @@ namespace QTMRealTimeSDK.Network
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        private bool disposed = false;
     }
 
     internal static class IPAddressExtensions

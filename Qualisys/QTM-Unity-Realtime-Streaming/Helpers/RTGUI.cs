@@ -1,10 +1,11 @@
-﻿// Unity SDK for Qualisys Track Manager. Copyright 2015 Qualisys AB
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using QTMRealTimeSDK.Data;
+using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity
 {
@@ -84,9 +85,9 @@ namespace QualisysRealTime.Unity
             }
             GUILayout.Label("Stream Settings", EditorStyles.boldLabel);
             portUDP = (short)EditorGUILayout.IntField("UDP Port:", portUDP);
-            stream3d = EditorGUILayout.Toggle("3D Labeled Markers", stream3d);
+            stream3d = EditorGUILayout.Toggle("Labeled 3D Markers", stream3d);
             stream6d = EditorGUILayout.Toggle("6DOF Objects", stream6d);
-            streamgaze = EditorGUILayout.Toggle("Gaze vectors", streamgaze);
+            streamgaze = EditorGUILayout.Toggle("Gaze Vectors", streamgaze);
             GUI.enabled = true;
 
             if (Application.isPlaying)
