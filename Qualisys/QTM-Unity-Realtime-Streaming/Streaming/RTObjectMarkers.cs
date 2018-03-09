@@ -1,25 +1,32 @@
-﻿using UnityEngine;
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
+//
+using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace QualisysRealTime.Unity
 {
     class RTObjectMarkers : RTObject
     {
-        public bool useObjectOrientation = false;
-        public string objectMarkerSuffix = "_";
-        public uint numberOfObjectMarkers = 4;
-        public bool visibleMarkers = false;
+        public bool useObjectOrientation = true;
+        public bool visibleMarkers = true;
 
         [Range(0.001f, 1f)]
-        public float markerScale = 0.012f;
+        public float markerScale = 0.05f;
 
         public Vector3 RelativePosition
         {
-            get { return PositionOffset - bodyPosition; }
+            get
+            {
+                return PositionOffset - bodyPosition;
+            }
         }
         public Quaternion RelativeRotation
         {
-            get { return Quaternion.Euler(RotationOffset) * Quaternion.Inverse(bodyRotation); }
+            get
+            {
+                return Quaternion.Euler(RotationOffset) * Quaternion.Inverse(bodyRotation);
+            }
         }
 
         protected List<LabeledMarker> markers;
@@ -49,7 +56,7 @@ namespace QualisysRealTime.Unity
             if (markers == null || markers.Count == 0)
                 return;
 
-            if (markerGOs == null || markerGOs.Count != numberOfObjectMarkers)
+            if (markerGOs == null)
             {
                 InitiateMarkers();
             }
@@ -91,7 +98,7 @@ namespace QualisysRealTime.Unity
             markers = rtClient.Markers;
             foreach (LabeledMarker marker in markers)
             {
-                if (marker.Label.StartsWith(this.ObjectName + objectMarkerSuffix))
+                if (marker.Label.StartsWith(this.ObjectName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     GameObject markerGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     markerGO.name = marker.Label;
@@ -100,7 +107,6 @@ namespace QualisysRealTime.Unity
                     markerGO.SetActive(false);
                     markerGOs.Add(markerGO);
                 }
-                if (markerGOs.Count >= numberOfObjectMarkers) break;
             }
         }
     }
