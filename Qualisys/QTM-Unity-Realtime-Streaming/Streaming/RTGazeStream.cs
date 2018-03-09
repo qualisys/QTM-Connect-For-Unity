@@ -15,10 +15,10 @@ namespace QualisysRealTime.Unity
         private Material material;
 
         [Range(0.1f, 10f)]
-        public float gazeVectorLength = 2.0;
+        public float gazeVectorLength = 2.0f;
 
         [Range(0.001f, 0.1f)]
-        public float gazeVectorWidth = 0.015;
+        public float gazeVectorWidth = 0.015f;
 
         private bool streaming = false;
 
