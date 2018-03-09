@@ -1,0 +1,18 @@
+Package 4.0
+
+- Updated scripts to Unity 2017.2 version
+
+Package 3.0
+
+- Aligned the RTClientSDK.Net used to a newer one available on github.com/qualisys.
+
+Package 2.0
+
+- Fewer memory allocations giving higher performance.
+- Lots of refactoring in the RTClientSDK.Net code.
+- RTGazeStream object added to give support for streaming and visualizing gaze vectors.
+- Added gaze vector demo scene and QTM file.
+
+Package 1.0
+
+- The first one
