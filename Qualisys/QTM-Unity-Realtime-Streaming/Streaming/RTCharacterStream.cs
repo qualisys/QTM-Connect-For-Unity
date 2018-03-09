@@ -382,7 +382,12 @@ namespace QualisysRealTime.Unity.Skeleton
                 var b = skeleton[Joint.HEAD];
                 if (!b.HasNaN) headCamera.transform.parent.rotation = b.Orientation.Convert();
             }
+#if UNITY_2017_2_OR_NEWER
+            UnityEngine.XR.InputTracking.Recenter();
+#else
             UnityEngine.VR.InputTracking.Recenter();
+#endif
+
         }
     }
 }
