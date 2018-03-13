@@ -1,4 +1,4 @@
-﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2017 Qualisys AB
+﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using System.Net;
 using System.Net.Sockets;
@@ -20,7 +20,7 @@ namespace QTMRealTimeSDK.Network
         /// <summary>
         /// Default constructor
         /// </summary>
-        internal RTNetwork() 
+        internal RTNetwork()
         {
         }
 
@@ -47,11 +47,15 @@ namespace QTMRealTimeSDK.Network
                 }
 
                 mTCPClient = new TcpClient();
+                // Adding timeout to connection, otherwise system sometimes
+                // hangs when attempting to connect to an invalid host; programs won't
+                // continue after mTCPClient.Connect() until a new request is made 
+                mTCPClient.SendTimeout = 500;
                 mTCPClient.Connect(serverIP[0], port);
                 // Disable Nagle's algorithm
                 mTCPClient.NoDelay = true;
             }
-            catch(SocketException e)
+            catch (SocketException e)
             {
                 mErrorString = e.Message;
                 mErrorCode = e.SocketErrorCode;
@@ -251,6 +255,10 @@ namespace QTMRealTimeSDK.Network
             return true;
         }
 
+        /// <summary>
+        /// Try and get all the local ip adresses
+        /// </summary>
+        /// <returns></returns>
         private List<IPAddress> GetLocalIPAddresses()
         {
             try
@@ -268,7 +276,7 @@ namespace QTMRealTimeSDK.Network
                 }
                 return localIPs;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // Ignore exception
             }

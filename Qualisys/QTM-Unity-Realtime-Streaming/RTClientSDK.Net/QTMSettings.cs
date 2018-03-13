@@ -1,4 +1,4 @@
-﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2017 Qualisys AB
+﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using System.Xml;
 using System.Xml.Serialization;
@@ -132,7 +132,7 @@ namespace QTMRealTimeSDK.Settings
             Third = "Yaw";
         }
 
-        [XmlElement("First"),]
+        [XmlElement("First")]
         public string First;
         [XmlElement("Second")]
         public string Second;
@@ -214,7 +214,7 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Camera mode the camera is set to</summary>
         [XmlElement("Mode")]
         public CameraMode Mode;
-        /// <summary>Values for camera video mode, current, min and max</summary>
+       /// <summary>Values for camera video mode, current, min and max</summary>
         [XmlElement("Video_Frequency")]
         public int VideoFrequency;
         /// <summary>Values for camera video exposure, current, min and max</summary>
@@ -237,14 +237,14 @@ namespace QTMRealTimeSDK.Settings
         public int Orientation;
         /// <summary>Marker resolution of camera, width and height</summary>
         [XmlElement("Marker_Res")]
-        public Resolution MarkerResolution;
+        public FieldOfViewSize MarkerFieldOfViewSize;
         /// <summary>Video resolution of camera, width and height</summary>
         [XmlElement("Video_Res")]
-        public Resolution VideoResolution;
-        /// <summary>Marker Field Of View, left,top,right and bottom coordinates</summary>
+        public FieldOfViewSize VideoFieldOfViewSize;
+        /// <summary>Marker Field Of View, left, top, right and bottom coordinates</summary>
         [XmlElement("Marker_FOV")]
         public FieldOfView MarkerFOV;
-        /// <summary>Video Field Of View, left,top,right and bottom coordinates</summary>
+        /// <summary>Video Field Of View, left, top, right and bottom coordinates</summary>
         [XmlElement("Video_FOV")]
         public FieldOfView VideoFOV;
         /// <summary>Sync out settings for Oqus sync out or Miqus Sync Unit Out1</summary>
@@ -259,15 +259,30 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Lens Control settings for camera equipped with motorized lens</summary>
         [XmlElement("LensControl")]
         public SettingsLensControl LensControl;
+        [XmlElement("AutoExposure")]
+        public SettingsAutoExposure AutoExposure;
+        [XmlElement("Video_Resolution")]
+        public SettingsVideoResolution VideoResolution;
+        [XmlElement("Video_Aspect_Ratio")]
+        public SettingsVideoAspectRatio VideoAspectRatio;
     }
 
-    /// <summary>Settings regarding Lens Control for Camera equipped with motorized lens</summary>
+    /// <summary>Settings regarding Lens Control for camera equipped with motorized lens</summary>
     public struct SettingsLensControl
     {
         [XmlElement("Focus")]
         public SettingsLensControlValues Focus;
         [XmlElement("Aperture")]
         public SettingsLensControlValues Aperture;
+    }
+
+    /// <summary>Settings regarding camera auto exposure</summary>
+    public struct SettingsAutoExposure
+    {
+        [XmlAttribute("Enabled")]
+        public bool Enabled;
+        [XmlAttribute("Compensation")]
+        public float Compensation;
     }
 
     /// <summary>Settings for Lens Control Focus</summary>
@@ -340,7 +355,7 @@ namespace QTMRealTimeSDK.Settings
     }
 
     /// <summary>Resolution (width/height)</summary>
-    public struct Resolution
+    public struct FieldOfViewSize
     {
         /// <summary>Width</summary>
         [XmlElement("Width")]
@@ -689,7 +704,6 @@ namespace QTMRealTimeSDK.Settings
         ProcessingTracking3D
     }
 
-
     /// <summary>Camera models</summary>
     public enum CameraModel
     {
@@ -703,7 +717,7 @@ namespace QTMRealTimeSDK.Settings
         ModelProReflex500,
         [XmlEnum("ProReflex 1000")]
         ModelProReflex1000,
-        [XmlEnum("Oqus 100 ")]
+        [XmlEnum("Oqus 100")]
         ModelQqus100,
         [XmlEnum("Oqus 300")]
         ModelQqus300,
@@ -721,6 +735,8 @@ namespace QTMRealTimeSDK.Settings
         ModelQqus700,
         [XmlEnum("Oqus 700 Plus")]
         ModelQqus700Plus,
+        [XmlEnum("Oqus 600 Plus")]
+        ModelQqus600Plus,
         [XmlEnum("Miqus M1")]
         ModelMiqusM1,
         [XmlEnum("Miqus M3")]
@@ -731,6 +747,8 @@ namespace QTMRealTimeSDK.Settings
         ModelMiqusSU,
         [XmlEnum("Miqus Video")]
         ModelMiqusVideo,
+        [XmlEnum("Miqus Video Color")]
+        ModelMiqusVideoColor,
     }
 
     /// <summary>Camera modes</summary>
@@ -832,4 +850,27 @@ namespace QTMRealTimeSDK.Settings
         [XmlEnum("PNG")]
         FormatPNG
     }
+    /// <summary>Video resolution settings for video cameras</summary>
+    public enum SettingsVideoResolution
+    {
+        [XmlEnum("1080p")]
+        VideoResolution_1080p = 0,
+        [XmlEnum("720p")]
+        VideoResolution_720p,
+        [XmlEnum("540p")]
+        VideoResolution_540p,
+        [XmlEnum("420p")]
+        VideoResolution_420p,
+    }
+    /// <summary>Video aspect ratio settings for video cameras</summary>
+    public enum SettingsVideoAspectRatio
+    {
+        [XmlEnum("16x9")]
+        AspectRatio_16x9,
+        [XmlEnum("4x3")]
+        AspectRatio_4x3,
+        [XmlEnum("1x1")]
+        AspectRatio_1x1,
+    }
+
 }
