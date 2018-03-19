@@ -460,11 +460,7 @@ namespace QTMRealTimeSDK
             if (mBroadcastSocketCreated || mNetwork.CreateUDPSocket(ref replyPort, true))
             {
                 mBroadcastSocketCreated = true;
-                var status = mNetwork.SendUDPBroadcast(msg, 10);
-                if (!status)
-                {
-                    return false;
-                }
+                mNetwork.SendUDPBroadcast(msg, 10);
 
                 mDiscoveryResponses.Clear();
 
