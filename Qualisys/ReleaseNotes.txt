@@ -1,3 +1,8 @@
+Package 5.0
+
+- Updated scripts and package to Unity 2018.1.6f1
+- Fixed smaller issues with discovery that failed early for some network interfaces
+
 Package 4.0
 
 - Updated scripts to Unity 2017.2 version
