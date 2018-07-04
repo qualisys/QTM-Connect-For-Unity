@@ -16,25 +16,26 @@ using System.Linq;
 using UnityEngine;
 
 namespace QualisysRealTime.Unity.Skeleton {
-	/// <summary>
-	/// Class for identifying biped bones based on most common naming conventions.
-	/// </summary>
-	public class JointNamings {
-		
-		/// <summary>
-		/// Type of the bone.
-		/// </summary>
-		[System.Serializable]
-		public enum JointObject {
-			Unassigned,
-			Spine,
+    /// <summary>
+    /// Class for identifying biped bones based on most common naming conventions.
+    /// </summary>
+    public class JointNamings {
+        
+        /// <summary>
+        /// Type of the bone.
+        /// </summary>
+        [System.Serializable]
+        public enum JointObject
+        {
+            Unassigned,
+            Spine,
             Neck,
-			Head,
-			Arm,
-			Leg,
+            Head,
+            Arm,
+            Leg,
             Fingers,
             Thumb
-		}
+        }
         /// <summary>
         /// Bone side: Left and Right for limbs and Center for spine, head and tail.
         /// </summary>
@@ -45,10 +46,10 @@ namespace QualisysRealTime.Unity.Skeleton {
             Right,
             Center
         }
-		
-		/// <summary>
+        
+        /// <summary>
         ///  Charcters Joint names
-		/// </summary>
+        /// </summary>
         public static string[]
             LeftSide = { " L ", "_L_", "-L-", " l ", "_l_", "-l-", "Left", "left", "CATRigL", "CATL" },
             RightSide = { " R ", "_R_", "-R-", " r ", "_r_", "-r-", "Right", "right", "CATRigR", "CATR" },
@@ -61,7 +62,7 @@ namespace QualisysRealTime.Unity.Skeleton {
             neckAlias = { "Neck", "neck" },
             headAlias = { "Head", "head" },
 
-            armAlias = { "Shoulder", "shoulder", "Collar", "collar", "Clavicle", "clavicle", "Arm", "arm", "Hand", "hand", "Wrist", "wrist", "Elbow", "elbow", "Palm", "palm" },
+            armAlias = { "Shoulder", "shoulder", "Shldr", "shldr", "Collar", "collar", "Clavicle", "clavicle", "Arm", "arm", "Hand", "hand", "Wrist", "wrist", "Elbow", "elbow", "Palm", "palm" },
 
             legAlias = { "Leg", "leg", "Thigh", "thigh", "Calf", "calf", "Femur", "femur", "Knee", "knee", "Shin", "shin", "Foot", "foot", "Ankle", "ankle", "Hip", "hip" },
 
@@ -82,13 +83,15 @@ namespace QualisysRealTime.Unity.Skeleton {
                                 },
             thumbExclude = { "Adjust", "adjust", "Twist", "twist", "Medial", "medial", "Distal", "distal" },
             legExclude = { "Toe", "toe", "Platform", "Adjust", "adjust", "Twist", "twist", "Digit", "digit" },
-            neckExclude = { "Head", "head"};		
-		/// <summary>
+            neckExclude = { "Head", "head"};
+
+        /// <summary>
         /// Returns only the bones with the specified JointObject.
-		/// </summary>
-		public static Transform[] GetBonesOfType(JointObject type, Transform[] bones) {
+        /// </summary>
+        public static Transform[] GetBonesOfType(JointObject type, Transform[] bones)
+        {
             return bones.Where(b => (b != null && GetType(b.name) == type)).ToArray();
-		}
+        }
 
 
         /// <summary>
@@ -97,9 +100,10 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="jointSide">The side of the joint</param>
         /// <param name="joints">The Transforms where to search</param>
         /// <returns>A list of matching Transforms</returns>
-		public static Transform[] GetJointsOfSide(BodySide jointSide, Transform[] joints) {
+        public static Transform[] GetJointsOfSide(BodySide jointSide, Transform[] joints)
+        {
             return joints.Where(j => (j != null && GetSideOfJointName(j.name) == jointSide)).ToArray();
-		}
+        }
 
         /// <summary>
         /// Gets the joint of given joint type and joint side.
@@ -108,32 +112,35 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="jointSide">The side on wich the joint should be located</param>
         /// <param name="transforms">The bones to search among</param>
         /// <returns>Null if no match, otherwise the first hit</returns>
-		public static Transform[] GetTypeAndSide(JointObject jointType, BodySide jointSide, Transform[] transforms) {
-			return GetJointsOfSide(jointSide, GetBonesOfType(jointType, transforms));
-		}
-		
-		/// <summary>
-		/// Returns only the bones that match all the namings in params string[][] namings
-		/// </summary>
-		/// <returns>
-		/// The matching Transforms
-		/// </returns>
-		/// <param name='transforms'>
-		/// Transforms.
-		/// </param>
-		/// <param name='namings'>
-		/// Namings.
-		/// </param>
-		public static Transform GetMatch(Transform[] transforms, params string[][] namings) {
+        public static Transform[] GetTypeAndSide(JointObject jointType, BodySide jointSide, Transform[] transforms)
+        {
+            return GetJointsOfSide(jointSide, GetBonesOfType(jointType, transforms));
+        }
+        
+        /// <summary>
+        /// Returns only the bones that match all the namings in params string[][] namings
+        /// </summary>
+        /// <returns>
+        /// The matching Transforms
+        /// </returns>
+        /// <param name='transforms'>
+        /// Transforms.
+        /// </param>
+        /// <param name='namings'>
+        /// Namings.
+        /// </param>
+        public static Transform GetMatch(Transform[] transforms, params string[][] namings)
+        {
            return transforms.FirstOrDefault(t => namings.All(n => Matches(t.name, n)));
-		}
+        }
 
         /// <summary>
         /// Gets the type of the joint.
         /// </summary>
         /// <param name="boneName">The name of the joint</param>
         /// <returns>The enum of the joint name</returns>
-		public static JointObject GetType(string boneName) {
+        public static JointObject GetType(string boneName)
+        {
             // Type Neck
             if (IsType(boneName, neckAlias, neckExclude)) return JointObject.Neck;
             // Type Spine
@@ -148,19 +155,22 @@ namespace QualisysRealTime.Unity.Skeleton {
             if (IsType(boneName, fingerAlias, fingerExclude)) return JointObject.Fingers;
             // Type Thumb
             if (IsType(boneName, thumbAlias, thumbExclude)) return JointObject.Thumb;
-			return JointObject.Unassigned;
-		}
+            return JointObject.Unassigned;
+        }
 
         /// <summary>
         /// Gets the joint side.
         /// </summary>
         /// <param name="jointName">The name of the joint</param>
         /// <returns>The enum representing the side</returns>
-		public static BodySide GetSideOfJointName(string jointName) {
-            if (Matches(jointName, LeftSide) || LastLetter(jointName) == "L" || FirstLetter(jointName) == "L")  return BodySide.Left;
-            else if (Matches(jointName, RightSide) || LastLetter(jointName) == "R" || FirstLetter(jointName) == "R") return BodySide.Right;
-			else return BodySide.Center;
-		}
+        public static BodySide GetSideOfJointName(string jointName)
+        {
+            if (Matches(jointName, LeftSide) || LastLetter(jointName) == "L" || FirstLetter(jointName) == "L")
+                return BodySide.Left;
+            else if (Matches(jointName, RightSide) || LastLetter(jointName) == "R" || FirstLetter(jointName) == "R")
+                return BodySide.Right;
+            return BodySide.Center;
+        }
 
         /// <summary>
         /// Returns a tranform from a given JointType
@@ -170,9 +180,10 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="jointSide">The side of which the joint is located</param>
         /// <param name="namings">The Names of the joints</param>
         /// <returns>The transform of the first result</returns>
-		public static Transform GetBone(Transform[] transforms, JointObject jointType, BodySide jointSide = BodySide.Center, params string[][] namings) {
+        public static Transform GetBone(Transform[] transforms, JointObject jointType, BodySide jointSide = BodySide.Center, params string[][] namings)
+        {
             return GetMatch(GetTypeAndSide(jointType, jointSide, transforms), namings);
-		}
+        }
         /// <summary>
         /// Returns true if the joint matches the given names and not the given exlusions
         /// </summary>
@@ -190,35 +201,37 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="jointName">The given name</param>
         /// <param name="possibleNames">The possible names</param>
         /// <returns>True if no match among the exluded and a match with the given, false otherwise</returns>
-		private static bool Matches(string jointName, string[] possibleNames) {
-            return !Exclude(jointName, exludeName) 
-                && possibleNames.Any(nc => jointName.Contains(nc));
-		}
-		/// <summary>
+        private static bool Matches(string jointName, string[] possibleNames)
+        {
+            return !Exclude(jointName, exludeName) && possibleNames.Any(nc => jointName.Contains(nc));
+        }
+        /// <summary>
         /// Returns true if the given names math the exclusions
-		/// </summary>
-		/// <param name="jointName">The given joint name</param>
-		/// <param name="exclusions">The names to match</param>
-		/// <returns>True if match, false otherwise</returns>
-		private static bool Exclude(string jointName, string[] exclusions) {
+        /// </summary>
+        /// <param name="jointName">The given joint name</param>
+        /// <param name="exclusions">The names to match</param>
+        /// <returns>True if match, false otherwise</returns>
+        private static bool Exclude(string jointName, string[] exclusions)
+        {
             return exclusions.Any(nc => jointName.Contains(nc));
-		}
-		/// <summary>
-		/// Returns the first letter of the string
-		/// </summary>
-		/// <param name="first">The string</param>
-		/// <returns>The first letter. If string is empty, return The string</returns>
-		private static string FirstLetter(string first) {
-			return (first.Length > 0) ? first.Substring(0, 1) : first;
-		}
-		/// <summary>
+        }
+        /// <summary>
+        /// Returns the first letter of the string
+        /// </summary>
+        /// <param name="first">The string</param>
+        /// <returns>The first letter. If string is empty, return The string</returns>
+        private static string FirstLetter(string first)
+        {
+            return (first.Length > 0) ? first.ToUpper().Substring(0, 1) : first;
+        }
+        /// <summary>
         /// Returns the last letter of the string
         /// </summary>
-		/// <param name="last"></param>
+        /// <param name="last"></param>
         /// <returns>The last letter. If string is empty: return The string</returns>
         private static string LastLetter(string last)
         {
-            return (last.Length > 0) ? last.Substring(last.Length - 1, 1) : last;
-		}
-	}
+            return (last.Length > 0) ? last.ToUpper().Substring(last.Length - 1, 1) : last;
+        }
+    }
 }

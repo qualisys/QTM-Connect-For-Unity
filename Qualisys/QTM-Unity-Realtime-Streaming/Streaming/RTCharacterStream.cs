@@ -50,6 +50,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
             //Find all joints of the characters
             jointsFound = charactersJoints.SetLimbs(this.transform, UseFingers);
+            //charactersJoints.PrintAll();
 
             // disable the animation
             var animation = this.GetComponent<Animation>();
@@ -267,7 +268,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
 
         /// <summary>
-        /// 
+        /// Calibrate size
         /// </summary>
         public void Calibrate()
         {
@@ -287,7 +288,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
 
         /// <summary>
-        /// Checks whether the model has been changed since last and change the model
+        /// Set model rotation to use
         /// </summary>
         public void SetModelRotation()
         {
@@ -317,10 +318,12 @@ namespace QualisysRealTime.Unity.Skeleton
                 case CharacterModels.Model8:
                     boneRotation = new Model8();
                     break;
-                case CharacterModels.EmptyModel:
-                    boneRotation = new Empty();
+                case CharacterModels.Model9:
+                    boneRotation = new Model9();
                     break;
                 default:
+                case CharacterModels.EmptyModel:
+                    boneRotation = new Empty();
                     break;
             }
         }

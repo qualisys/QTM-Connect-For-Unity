@@ -1,3 +1,8 @@
+Package 5.1
+
+- Added a Model9 definition for easier character mapping.
+- Added some more naming variants for joints to map better with some characters.
+
 Package 5.0
 
 - Updated scripts and package to Unity 2018.1.6f1
