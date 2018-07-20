@@ -13,14 +13,8 @@ namespace QualisysRealTime.Unity
         public Vector3 RotationOffset = new Vector3(0, 0, 0);
 
         protected RTClient rtClient;
-        protected SixDOFBody body;
 
-        public bool hasBody()
-        {
-            return body != null;
-        }
-
-        public virtual void applyBody()
+        protected virtual void applyBodyTransform(SixDOFBody body)
         {
             if (body.Position.magnitude > 0) //just to avoid error when position is NaN
             {
@@ -42,11 +36,9 @@ namespace QualisysRealTime.Unity
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
 
-            body = rtClient.GetBody(ObjectName);
+            var body = rtClient.GetBody(ObjectName);
             if (body != null)
-            {
-                this.applyBody();
-            }
+                applyBodyTransform(body);
         }
     }
 }

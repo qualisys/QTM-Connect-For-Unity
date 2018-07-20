@@ -39,10 +39,10 @@ namespace QualisysRealTime.Unity
         /// 
         /// </summary>
         /// <param name="body"></param>
-        public override void applyBody()
+        protected override void applyBodyTransform(SixDOFBody body)
         {
             if (useObjectOrientation)
-                base.applyBody();
+                base.applyBodyTransform(body);
 
             // Avoid position is NaN
             if (body.Position.magnitude > 0)
