@@ -19,7 +19,7 @@ namespace QualisysRealTime.Unity
     public class LabeledMarker
     {
         public LabeledMarker() { }
-        public string Label;
+        public string Name;
         public Vector3 Position;
         public Color Color;
     }
@@ -52,7 +52,7 @@ namespace QualisysRealTime.Unity
             foreach (var labeledMarker in labeledMarkers)
             {
                 var m = new Marker();
-                m.Label = labeledMarker.Label;
+                m.Label = labeledMarker.Name;
                 m.Position = labeledMarker.Position.Convert();
                 newList.Add(m);
             }

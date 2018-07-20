@@ -41,7 +41,7 @@ namespace QualisysRealTime.Unity
             for (int i = 0; i < markerData.Count; i++)
             {
                 GameObject newMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                newMarker.name = markerData[i].Label;
+                newMarker.name = markerData[i].Name;
                 newMarker.transform.parent = markerRoot.transform;
                 newMarker.transform.localScale = Vector3.one * markerScale;
                 newMarker.SetActive(false);
@@ -78,7 +78,7 @@ namespace QualisysRealTime.Unity
             {
                 if (markerData[i].Position.magnitude > 0)
                 {
-                    markers[i].name = markerData[i].Label;
+                    markers[i].name = markerData[i].Name;
                     markers[i].GetComponent<Renderer>().material.color = markerData[i].Color;
                     markers[i].transform.localPosition = markerData[i].Position;
                     markers[i].SetActive(true);

@@ -98,10 +98,10 @@ namespace QualisysRealTime.Unity
             markers = rtClient.Markers;
             foreach (LabeledMarker marker in markers)
             {
-                if (marker.Label.StartsWith(this.ObjectName, StringComparison.CurrentCultureIgnoreCase))
+                if (marker.Name.StartsWith(this.ObjectName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     GameObject markerGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    markerGO.name = marker.Label;
+                    markerGO.name = marker.Name;
                     markerGO.transform.parent = this.gameObject.transform;
                     markerGO.transform.localScale = Vector3.one * markerScale;
                     markerGO.SetActive(false);

@@ -193,14 +193,13 @@ namespace QualisysRealTime.Unity
         // Get marker data from streamed data
         public LabeledMarker GetMarker(string name)
         {
-            if (mMarkers.Count > 0)
+            if (string.IsNullOrEmpty(name))
+                return null;
+            foreach (LabeledMarker marker in mMarkers)
             {
-                foreach (LabeledMarker marker in mMarkers)
+                if (marker.Name == name)
                 {
-                    if (marker.Label == name)
-                    {
-                        return marker;
-                    }
+                    return marker;
                 }
             }
             return null;
