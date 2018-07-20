@@ -19,9 +19,10 @@ namespace QualisysRealTime.Unity
         bool connected = false;
         bool stream6d = true;
         bool stream3d = true;
-        bool streamgaze = true;
+        bool streamGaze = true;
+        bool streamAnalog = false;
 
-        private List<SixDOFBody> availableBodies;
+        //private List<SixDOFBody> availableBodies;
         private List<DiscoveryResponse> discoveryResponses;
 
         [MenuItem("Window/Qualisys/RTClient")]
@@ -87,7 +88,8 @@ namespace QualisysRealTime.Unity
             portUDP = (short)EditorGUILayout.IntField("UDP Port:", portUDP);
             stream3d = EditorGUILayout.Toggle("Labeled 3D Markers", stream3d);
             stream6d = EditorGUILayout.Toggle("6DOF Objects", stream6d);
-            streamgaze = EditorGUILayout.Toggle("Gaze Vectors", streamgaze);
+            streamGaze = EditorGUILayout.Toggle("Gaze Vectors", streamGaze);
+            streamAnalog = EditorGUILayout.Toggle("Analog", streamAnalog);
             GUI.enabled = true;
 
             if (Application.isPlaying)
@@ -100,12 +102,22 @@ namespace QualisysRealTime.Unity
                     {
                         OnDisconnect();
                     }
-                    GUILayout.Label("Available Bodies:");
-                    if (availableBodies != null)
+                    var bodies = RTClient.GetInstance().Bodies;
+                    if (bodies != null)
                     {
-                        foreach (SixDOFBody body in availableBodies)
+                        GUILayout.Label("Available Bodies:");
+                        foreach (var body in bodies)
                         {
                             GUILayout.Label(body.Name);
+                        }
+                    }
+                    var analogChannels = RTClient.GetInstance().AnalogChannels;
+                    if (analogChannels != null)
+                    {
+                        GUILayout.Label("Available Channels:");
+                        foreach (var channel in analogChannels)
+                        {
+                            GUILayout.Label(channel.Name);
                         }
                     }
                 }
@@ -133,7 +145,6 @@ namespace QualisysRealTime.Unity
         {
             RTClient.GetInstance().Disconnect();
             connected = false;
-
             connectionStatus = "Disconnected";
         }
 
@@ -141,13 +152,12 @@ namespace QualisysRealTime.Unity
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, streamgaze);
+                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, streamGaze, streamAnalog);
             }
 
             if (connected)
             {
                 connectionStatus = "Connected";
-                availableBodies = RTClient.GetInstance().Bodies;
             }
             else
             {

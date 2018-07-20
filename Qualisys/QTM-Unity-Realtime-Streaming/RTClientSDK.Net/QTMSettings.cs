@@ -495,7 +495,7 @@ namespace QTMRealTimeSDK.Settings
         public AnalogRange ChannelRange;
         /// <summary>Information of channels</summary>
         [XmlElement("Channel")]
-        public List<AnalogChannelInfo> Labels;
+        public List<AnalogChannelInformation> ChannelInformation;
     }
 
     /// <summary>Analog range and channels</summary>
@@ -510,11 +510,11 @@ namespace QTMRealTimeSDK.Settings
     }
 
     /// <summary>Settings for Analog channel</summary>
-    public struct AnalogChannelInfo
+    public struct AnalogChannelInformation
     {
-        /// <summary>Channel label</summary>
+        /// <summary>Channel name</summary>
         [XmlElement("Label")]
-        public string Label;
+        public string Name;
         /// <summary>Unit used by channel</summary>
         [XmlElement("Unit")]
         public string Unit;

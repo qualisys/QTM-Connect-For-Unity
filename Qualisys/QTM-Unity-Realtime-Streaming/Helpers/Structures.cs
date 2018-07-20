@@ -44,6 +44,12 @@ namespace QualisysRealTime.Unity
         public Vector3 Direction;
     }
 
+    public class AnalogChannel
+    {
+        public string Name;
+        public float[] Values;
+    }
+
     public static class MarkerConverter
     {
         public static List<Marker> Convert(this List<LabeledMarker> labeledMarkers)

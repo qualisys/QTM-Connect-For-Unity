@@ -6,6 +6,7 @@ using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace QualisysRealTime.Unity
 {
@@ -30,6 +31,10 @@ namespace QualisysRealTime.Unity
         private List<GazeVector> mGazeVectors;
         public List<GazeVector> GazeVectors { get { return mGazeVectors; } }
 
+        private List<AnalogChannel> mAnalogChannels;
+        public List<AnalogChannel> AnalogChannels { get { return mAnalogChannels; } }
+        
+
         private Axis mUpAxis;
         private Quaternion mCoordinateSystemChange;
         private RTPacket mPacket;
@@ -42,9 +47,10 @@ namespace QualisysRealTime.Unity
         {
             mPacket = packet;
 
-            List<Q6DOF> bodyData = packet.Get6DOFData();
-            List<Q3D> markerData = packet.Get3DMarkerData();
-            List<QTMRealTimeSDK.Data.GazeVector> gazeVectorData = packet.GetGazeVectorData();
+            var bodyData = packet.Get6DOFData();
+            var markerData = packet.Get3DMarkerData();
+            var gazeVectorData = packet.GetGazeVectorData();
+            var analogData = packet.GetAnalogData();
 
             if (bodyData != null)
             {
@@ -101,6 +107,20 @@ namespace QualisysRealTime.Unity
 
                 }
             }
+
+            if (analogData != null)
+            {
+                int channelIndex = 0;
+                foreach (var analogDevice in analogData)
+                {
+                    for (int i = 0; i < analogDevice.Channels.Length; i++)
+                    {
+                        var analogChannel = analogDevice.Channels[i];
+                        mAnalogChannels[channelIndex].Values = analogChannel.Samples;
+                        channelIndex++;
+                    }
+                }
+            }
         }
 
         // called every time a event is broadcasted from QTM server.
@@ -120,6 +140,7 @@ namespace QualisysRealTime.Unity
                 Get3DSettings();
                 Get6DOFSettings();
                 GetGazeVectorSettings();
+                GetAnalogSettings();
             }
         }
 
@@ -138,22 +159,17 @@ namespace QualisysRealTime.Unity
             return mProtocol.GeneralSettings.CaptureFrequency;
         }
 
-        // Constructor
         private RTClient()
         {
-            //New instance of protocol, contains a RT packet
+            // New instance of protocol, contains a RT packet
             mProtocol = new RTProtocol();
-            //list of bodies that server streams
             mBodies = new List<SixDOFBody>();
-            //list of markers
             mMarkers = new List<LabeledMarker>();
-            //list of bones
             mBones = new List<Bone>();
-            //list of gaze vectors
             mGazeVectors = new List<GazeVector>();
+            mAnalogChannels = new List<AnalogChannel>();
 
             mStreamingStatus = false;
-
             mPacket = RTPacket.ErrorPacket;
         }
 
@@ -164,7 +180,7 @@ namespace QualisysRealTime.Unity
 
         public static RTClient GetInstance()
         {
-            //Singleton method since we only want one instance (one connection to server)
+            // Singleton method since we only want one instance (one connection to server)
             if (mInstance == null)
             {
                 mInstance = new RTClient();
@@ -177,14 +193,12 @@ namespace QualisysRealTime.Unity
         {
             if (string.IsNullOrEmpty(name))
                 return null;
-            if (mBodies.Count > 0)
+
+            foreach (SixDOFBody body in mBodies)
             {
-                foreach (SixDOFBody body in mBodies)
+                if (body.Name == name)
                 {
-                    if (body.Name == name)
-                    {
-                        return body;
-                    }
+                    return body;
                 }
             }
             return null;
@@ -202,6 +216,40 @@ namespace QualisysRealTime.Unity
                     return marker;
                 }
             }
+            return null;
+        }
+
+        public AnalogChannel GetAnalogChannel(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+            foreach (var analogChannel in mAnalogChannels)
+            {
+                if (analogChannel.Name == name)
+                {
+                    return analogChannel;
+                }
+            }
+            return null;
+        }
+        // Get analog channel data from streamed data
+        public List<AnalogChannel> GetAnalogChannels(List<string> names)
+        {
+            if (mAnalogChannels.Count <= 0)
+                return null;
+
+            List<AnalogChannel> analogChannels = new List<AnalogChannel>();
+            var analogChannelDictionary = mAnalogChannels.ToDictionary(d => d.Name);
+            foreach (var channelName in names)
+            {
+                AnalogChannel analogChannel;
+                if (analogChannelDictionary.TryGetValue(channelName, out analogChannel))
+                {
+                    analogChannels.Add(analogChannel);
+                }
+            }
+            if (analogChannels.Count == names.Count)
+                return analogChannels;
             return null;
         }
 
@@ -249,8 +297,9 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d">if 6DOF data should be streamed.</param>
         /// <param name="stream3d">if labeled markers should be streamed.</param>
-        /// <param name="streamgaze">if gaze vectors should be streamed.</param>
-        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
+        /// <param name="streamGaze">if gaze vectors should be streamed.</param>
+        /// <param name="streamAnalog">if gaze vectors should be streamed.</param>
+        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
         {
             if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
             {
@@ -260,7 +309,7 @@ namespace QualisysRealTime.Unity
                     return false;
                 }
             }
-            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamgaze);
+            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamGaze, streamAnalog);
         }
 
         /// <summary>
@@ -270,12 +319,13 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d">if 6DOF data should be streamed.</param>
         /// <param name="stream3d">if labeled markers should be streamed.</param>
-        /// <param name="streamgaze">if gaze vectors should be streamed.</param>
-        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool streamgaze)
+        /// <param name="streamGaze">if gaze vectors should be streamed.</param>
+        /// <param name="streamAnalog">if gaze vectors should be streamed.</param>
+        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
         {
             if (mProtocol.Connect(IpAddress, udpPort))
             {
-                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamgaze);
+                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamGaze, streamAnalog);
             }
             Debug.Log("Error Creating Connection to server");
             return false;
@@ -300,6 +350,7 @@ namespace QualisysRealTime.Unity
             mMarkers.Clear();
             mBones.Clear();
             mGazeVectors.Clear();
+            mAnalogChannels.Clear();
             mStreamingStatus = false;
             mProtocol.StreamFramesStop();
             mProtocol.StopStreamListen();
@@ -325,7 +376,28 @@ namespace QualisysRealTime.Unity
 
                 return true;
             }
+            return false;
+        }
 
+        private bool GetAnalogSettings()
+        {
+            bool getStatus = mProtocol.GetAnalogSettings();
+            if (getStatus)
+            {
+                mAnalogChannels.Clear();
+                var settings = mProtocol.AnalogSettings;
+                foreach (var device in settings.Devices)
+                {
+                    foreach (var channel in device.ChannelInformation)
+                    {
+                        var analogChannel = new AnalogChannel();
+                        analogChannel.Name = channel.Name;
+                        analogChannel.Values = new float[0];
+                        mAnalogChannels.Add(analogChannel);
+                    }
+                }
+                return true;
+            }
             return false;
         }
 
@@ -371,7 +443,7 @@ namespace QualisysRealTime.Unity
                 foreach (Settings3DLabel marker in mProtocol.Settings3D.Labels)
                 {
                     LabeledMarker newMarker = new LabeledMarker();
-                    newMarker.Label = marker.Name;
+                    newMarker.Name = marker.Name;
                     newMarker.Position = Vector3.zero;
                     newMarker.Color.r = (marker.ColorRGB) & 0xFF;
                     newMarker.Color.g = (marker.ColorRGB >> 8) & 0xFF;
@@ -411,16 +483,17 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool streamgaze)
+        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
         {
             List<ComponentType> streamedTypes = new List<ComponentType>();
             if (stream3d)
                 streamedTypes.Add(ComponentType.Component3d);
             if (stream6d)
                 streamedTypes.Add(ComponentType.Component6d);
-            if (streamgaze)
+            if (streamGaze)
                 streamedTypes.Add(ComponentType.ComponentGazeVector);
-
+            if (streamAnalog)
+                streamedTypes.Add(ComponentType.ComponentAnalog);
 
             if (!mProtocol.GetGeneralSettings())
             {
@@ -446,12 +519,21 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-            if (streamgaze)
+            if (streamGaze)
             {
                 if (!GetGazeVectorSettings())
                 {
                     // Don't fail too hard since gaze only has been available for a short while... but still give an error in the log.
                     Debug.Log("Error retrieving gaze settings from stream");
+                }
+            }
+
+            if (streamAnalog)
+            {
+                if (!GetAnalogSettings())
+                {
+                    // Don't fail too hard since gaze only has been available for a short while... but still give an error in the log.
+                    Debug.Log("Error retrieving analog settings from stream");
                 }
             }
 
