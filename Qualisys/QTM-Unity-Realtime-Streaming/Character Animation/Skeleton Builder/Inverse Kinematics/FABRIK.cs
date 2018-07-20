@@ -43,7 +43,7 @@ namespace QualisysRealTime.Unity.Skeleton
             float lastDistToTarget = float.MaxValue;
 
             float distToTarget = (bones[bones.Length - 1].Pos - target.Pos).Length;
-            while (distToTarget > threshold && iterations++ < MaxIterations && distToTarget < lastDistToTarget)
+            while (distToTarget > distanceThreshold && iterations++ < MaxIterations && distToTarget < lastDistToTarget)
             {
                 // Forward reaching
                 ForwardReaching(ref bones, ref distances, target);
@@ -55,7 +55,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
             bones[bones.Length - 1].Orientation = target.Orientation;
 
-            return (distToTarget <= threshold);
+            return (distToTarget <= distanceThreshold);
         }
 
 

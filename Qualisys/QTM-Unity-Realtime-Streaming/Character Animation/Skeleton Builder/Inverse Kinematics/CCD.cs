@@ -28,8 +28,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <returns>True if target was reached, false if maximum iteration was reached first   </returns>
         override public bool SolveBoneChain(Bone[] bones, Bone target, Bone grandparent)
         {
-
-            if (!IsReachable(bones,target))
+            if (!IsReachable(bones, target))
             {
                 TargetUnreachable(bones, target.Pos, grandparent);
                 bones[bones.Length - 1].Orientation = new Quaternion(target.Orientation.Xyz, target.Orientation.W);
@@ -37,17 +36,19 @@ namespace QualisysRealTime.Unity.Skeleton
             }
 
             int numberOfBones = bones.Length;
-            int iter = 0;
+            int iteration = 0;
             int degrees = degreeStep;
             bool toggle = false;
             bool doneOneLapAroundYAxis = false;
             int maxdegrees = 120;
             float lastDistanceToTarget = float.MaxValue;
             float distanceToTarget = (bones[bones.Length - 1].Pos - target.Pos).Length;
-            // main loop
-            while (distanceToTarget > threshold && MaxIterations > ++iter)
+            if (float.IsNaN(distanceToTarget))
+                distanceToTarget = lastDistanceToTarget;
+
+            while (distanceToTarget > distanceThreshold && MaxIterations > ++iteration)
             {
-                // if CCD is stuck becouse of constraints, we twist the chain
+                // if CCD is stuck because of constraints, we twist the chain
                 if (distanceToTarget >= lastDistanceToTarget)
                 {
                     if (!doneOneLapAroundYAxis && degrees > maxdegrees)
@@ -60,7 +61,7 @@ namespace QualisysRealTime.Unity.Skeleton
                         break;
                     }
                     Quaternion q = doneOneLapAroundYAxis ?
-                        QuaternionHelper2.RotationX(MathHelper.DegreesToRadians(toggle ? degrees : -degrees))
+                       QuaternionHelper2.RotationX(MathHelper.DegreesToRadians(toggle ? degrees : -degrees))
                       :
                        QuaternionHelper2.RotationY(MathHelper.DegreesToRadians(toggle ? degrees : -degrees));
                     ForwardKinematics(ref bones, q);
@@ -111,9 +112,9 @@ namespace QualisysRealTime.Unity.Skeleton
                 lastDistanceToTarget = distanceToTarget;
                 distanceToTarget = (bones[bones.Length - 1].Pos - target.Pos).LengthFast;
             }
-            // Copy the targets rotation so that rotation is consistant
+            // Copy the targets rotation so that rotation is consistent
             bones[bones.Length - 1].Orientation = new Quaternion (target.Orientation.Xyz,target.Orientation.W);
-            return (distanceToTarget <= threshold);
+            return (distanceToTarget <= distanceThreshold);
         }
     }
 }

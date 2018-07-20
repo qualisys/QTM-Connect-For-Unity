@@ -18,7 +18,7 @@ using OpenTK;
 
 namespace QualisysRealTime.Unity.Skeleton
 {
-	public class ŚegmentTracking
+	public class SegmentTracking
 	{
 		private BipedSkeleton skeleton;
 		private MarkersNames markerNames;
@@ -29,12 +29,12 @@ namespace QualisysRealTime.Unity.Skeleton
         //private readonly string DEBUG_MARKER = "L_HME";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="QualisysRealTime.Unity.Skeleton.ŚegmentTracking"/> class.
+		/// Initializes a new instance of the <see cref="QualisysRealTime.Unity.Skeleton.SegmentTracking"/> class.
 		/// </summary>
 		/// <param name="s">S.</param>
 		/// <param name="mn">Mn.</param>
 		/// <param name="lm">Lm.</param>
-		public ŚegmentTracking(BipedSkeleton s, MarkersNames mn, List<Marker> lm)
+		public SegmentTracking(BipedSkeleton s, MarkersNames mn, List<Marker> lm)
 		{
 			this.skeleton = s;
 			this.markerNames = mn;

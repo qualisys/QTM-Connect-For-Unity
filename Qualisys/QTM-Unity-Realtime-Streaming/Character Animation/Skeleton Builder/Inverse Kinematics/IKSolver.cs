@@ -2,7 +2,7 @@
 /*
     The MIT License (MIT)
 
-    Copyright (c) 2015 Qualisys AB
+    Copyright (c) 2015-2018 Qualisys AB
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -22,11 +22,11 @@ namespace QualisysRealTime.Unity.Skeleton
     abstract class IKSolver
     {
         abstract public bool SolveBoneChain(Bone[] bones, Bone target, Bone parent);
-        protected float threshold = 0.01f;
+        protected float distanceThreshold = 0.01f;
         public ConstraintsFunctions constraints = new ConstraintsFunctions();
         public int MaxIterations = 140;
         /// <summary>
-        /// Checks wheter the target is reacheble for the bone chain or not
+        /// Checks whether the target is reachable for the bone chain or not
         /// </summary>
         /// <param name="bones">The chain of bone, the IK Chain</param>
         /// <param name="target">The target</param>
@@ -39,7 +39,9 @@ namespace QualisysRealTime.Unity.Skeleton
                 acc += (bones[i].Pos - bones[i + 1].Pos).Length;
             }
             float dist = System.Math.Abs((bones[0].Pos - target.Pos).Length);
-            return dist < acc; // the target is unreachable
+            if (float.IsNaN(dist) || float.IsNaN(acc))
+                return false;
+            return dist < acc;
         }
         /// <summary>
         /// Gets the total length from the root of each bone in the kinematic chain (the bone chain)
@@ -56,7 +58,7 @@ namespace QualisysRealTime.Unity.Skeleton
             return distances;
         }
         /// <summary>
-        /// Streches the chain to a maximum towards the target, assuming it is unreachabel
+        /// Stretches the chain to a maximum towards the target, assuming it is unreachable
         /// </summary>
         /// <param name="bones">The kimematic chain, the bones</param>
         /// <param name="target">The target to be reach towards</param>
@@ -91,7 +93,7 @@ namespace QualisysRealTime.Unity.Skeleton
             ForwardKinematics(ref bones, rotation, i, bones.Length-1);
         }
         /// <summary>
-        /// Forward kinamatic function
+        /// Forward kinematic function
         /// </summary>
         /// <param name="bones">The kinamatic chain, array of bones</param>
         /// <param name="rotation">The rotation to be alplied to the chain</param>
@@ -103,8 +105,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 if (j > i)
                 {
-                    bones[j].Pos = bones[i].Pos +
-                        Vector3.Transform((bones[j].Pos - bones[i].Pos), rotation);
+                    bones[j].Pos = bones[i].Pos + Vector3.Transform((bones[j].Pos - bones[i].Pos), rotation);
                 }
                 // rotate orientation
                 bones[j].Rotate(rotation);
