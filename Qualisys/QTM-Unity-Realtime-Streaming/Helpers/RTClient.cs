@@ -25,6 +25,9 @@ namespace QualisysRealTime.Unity
         private List<LabeledMarker> mMarkers;
         public List<LabeledMarker> Markers { get { return mMarkers; } }
 
+        private List<UnlabeledMarker> mUnlabeledMarkers;
+        public List<UnlabeledMarker> UnlabeledMarkers { get { return mUnlabeledMarkers; } }
+
         private List<Bone> mBones;
         public List<Bone> Bones { get { return mBones; } }
 
@@ -48,7 +51,8 @@ namespace QualisysRealTime.Unity
             mPacket = packet;
 
             var bodyData = packet.Get6DOFData();
-            var markerData = packet.Get3DMarkerData();
+            var labeledMarkerData = packet.Get3DMarkerResidualData();
+            var unlabeledMarkerData = packet.Get3DMarkerNoLabelsResidualData();
             var gazeVectorData = packet.GetGazeVectorData();
             var analogData = packet.GetAnalogData();
 
@@ -74,19 +78,39 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-            //Get marker data that is labeled and update values
-            if (markerData != null)
+            // Get marker data that is labeled and update values
+            if (labeledMarkerData != null)
             {
-                for (int i = 0; i < markerData.Count; i++)
+                for (int i = 0; i < labeledMarkerData.Count; i++)
                 {
-                    Q3D marker = markerData[i];
+                    Q3D marker = labeledMarkerData[i];
                     Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
 
                     position /= 1000;
 
                     mMarkers[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
                     mMarkers[i].Position.z *= -1;
+                    mMarkers[i].Residual = labeledMarkerData[i].Residual;
+                }
+            }
 
+            // Get unlabeled marker data
+            if (unlabeledMarkerData != null)
+            {
+                mUnlabeledMarkers.Clear();
+                for (int i = 0; i < unlabeledMarkerData.Count; i++)
+                {
+                    UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
+                    Q3D marker = unlabeledMarkerData[i];
+                    Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
+
+                    position /= 1000;
+
+                    unlabeledMarker.Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    unlabeledMarker.Position.z *= -1;
+                    unlabeledMarker.Residual = unlabeledMarkerData[i].Residual;
+                    unlabeledMarker.Id = unlabeledMarkerData[i].Id;
+                    mUnlabeledMarkers.Add(unlabeledMarker);
                 }
             }
 
@@ -165,6 +189,7 @@ namespace QualisysRealTime.Unity
             mProtocol = new RTProtocol();
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
+            mUnlabeledMarkers = new List<UnlabeledMarker>();
             mBones = new List<Bone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
@@ -194,7 +219,7 @@ namespace QualisysRealTime.Unity
             if (string.IsNullOrEmpty(name))
                 return null;
 
-            foreach (SixDOFBody body in mBodies)
+            foreach (var body in mBodies)
             {
                 if (body.Name == name)
                 {
@@ -209,9 +234,21 @@ namespace QualisysRealTime.Unity
         {
             if (string.IsNullOrEmpty(name))
                 return null;
-            foreach (LabeledMarker marker in mMarkers)
+            foreach (var marker in mMarkers)
             {
                 if (marker.Name == name)
+                {
+                    return marker;
+                }
+            }
+            return null;
+        }
+
+        public UnlabeledMarker GetUnlabeledMarker(uint id)
+        {
+            foreach (var marker in mUnlabeledMarkers)
+            {
+                if (marker.Id == id)
                 {
                     return marker;
                 }
@@ -297,9 +334,10 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d">if 6DOF data should be streamed.</param>
         /// <param name="stream3d">if labeled markers should be streamed.</param>
+        /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
-        /// <param name="streamAnalog">if gaze vectors should be streamed.</param>
-        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
+        /// <param name="streamAnalog">if analog data should be streamed.</param>
+        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
         {
             if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
             {
@@ -309,7 +347,7 @@ namespace QualisysRealTime.Unity
                     return false;
                 }
             }
-            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamGaze, streamAnalog);
+            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog);
         }
 
         /// <summary>
@@ -319,13 +357,14 @@ namespace QualisysRealTime.Unity
         /// <param name="udpPort">UDP port streaming should occur on.</param>
         /// <param name="stream6d">if 6DOF data should be streamed.</param>
         /// <param name="stream3d">if labeled markers should be streamed.</param>
+        /// <param name="stream3d">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
-        /// <param name="streamAnalog">if gaze vectors should be streamed.</param>
-        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
+        /// <param name="streamAnalog">if analog data should be streamed.</param>
+        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
         {
             if (mProtocol.Connect(IpAddress, udpPort))
             {
-                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, streamGaze, streamAnalog);
+                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog);
             }
             Debug.Log("Error Creating Connection to server");
             return false;
@@ -348,6 +387,7 @@ namespace QualisysRealTime.Unity
         {
             mBodies.Clear();
             mMarkers.Clear();
+            mUnlabeledMarkers.Clear();
             mBones.Clear();
             mGazeVectors.Clear();
             mAnalogChannels.Clear();
@@ -445,15 +485,14 @@ namespace QualisysRealTime.Unity
                     LabeledMarker newMarker = new LabeledMarker();
                     newMarker.Name = marker.Name;
                     newMarker.Position = Vector3.zero;
+                    newMarker.Residual = 0;
                     newMarker.Color.r = (marker.ColorRGB) & 0xFF;
                     newMarker.Color.g = (marker.ColorRGB >> 8) & 0xFF;
                     newMarker.Color.b = (marker.ColorRGB >> 16) & 0xFF;
-
                     newMarker.Color /= 255;
-
                     newMarker.Color.a = 1F;
 
-                    Markers.Add(newMarker);
+                    mMarkers.Add(newMarker);
                 }
 
                 // Save bone settings
@@ -483,11 +522,13 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool streamGaze, bool streamAnalog)
+        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
         {
             List<ComponentType> streamedTypes = new List<ComponentType>();
             if (stream3d)
-                streamedTypes.Add(ComponentType.Component3d);
+                streamedTypes.Add(ComponentType.Component3dResidual);
+            if (stream3dNoLabels)
+                streamedTypes.Add(ComponentType.Component3dNoLabelsResidual);
             if (stream6d)
                 streamedTypes.Add(ComponentType.Component6d);
             if (streamGaze)

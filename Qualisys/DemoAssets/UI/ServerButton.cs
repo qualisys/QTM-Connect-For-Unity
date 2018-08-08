@@ -5,7 +5,8 @@ using QualisysRealTime.Unity;
 using QTMRealTimeSDK;
 
 [System.Serializable]
-public class ServerButton : MonoBehaviour {
+public class ServerButton : MonoBehaviour
+{
     public Button button;
     public Text HostText;
     public Text IpAddressText;
@@ -21,7 +22,7 @@ public class ServerButton : MonoBehaviour {
     }
     void Connect()
     {
-        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, true))
+        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, false, true, false))
         {
             InfoText.color = Color.red;
             InfoText.text = "Could not connect to this server";

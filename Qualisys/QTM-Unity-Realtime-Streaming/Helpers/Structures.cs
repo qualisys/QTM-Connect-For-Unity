@@ -22,6 +22,14 @@ namespace QualisysRealTime.Unity
         public string Name;
         public Vector3 Position;
         public Color Color;
+        public float Residual;
+    }
+
+    public class UnlabeledMarker
+    {
+        public uint Id;
+        public Vector3 Position;
+        public float Residual;
     }
 
     // Class for user bones
@@ -60,6 +68,7 @@ namespace QualisysRealTime.Unity
                 var m = new Marker();
                 m.Label = labeledMarker.Name;
                 m.Position = labeledMarker.Position.Convert();
+                m.Residual = labeledMarker.Residual;
                 newList.Add(m);
             }
             return newList;

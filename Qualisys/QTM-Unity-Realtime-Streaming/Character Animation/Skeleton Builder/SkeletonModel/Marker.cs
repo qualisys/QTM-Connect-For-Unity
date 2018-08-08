@@ -21,5 +21,6 @@ namespace QualisysRealTime.Unity.Skeleton
     {
         public string Label;
         public Vector3 Position;
-	}
+        public float Residual;
+    }
 }
