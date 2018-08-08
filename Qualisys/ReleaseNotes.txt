@@ -1,3 +1,8 @@
+Package 6
+
+- Added support for streaming Analog channel data.
+- Added support for streaming Unlabeled marker data.
+
 Package 5.1
 
 - Added a Model9 definition for easier character mapping.
