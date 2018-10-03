@@ -22,6 +22,7 @@ namespace QualisysRealTime.Unity
         bool stream3dNoLabels = false;
         bool streamGaze = true;
         bool streamAnalog = false;
+        bool streamSkeleton = true;
 
         //private List<SixDOFBody> availableBodies;
         private List<DiscoveryResponse> discoveryResponses;
@@ -92,6 +93,7 @@ namespace QualisysRealTime.Unity
             stream6d = EditorGUILayout.Toggle("6DOF Objects", stream6d);
             streamGaze = EditorGUILayout.Toggle("Gaze Vectors", streamGaze);
             streamAnalog = EditorGUILayout.Toggle("Analog", streamAnalog);
+            streamSkeleton = EditorGUILayout.Toggle("Skeletons", streamSkeleton);
             GUI.enabled = true;
 
             if (Application.isPlaying)
@@ -111,6 +113,15 @@ namespace QualisysRealTime.Unity
                         foreach (var body in bodies)
                         {
                             GUILayout.Label(body.Name);
+                        }
+                    }
+                    var skeletons = RTClient.GetInstance().Skeletons;
+                    if (skeletons != null)
+                    {
+                        GUILayout.Label("Available Skeletons:");
+                        foreach (var skeleton in skeletons)
+                        {
+                            GUILayout.Label(skeleton.Name);
                         }
                     }
                     var analogChannels = RTClient.GetInstance().AnalogChannels;
@@ -154,7 +165,7 @@ namespace QualisysRealTime.Unity
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog);
+                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             }
 
             if (connected)

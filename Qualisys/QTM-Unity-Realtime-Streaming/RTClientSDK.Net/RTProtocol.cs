@@ -47,7 +47,7 @@ namespace QTMRealTimeSDK
             /// <summary>Latest major version of protocol</summary>
             public const int MAJOR_VERSION = 1;
             /// <summary>Latest minor version of protocol</summary>
-            public const int MINOR_VERSION = 14;
+            public const int MINOR_VERSION = 19;
             /// <summary>Maximum camera count</summary>
             public const int MAX_CAMERA_COUNT = 256;
             /// <summary>Maximum Analog device count</summary>
@@ -106,6 +106,10 @@ namespace QTMRealTimeSDK
         /// <summary>Gaze vector settings from QTM</summary>
         public SettingsGazeVectors GazeVectorSettings { get { return mGazeVectorSettings; } }
 
+        private SettingsSkeletons mSkeletonSettings;
+        /// <summary>Skeleton settings from QTM</summary>
+        public SettingsSkeletons SkeletonSettings { get { return mSkeletonSettings; } }
+
         private bool mBroadcastSocketCreated = false;
         private Thread mProcessStreamthread;
         private RTNetwork mNetwork;
@@ -136,10 +140,8 @@ namespace QTMRealTimeSDK
             mDiscoveryResponses = new HashSet<DiscoveryResponse>();
         }
 
-        /// <summary>
-        /// Create connection to server
-        ///</summary>
-        /// <param name="serverAddr">Adress to server</param>
+        /// <summary>Create connection to server</summary>
+        /// <param name="serverAddr">address to server</param>
         /// <param name="serverPortUDP">port to use if UDP socket is desired, set to 0 for automatic port selection</param>
         /// <param name="majorVersion">Major protocol version to use, default is latest</param>
         /// <param name="minorVersion">Minor protocol version to use, default is latest</param>
@@ -254,9 +256,7 @@ namespace QTMRealTimeSDK
             return false;
         }
 
-        /// <summary>
-        /// Create connection to server
-        ///</summary>
+        /// <summary>Create connection to server</summary>
         /// <param name="host">host detected via broadcast discovery</param>
         /// <param name="serverPortUDP">port to use if UDP socket is desired, set to 0 for automatic port selection</param>
         /// <param name="majorVersion">Major protocol version to use, default is latest</param>
@@ -267,17 +267,6 @@ namespace QTMRealTimeSDK
             return Connect(host.IpAddress, serverPortUDP, majorVersion, minorVersion, host.Port);
         }
 
-        /// <summary>
-        /// Creates an UDP socket
-        ///</summary>
-        /// <param name="udpPort">Port to listen to. </param>
-        /// <param name="broadcast">if port should be able to send broadcast packets</param>
-        /// <returns></returns>
-        public bool CreateUDPSocket(ref ushort udpPort, bool broadcast = false)
-        {
-            return mNetwork.CreateUDPSocket(ref udpPort, broadcast);
-        }
-
         public void ClearSettings()
         {
             m3DSettings = null;
@@ -285,13 +274,12 @@ namespace QTMRealTimeSDK
             mAnalogSettings = null;
             mForceSettings = null;
             mGazeVectorSettings = null;
+            mSkeletonSettings = null;
             mGeneralSettings = null;
             mImageSettings = null;
         }
 
-        /// <summary>
-        /// Disconnect sockets from server
-        ///</summary>
+        /// <summary>Disconnect from server</summary>
         public void Disconnect()
         {
             mBroadcastSocketCreated = false;
@@ -306,9 +294,7 @@ namespace QTMRealTimeSDK
             ClearSettings();
         }
 
-        /// <summary>
-        /// Check it our TCP is connected
-        ///</summary>
+        /// <summary>Check if there is a tcp connection to the server available</summary>
         /// <returns>connection status of TCP socket </returns>
         public bool IsConnected()
         {
@@ -318,7 +304,7 @@ namespace QTMRealTimeSDK
         private byte[] data = new byte[65535];
         private Object receiveLock = new Object();
 
-        public int ReceiveRTPacket(out PacketType packetType, bool skipEvents = true, int timeout = 500000)
+        public int ReceiveRTPacket(out PacketType packetType, int timeout = 500000)
         {
             lock (receiveLock)
             {
@@ -327,21 +313,48 @@ namespace QTMRealTimeSDK
 
                 packetType = PacketType.PacketNone;
 
-                do
-                {
-                    receivedTotal = 0;
+                receivedTotal = 0;
 
-                    int received = mNetwork.Receive(ref data, 0, data.Length, true, timeout);
-                    if (received == 0)
+                int received = mNetwork.Receive(ref data, 0, data.Length, true, timeout);
+                if (received == 0)
+                {
+                    return 0; // Receive timeout
+                }
+                if (received < sizeof(int) * 2)
+                {
+                    // QTM header not received.
+                    return -1;
+                }
+                if (received == -1)
+                {
+                    if (!mNetwork.IsConnected())
                     {
-                        return 0; // Receive timeout
+                        mErrorString = "Disconnected from server.";
                     }
-                    if (received < sizeof(int) * 2)
+                    else
                     {
-                        // QTM header not received.
-                        return -1;
+                        mErrorString = "Socket Error.";
                     }
-                    if (received == -1)
+                    return -1;
+                }
+                receivedTotal += received;
+
+                frameSize = RTPacket.GetPacketSize(data);
+                packetType = RTPacket.GetPacketType(data);
+
+                if (data == null || frameSize > data.Length)
+                {
+                    // Do some preventive additional allocation to reduce number of times allocation is needed
+                    var newSize = (int)(frameSize * 1.47);
+                    Array.Resize(ref data, newSize);
+                }
+
+                // Receive more data until we have read the whole packet
+                while (receivedTotal < frameSize)
+                {
+                    // As long as we haven't received enough data, wait for more
+                    received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
+                    if (received <= 0)
                     {
                         if (!mNetwork.IsConnected())
                         {
@@ -354,39 +367,8 @@ namespace QTMRealTimeSDK
                         return -1;
                     }
                     receivedTotal += received;
-
-                    frameSize = RTPacket.GetPacketSize(data);
-                    packetType = RTPacket.GetPacketType(data);
-
-                    if (data == null || frameSize > data.Length)
-                    {
-                        // Do some preventive additional allocation to reduce number of times allocation is needed
-                        var newSize = (int)(frameSize * 1.47);
-                        Array.Resize(ref data, newSize);
-                    }
-
-                    // Receive more data until we have read the whole packet
-                    while (receivedTotal < frameSize)
-                    {
-                        // As long as we haven't received enough data, wait for more
-                        received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
-                        if (received <= 0)
-                        {
-                            if (!mNetwork.IsConnected())
-                            {
-                                mErrorString = "Disconnected from server.";
-                            }
-                            else
-                            {
-                                mErrorString = "Socket Error.";
-                            }
-                            return -1;
-                        }
-                        receivedTotal += received;
-                    }
-                    mPacket.SetData(data);
                 }
-                while (skipEvents && packetType == PacketType.PacketEvent);
+                mPacket.SetData(data);
 
                 if (receivedTotal == frameSize)
                 {
@@ -516,9 +498,8 @@ namespace QTMRealTimeSDK
 
             while (mThreadActive)
             {
-                if (ReceiveRTPacket(out packetType, false) <= 0)
+                if (ReceiveRTPacket(out packetType, 0) <= 0)
                 {
-                    Thread.Sleep(50);
                     continue;
                 }
 
@@ -706,7 +687,7 @@ namespace QTMRealTimeSDK
                 PacketType packetType;
                 do
                 {
-                    nReceived = ReceiveRTPacket(out packetType, false, 2000000);
+                    nReceived = ReceiveRTPacket(out packetType, 0);
                     if (nReceived > 0)
                     {
                         respondedEvent = mPacket.GetEvent();
@@ -964,6 +945,13 @@ namespace QTMRealTimeSDK
             return GetSettings("GazeVector", "Gaze_Vector", out mGazeVectorSettings);
         }
 
+        /// <summary>Get Skeleton settings from QTM Server</summary>
+        /// <returns>Returns true if settings was retrieved</returns>
+        public bool GetSkeletonSettings()
+        {
+            return GetSettings("Skeleton", "Skeletons", out mSkeletonSettings);
+        }
+
         internal bool GetSettings<TSettings>(string settingsName, string settingXmlName, out TSettings settingObject)
         {
             string xml;
@@ -1095,7 +1083,7 @@ namespace QTMRealTimeSDK
             {
                 Thread.Sleep(50);
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType, true) > 0)
+                while (ReceiveRTPacket(out packetType) > 0)
                 {
                     if (packetType != PacketType.PacketXML)
                     {
@@ -1125,7 +1113,7 @@ namespace QTMRealTimeSDK
             if (SendString(command, PacketType.PacketCommand))
             {
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType, true) > 0)
+                while (ReceiveRTPacket(out packetType) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
@@ -1152,7 +1140,7 @@ namespace QTMRealTimeSDK
             if (SendString(xmlString, PacketType.PacketXML))
             {
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType, true) > 0)
+                while (ReceiveRTPacket(out packetType) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
@@ -1251,6 +1239,9 @@ namespace QTMRealTimeSDK
                     case ComponentType.ComponentGazeVector:
                         command += " GazeVector";
                         break;
+                    case ComponentType.ComponentSkeleton:
+                        command += " Skeleton";
+                        break;
                 }
             }
             return command;
@@ -1280,7 +1271,7 @@ namespace QTMRealTimeSDK
 
         private bool disposed = false;
 
-         ~RTProtocol()
+        ~RTProtocol()
         {
             Dispose(false);
         }

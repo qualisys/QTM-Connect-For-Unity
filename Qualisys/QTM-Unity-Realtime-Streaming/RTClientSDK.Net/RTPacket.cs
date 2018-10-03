@@ -63,8 +63,10 @@ namespace QTMRealTimeSDK.Data
         ComponentGazeVector = 16,
         // Timecode component
         ComponentTimecode = 17,
+        // Skeleton component
+        ComponentSkeleton = 18,
         // Nothing
-        ComponentNone = 18,
+        ComponentNone = 19,
     }
 
     /// <summary>Events sent from QTM via RT</summary>
@@ -121,6 +123,18 @@ namespace QTMRealTimeSDK.Data
         public float Y;
         [XmlElement("Z")]
         public float Z;
+    }
+    /// <summary>Struct for quaternion</summary>
+    public struct QuaternionRotation
+    {
+        [XmlElement("X")]
+        public float X;
+        [XmlElement("Y")]
+        public float Y;
+        [XmlElement("Z")]
+        public float Z;
+        [XmlElement("W")]
+        public float W;
     }
 
     /// <summary>Struct for Euler rotation</summary>
@@ -272,7 +286,6 @@ namespace QTMRealTimeSDK.Data
         {
             return this.FormatTimestamp();
         }
-
     }
 
     /// <summary> IRIG timecode struct </summary>
@@ -293,6 +306,29 @@ namespace QTMRealTimeSDK.Data
         public uint Minute;
         public uint Second;
         public uint Frame;
+    }
+
+    /// <summary>Data for Skeleton joint</summary>
+    public struct SkeletonJoint
+    {
+        /// <summary>ID</summary>
+        public uint Id;
+        /// <summary>Skeleton position</summary>
+        public Point Position;
+        /// <summary>Skeleton rotation</summary>
+        public QuaternionRotation Rotation;
+    }
+    /// <summary>Data for Skeleton</summary>
+    public struct Skeleton
+    {
+        // <summary>Joint data</summary>
+        public List<SkeletonJoint> Joints;
+        /// <summary>Sample number</summary>
+        public uint SampleNumber;
+        /// <summary>ID</summary>
+        public uint Id;
+        /// <summary>Number of joints</summary>
+        public uint JointCount;
     }
 
     #endregion
@@ -360,6 +396,7 @@ namespace QTMRealTimeSDK.Data
         List<CameraImage> mImageData;
         List<GazeVector> mGazeVectorData;
         List<Timecode> mTimecodeData;
+        List<Skeleton> mSkeletonData;
 
 
         /// <summary>
@@ -376,8 +413,7 @@ namespace QTMRealTimeSDK.Data
         /// </summary>
         /// <param name="majorVersion">Major version of packet, default is latest version.</param>
         /// <param name="minorVersion">Minor version of packet, default is latest version.</param>
-        public RTPacket(int majorVersion = RTProtocol.Constants.MAJOR_VERSION,
-        int minorVersion = RTProtocol.Constants.MINOR_VERSION)
+        public RTPacket(int majorVersion = RTProtocol.Constants.MAJOR_VERSION, int minorVersion = RTProtocol.Constants.MINOR_VERSION)
         {
             mMajorVersion = majorVersion;
             mMinorVersion = minorVersion;
@@ -405,6 +441,7 @@ namespace QTMRealTimeSDK.Data
             mGazeVectorData = new List<GazeVector>();
 
             mTimecodeData = new List<Timecode>();
+            mSkeletonData = new List<Skeleton>();
 
             ClearData();
         }
@@ -449,7 +486,7 @@ namespace QTMRealTimeSDK.Data
             mImageData.Clear();
             mGazeVectorData.Clear();
             mTimecodeData.Clear();
-
+            mSkeletonData.Clear();
         }
 
         private Object packetLock = new Object();
@@ -492,12 +529,12 @@ namespace QTMRealTimeSDK.Data
                         if (componentType == ComponentType.Component3d)
                         {
                             /* Marker count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per marker]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per marker]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
                             */
                             uint markerCount = BitConvert.GetUInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -516,14 +553,14 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.Component3dNoLabels)
                         {
                             /* Marker count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per marker]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   ID - 4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per marker]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   ID - 4 bytes
+                            */
 
                             int markerCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -542,13 +579,13 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentAnalog)
                         {
                             /* Analog Device count - 4 bytes
-                                * [Repeated per device]
-                                *   Device id - 4 bytes
-                                *   Channel count - 4 bytes
-                                *   Sample count - 4 bytes
-                                *   Sample number - 4 bytes
-                                *   Analog data - 4 * channelcount * sampleCount
-                                */
+                            * [Repeated per device]
+                            *   Device id - 4 bytes
+                            *   Channel count - 4 bytes
+                            *   Sample count - 4 bytes
+                            *   Sample number - 4 bytes
+                            *   Analog data - 4 * channelcount * sampleCount
+                            */
                             uint deviceCount = BitConvert.GetUInt32(mData, ref position);
                             for (int i = 0; i < deviceCount; i++)
                             {
@@ -580,12 +617,12 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentForce)
                         {
                             /* Force plate count - 4 bytes
-                                * [Repeated per plate]
-                                *   Force plate ID - 4 bytes
-                                *   Force count - 4 bytes
-                                *   forceNumber - 4 bytes
-                                *   Force data - 36 * force count bytes
-                                */
+                            * [Repeated per plate]
+                            *   Force plate ID - 4 bytes
+                            *   Force count - 4 bytes
+                            *   forceNumber - 4 bytes
+                            *   Force data - 36 * force count bytes
+                            */
 
                             int forcePlateCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < forcePlateCount; i++)
@@ -612,14 +649,14 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.Component6d)
                         {
                             /* Body count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per body]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   rotation matrix - 9*4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per body]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   rotation matrix - 9*4 bytes
+                            */
 
                             int bodyCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -644,14 +681,14 @@ namespace QTMRealTimeSDK.Data
                         {
 
                             /* Body count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per body]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   Euler Angles - 3*4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per body]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   Euler Angles - 3*4 bytes
+                            */
 
                             int bodyCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -670,17 +707,17 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.Component2d || componentType == ComponentType.Component2dLinearized)
                         {
                             /* Camera Count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per Camera]
-                                *   Marker Count - 4 bytes
-                                *   Status Flags - 1 byte
-                                *   [Repeated per Marker]
-                                *     X - 4 Bytes
-                                *     Y - 4 Bytes
-                                *     Diameter X - 4 bytes
-                                *     Diameter Y - 4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per Camera]
+                            *   Marker Count - 4 bytes
+                            *   Status Flags - 1 byte
+                            *   [Repeated per Marker]
+                            *     X - 4 Bytes
+                            *     Y - 4 Bytes
+                            *     Diameter X - 4 bytes
+                            *     Diameter Y - 4 bytes
+                            */
 
                             uint cameraCount = BitConvert.GetUInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -711,13 +748,13 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.Component3dResidual)
                         {
                             /* Marker count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per marker]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   Residual - 4 bytes
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per marker]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   Residual - 4 bytes
                             */
                             int markerCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -763,15 +800,15 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.Component6dResidual)
                         {
                             /* Body count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per marker]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   rotation matrix - 9*4 bytes
-                                *   residual - 9*4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per marker]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   rotation matrix - 9*4 bytes
+                            *   residual - 9*4 bytes
+                            */
 
                             int bodyCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -793,15 +830,15 @@ namespace QTMRealTimeSDK.Data
                         {
 
                             /* Body count - 4 bytes
-                                * 2D Drop rate - 2 bytes
-                                * 2D Out of sync rate - 2 bytes
-                                * [Repeated per marker]
-                                *   X - 4 bytes
-                                *   Y - 4 bytes
-                                *   Z - 4 bytes
-                                *   Euler Angles - 3*4 bytes
-                                *   residual - 9*4 bytes
-                                */
+                            * 2D Drop rate - 2 bytes
+                            * 2D Out of sync rate - 2 bytes
+                            * [Repeated per marker]
+                            *   X - 4 bytes
+                            *   Y - 4 bytes
+                            *   Z - 4 bytes
+                            *   Euler Angles - 3*4 bytes
+                            *   residual - 9*4 bytes
+                            */
 
                             int bodyCount = BitConvert.GetInt32(mData, ref position);
                             m2DDropRate = BitConvert.GetUShort(mData, ref position);
@@ -820,11 +857,11 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentAnalogSingle)
                         {
                             /* Analog Device count - 4 bytes
-                                * [Repeated per device]
-                                *   Device id - 4 bytes
-                                *   Channel count - 4 bytes
-                                *   Analog data - 4 * channelcount
-                                */
+                            * [Repeated per device]
+                            *   Device id - 4 bytes
+                            *   Channel count - 4 bytes
+                            *   Analog data - 4 * channelcount
+                            */
 
                             int deviceCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < deviceCount; i++)
@@ -848,18 +885,18 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentImage)
                         {
                             /* Camera count - 4 bytes
-                                * [Repeated per marker]
-                                *   Camera ID - 4 bytes
-                                *   Image Format - 4 bytes
-                                *   Width - 4 bytes
-                                *   Height- 4 bytes
-                                *   Left crop - 4 bytes
-                                *   Top crop - 4 bytes
-                                *   Right crop - 4 bytes
-                                *   Bottom crop - 4 bytes
-                                *   Image size- 4 bytes
-                                *   Image data - [Image size bytes]
-                                */
+                            * [Repeated per marker]
+                            *   Camera ID - 4 bytes
+                            *   Image Format - 4 bytes
+                            *   Width - 4 bytes
+                            *   Height- 4 bytes
+                            *   Left crop - 4 bytes
+                            *   Top crop - 4 bytes
+                            *   Right crop - 4 bytes
+                            *   Bottom crop - 4 bytes
+                            *   Image size- 4 bytes
+                            *   Image data - [Image size bytes]
+                            */
 
                             int cameraCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < cameraCount; i++)
@@ -884,11 +921,11 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentTimecode)
                         {
                             /* Timecode count - 4 bytes
-                                * [Repeated per marker]
-                                *   Timecode Type - 4 bytes
-                                *   Timecode High - 4 bytes
-                                *   Timecode Low - 4 bytes
-                                */
+                            * [Repeated per marker]
+                            *   Timecode Type - 4 bytes
+                            *   Timecode High - 4 bytes
+                            *   Timecode Low - 4 bytes
+                            */
 
                             int timecodeCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < timecodeCount; i++)
@@ -904,10 +941,10 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentForceSingle)
                         {
                             /* Force plate count - 4 bytes
-                                * [Repeated per plate]
-                                *   Force plate ID - 4 bytes
-                                *   Force data - 36 bytes
-                                */
+                            * [Repeated per plate]
+                            *   Force plate ID - 4 bytes
+                            *   Force data - 36 bytes
+                            */
 
                             int forcePlateCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < forcePlateCount; i++)
@@ -927,11 +964,11 @@ namespace QTMRealTimeSDK.Data
                         else if (componentType == ComponentType.ComponentGazeVector)
                         {
                             /* Gaze vector count - 4 bytes
-                                * Gaze vector sample count - 4 bytes
-                                * Gaze vector sample number - 4 bytes (omitted if sample count is 0)
-                                * [Repeated per gaze vector (omitted if sample count is 0)]
-                                *   Gaze vector data - 24 bytes
-                                */
+                            * Gaze vector sample count - 4 bytes
+                            * Gaze vector sample number - 4 bytes (omitted if sample count is 0)
+                            * [Repeated per gaze vector (omitted if sample count is 0)]
+                            *   Gaze vector data - 24 bytes
+                            */
 
                             int gazeVectorCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < gazeVectorCount; i++)
@@ -950,6 +987,35 @@ namespace QTMRealTimeSDK.Data
                                 }
                                 mGazeVectorData.Add(gazeVector);
                             }
+                        }
+                        else if (componentType == ComponentType.ComponentSkeleton)
+                        {
+                            int skeletonCount = BitConvert.GetInt32(mData, ref position);
+                            for (int i = 0; i < skeletonCount; i++)
+                            {
+                                Skeleton skeleton = new Skeleton();
+
+                                //skeleton.Id = BitConvert.GetUInt32(mData, ref position);
+                                skeleton.JointCount = BitConvert.GetUInt32(mData, ref position);
+
+                                skeleton.Joints = new List<SkeletonJoint>();
+                                for (int joint = 0; joint < skeleton.JointCount; joint++)
+                                {
+                                    SkeletonJoint skeletonJoint = new SkeletonJoint();
+                                    skeletonJoint.Id = BitConvert.GetUInt32(mData, ref position);
+                                    skeletonJoint.Position = BitConvert.GetPoint(mData, ref position);
+                                    skeletonJoint.Rotation.X = BitConvert.GetFloat(mData, ref position);
+                                    skeletonJoint.Rotation.Y = BitConvert.GetFloat(mData, ref position);
+                                    skeletonJoint.Rotation.Z = BitConvert.GetFloat(mData, ref position);
+                                    skeletonJoint.Rotation.W = BitConvert.GetFloat(mData, ref position);
+                                    skeleton.Joints.Add(skeletonJoint);
+                                }
+                                mSkeletonData.Add(skeleton);
+                            }
+                        }
+                        else
+                        {
+                            // Any missing component types?
                         }
                     }
                 }
@@ -1549,6 +1615,29 @@ namespace QTMRealTimeSDK.Data
             }
         }
 
+        /// <summary>
+        /// Get skeleton from all cameras
+        /// </summary>
+        /// <returns>list of all images</returns>
+        public List<Skeleton> GetSkeletonData()
+        {
+            lock (packetLock)
+            {
+                return mSkeletonData.ToList();
+            }
+        }
+        /// <summary>
+        /// Get skeleton data from cameras at index
+        /// </summary>
+        /// <param name="index">index to get data from.(not camera index!)</param>
+        /// <returns>Gaze vector from index</returns>
+        public Skeleton GetSkeletonData(int index)
+        {
+            lock (packetLock)
+            {
+                return mSkeletonData[index];
+            }
+        }
         #endregion
     }
 }

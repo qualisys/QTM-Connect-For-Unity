@@ -13,6 +13,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public Vector3 Position;
         public Quaternion Rotation;
+        public Color Color;
     }
 
     // Class for labeled markers with unity data types
@@ -56,6 +57,21 @@ namespace QualisysRealTime.Unity
     {
         public string Name;
         public float[] Values;
+    }
+    public class QssJoint
+    {
+        public string Name;
+        public uint Id;
+        public uint ParentId;
+        public Vector3 Position = Vector3.zero;
+        public Quaternion Rotation = Quaternion.identity;
+        public Vector3 TPosition = Vector3.zero;
+        public Quaternion TRotation = Quaternion.identity;
+    }
+    public class QssSkeleton
+    {
+        public string Name;
+        public Dictionary<uint, QssJoint> QssJoints = new Dictionary<uint, QssJoint>();
     }
 
     public static class MarkerConverter

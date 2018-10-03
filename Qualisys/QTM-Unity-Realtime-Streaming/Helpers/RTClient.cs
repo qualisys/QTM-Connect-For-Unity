@@ -36,7 +36,10 @@ namespace QualisysRealTime.Unity
 
         private List<AnalogChannel> mAnalogChannels;
         public List<AnalogChannel> AnalogChannels { get { return mAnalogChannels; } }
-        
+
+        private List<QssSkeleton> mSkeletons;
+        public List<QssSkeleton> Skeletons { get { return mSkeletons; } }
+
 
         private Axis mUpAxis;
         private Quaternion mCoordinateSystemChange;
@@ -51,11 +54,6 @@ namespace QualisysRealTime.Unity
             mPacket = packet;
 
             var bodyData = packet.Get6DOFData();
-            var labeledMarkerData = packet.Get3DMarkerResidualData();
-            var unlabeledMarkerData = packet.Get3DMarkerNoLabelsResidualData();
-            var gazeVectorData = packet.GetGazeVectorData();
-            var analogData = packet.GetAnalogData();
-
             if (bodyData != null)
             {
                 for (int i = 0; i < bodyData.Count; i++)
@@ -79,6 +77,7 @@ namespace QualisysRealTime.Unity
             }
 
             // Get marker data that is labeled and update values
+            var labeledMarkerData = packet.Get3DMarkerResidualData();
             if (labeledMarkerData != null)
             {
                 for (int i = 0; i < labeledMarkerData.Count; i++)
@@ -95,6 +94,7 @@ namespace QualisysRealTime.Unity
             }
 
             // Get unlabeled marker data
+            var unlabeledMarkerData = packet.Get3DMarkerNoLabelsResidualData();
             if (unlabeledMarkerData != null)
             {
                 mUnlabeledMarkers.Clear();
@@ -114,6 +114,7 @@ namespace QualisysRealTime.Unity
                 }
             }
 
+            var gazeVectorData = packet.GetGazeVectorData();
             if (gazeVectorData != null)
             {
                 for (int i = 0; i < gazeVectorData.Count; i++)
@@ -132,6 +133,7 @@ namespace QualisysRealTime.Unity
                 }
             }
 
+            var analogData = packet.GetAnalogData();
             if (analogData != null)
             {
                 int channelIndex = 0;
@@ -142,6 +144,30 @@ namespace QualisysRealTime.Unity
                         var analogChannel = analogDevice.Channels[i];
                         mAnalogChannels[channelIndex].Values = analogChannel.Samples;
                         channelIndex++;
+                    }
+                }
+            }
+
+            var skeletonData = packet.GetSkeletonData();
+            if (skeletonData != null)
+            {
+                for (int skeletonIndex = 0; skeletonIndex < skeletonData.Count; skeletonIndex++)
+                {
+                    foreach (var joint in skeletonData[skeletonIndex].Joints)
+                    {
+                        QssJoint qssJoint;
+                        if (!mSkeletons[skeletonIndex].QssJoints.TryGetValue(joint.Id, out qssJoint))
+                            continue;
+
+                        qssJoint.Position = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
+                        qssJoint.Rotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
+                        //qssJoint.Rotation.z *= -1;
+                        //qssJoint.Rotation.w *= -1;
+
+                        //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
+                        //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
+
+                        mSkeletons[skeletonIndex].QssJoints[joint.Id] = qssJoint;
                     }
                 }
             }
@@ -165,6 +191,7 @@ namespace QualisysRealTime.Unity
                 Get6DOFSettings();
                 GetGazeVectorSettings();
                 GetAnalogSettings();
+                GetSkeletonSettings();
             }
         }
 
@@ -193,6 +220,7 @@ namespace QualisysRealTime.Unity
             mBones = new List<Bone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
+            mSkeletons = new List<QssSkeleton>();
 
             mStreamingStatus = false;
             mPacket = RTPacket.ErrorPacket;
@@ -337,7 +365,7 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
         /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
+        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             if (!mProtocol.Connect(discoveryResponse, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
             {
@@ -347,7 +375,7 @@ namespace QualisysRealTime.Unity
                     return false;
                 }
             }
-            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog);
+            return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
         }
 
         /// <summary>
@@ -360,11 +388,11 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3d">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
         /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
+        public bool Connect(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             if (mProtocol.Connect(IpAddress, udpPort))
             {
-                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog);
+                return ConnectStream(udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             }
             Debug.Log("Error Creating Connection to server");
             return false;
@@ -454,6 +482,11 @@ namespace QualisysRealTime.Unity
                 {
                     SixDOFBody newbody = new SixDOFBody();
                     newbody.Name = body.Name;
+                    newbody.Color.r = (body.ColorRGB) & 0xFF;
+                    newbody.Color.g = (body.ColorRGB >> 8) & 0xFF;
+                    newbody.Color.b = (body.ColorRGB >> 16) & 0xFF;
+                    newbody.Color /= 255;
+                    newbody.Color.a = 1F;
                     newbody.Position = Vector3.zero;
                     newbody.Rotation = Quaternion.identity;
                     mBodies.Add(newbody);
@@ -464,6 +497,49 @@ namespace QualisysRealTime.Unity
             }
 
             return false;
+        }
+
+        private bool GetSkeletonSettings()
+        {
+            bool getStatus = mProtocol.GetSkeletonSettings();
+            if (!getStatus)
+                return false;
+
+            mSkeletons.Clear();
+            var settings = mProtocol.SkeletonSettings;
+            foreach (var skeleton in settings.Skeletons)
+            {
+                QssSkeleton qssSkeleton = new QssSkeleton();
+                qssSkeleton.Name = skeleton.Name;
+                foreach (var joint in skeleton.Joints)
+                {
+                    var qssJoint = new QssJoint();
+                    qssJoint.Name = joint.Name;
+                    qssJoint.Id = joint.Id;
+                    qssJoint.ParentId = joint.ParentId;
+
+                    // Set rotation and position to work with unity
+                    qssJoint.TPosition = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
+                    qssJoint.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
+                    //Vector3 position = new Vector3(joint.Position.X, joint.Position.Z, joint.Position.Y);
+                    //position /= 1000;
+
+                    ////qssJoint.TPosition = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    ////qssJoint.TPosition.z *= -1;
+
+                    //qssJoint.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Y, joint.Rotation.Z, joint.Rotation.W);
+                    //qssJoint.Rotation = mCoordinateSystemChange * new Quaternion(joint.Rotation.X, joint.Rotation.Y, joint.Rotation.Z, joint.Rotation.W);
+                    //qssJoint.Rotation.z *= -1;
+                    //qssJoint.Rotation.w *= -1;
+
+                    //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
+                    //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
+
+                    qssSkeleton.QssJoints.Add(qssJoint.Id, qssJoint);
+                }
+                mSkeletons.Add(qssSkeleton);
+            }
+            return true;
         }
 
         private bool Get3DSettings()
@@ -522,19 +598,9 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog)
+        public bool ConnectStream(short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             List<ComponentType> streamedTypes = new List<ComponentType>();
-            if (stream3d)
-                streamedTypes.Add(ComponentType.Component3dResidual);
-            if (stream3dNoLabels)
-                streamedTypes.Add(ComponentType.Component3dNoLabelsResidual);
-            if (stream6d)
-                streamedTypes.Add(ComponentType.Component6d);
-            if (streamGaze)
-                streamedTypes.Add(ComponentType.ComponentGazeVector);
-            if (streamAnalog)
-                streamedTypes.Add(ComponentType.ComponentAnalog);
 
             if (!mProtocol.GetGeneralSettings())
             {
@@ -542,10 +608,17 @@ namespace QualisysRealTime.Unity
                 return false;
             }
 
-            if (stream3d)
+            if (stream3d || stream3dNoLabels)
             {
-                if (!Get3DSettings())
+                if (Get3DSettings())
                 {
+                    if (stream3d)
+                        streamedTypes.Add(ComponentType.Component3dResidual);
+                    if (stream3dNoLabels)
+                        streamedTypes.Add(ComponentType.Component3dNoLabelsResidual);
+                }
+                else
+                { 
                     Debug.Log("Error retrieving 3d settings from stream");
                     return false;
                 }
@@ -553,17 +626,24 @@ namespace QualisysRealTime.Unity
 
             if (stream6d)
             {
-                if (!Get6DOFSettings())
+                if (Get6DOFSettings())
                 {
+                    streamedTypes.Add(ComponentType.Component6d);
+                }
+                else
+                { 
                     Debug.Log("Error retrieving 6dof settings from stream");
-                    return false;
                 }
             }
 
             if (streamGaze)
             {
-                if (!GetGazeVectorSettings())
+                if (GetGazeVectorSettings())
                 {
+                    streamedTypes.Add(ComponentType.ComponentGazeVector);
+                }
+                else
+                { 
                     // Don't fail too hard since gaze only has been available for a short while... but still give an error in the log.
                     Debug.Log("Error retrieving gaze settings from stream");
                 }
@@ -571,10 +651,26 @@ namespace QualisysRealTime.Unity
 
             if (streamAnalog)
             {
-                if (!GetAnalogSettings())
+                if (GetAnalogSettings())
                 {
+                    streamedTypes.Add(ComponentType.ComponentAnalog);
+                }
+                else
+                { 
                     // Don't fail too hard since gaze only has been available for a short while... but still give an error in the log.
                     Debug.Log("Error retrieving analog settings from stream");
+                }
+            }
+
+            if (streamSkeleton)
+            {
+                if (GetSkeletonSettings())
+                {
+                    streamedTypes.Add(ComponentType.ComponentSkeleton);
+                }
+                else
+                {
+                    Debug.Log("Error retrieving skeleton settings from stream");
                 }
             }
 

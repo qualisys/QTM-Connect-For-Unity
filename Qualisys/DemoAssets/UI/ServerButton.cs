@@ -22,7 +22,7 @@ public class ServerButton : MonoBehaviour
     }
     void Connect()
     {
-        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, false, true, false))
+        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, false, true, false, true))
         {
             InfoText.color = Color.red;
             InfoText.text = "Could not connect to this server";
