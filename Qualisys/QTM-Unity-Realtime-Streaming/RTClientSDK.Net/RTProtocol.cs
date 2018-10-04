@@ -616,11 +616,11 @@ namespace QTMRealTimeSDK
         /// <param name="streamRate">what rate server should stream at</param>
         /// <param name="streamValue">related to streamrate, not used if all frames are streamed</param>
         /// <param name="components">List of all component types deisred to stream</param>
-        /// <param name="port">if set, streaming will be done by UDP on this port. Has to be set if ipadress is specified</param>
-        /// <param name="ipAdress">if UDP streaming should occur to other ip adress,
+        /// <param name="port">if set, streaming will be done by UDP on this port. Has to be set if ipAddress is specified</param>
+        /// <param name="ipAddress">if UDP streaming should occur to other ip adress,
         /// if not set streaming occurs on same ip as command came from</param>
         /// <returns></returns>
-        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, short port = -1, string ipAdress = "")
+        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, short udpPort = -1, string ipAddress = "")
         {
             string command = "streamframes";
 
@@ -637,21 +637,14 @@ namespace QTMRealTimeSDK
                     break;
             }
 
-            if (ipAdress != "")
+            if (udpPort > 0)
             {
-                if (port > 0)
+                command += " udp:";
+                if (!String.IsNullOrEmpty(ipAddress))
                 {
-                    command += " UDP:" + ipAdress + ":" + port;
+                    command += ipAddress + ":";
                 }
-                else
-                {
-                    mErrorString = "If an IP-adress was specified for UDP streaming, a port must be specified aswell";
-                    return false;
-                }
-            }
-            else if (port > 0)
-            {
-                command += " UDP:" + port;
+                command += udpPort;
             }
 
             command += BuildStreamString(components);
@@ -660,11 +653,11 @@ namespace QTMRealTimeSDK
         }
 
 
-        public bool StreamFrames(StreamRate streamRate, int streamValue, ComponentType component, short port = -1, string ipAdress = "")
+        public bool StreamFrames(StreamRate streamRate, int streamValue, ComponentType component, short port = -1, string ipAddress = "")
         {
             List<ComponentType> list = new List<ComponentType>();
             list.Add(component);
-            return StreamFrames(streamRate, streamValue, list, port, ipAdress);
+            return StreamFrames(streamRate, streamValue, list, port, ipAddress);
         }
 
         /// <summary>
