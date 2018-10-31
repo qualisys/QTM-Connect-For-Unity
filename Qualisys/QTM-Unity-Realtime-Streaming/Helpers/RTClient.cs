@@ -392,6 +392,8 @@ namespace QualisysRealTime.Unity
             mGazeVectors.Clear();
             mAnalogChannels.Clear();
             mStreamingStatus = false;
+            mProtocol.RealTimeDataCallback -= Process;
+            mProtocol.EventDataCallback -= Events;
             mProtocol.StreamFramesStop();
             mProtocol.StopStreamListen();
             mProtocol.Disconnect();
