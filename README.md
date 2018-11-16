@@ -32,7 +32,7 @@ The scripts below can be attached to GameObjects for streaming data from QTM. Th
 * *RTMarker.cs* - Add this script to a Game object to set the position of game object from a specific labeled marker name.
 * *RTUnlabeledMarker.cs* - Add this script to a Game object to set the position of game object from a specific unlabeled marker id.
 * *RTMarkerStream.cs* - Add this script to a Game object to visualize marker positions (using spheres) streamed from Qualisys Track Manager.
-* *RTBones.cs* - Add this script to a Game object to visualize user defined bones (using line gizmos).
+* *RTAIMBones.cs* - Add this script to a Game object to visualize user defined bones (using line gizmos).
 * *RTObject.cs* - Add this script to a Game object to get 6DOF object positions and rotations streamed from Qualisys Track Manager.
 * *RTObjectMarkers.cs* - Add this script to Game objects of a 6DOF object body markers.
 * *RTCharacterStream.cs* - Add this script to a Unity character to animate the character from marker streamed from Qualisys Track Manager.
