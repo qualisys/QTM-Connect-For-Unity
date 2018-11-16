@@ -15,9 +15,9 @@
 namespace QualisysRealTime.Unity.Skeleton
 {
     /// <summary>
-    /// Joint identifiers
+    /// Segment identifiers
     /// </summary>
-    public enum Joint
+    public enum SegmentName
     {
         PELVIS,
         // Left leg chain
@@ -62,8 +62,8 @@ namespace QualisysRealTime.Unity.Skeleton
 
     public class BipedSkeleton
     {
-        protected TreeNode<Bone> root;
-        public TreeNode<Bone> Root { get { return root; } }
+        protected TreeNode<Segment> root;
+        public TreeNode<Segment> Root { get { return root; } }
         private ConstraintsExamples constraints = new ConstraintsExamples();
 
         public BipedSkeleton()
@@ -72,14 +72,14 @@ namespace QualisysRealTime.Unity.Skeleton
             constraints.SetConstraints(this);
         }
 
-        public Bone Find(Joint key)
+        public Segment Find(SegmentName key)
         {
             foreach (var b in root)
                 if (b.Data.Name == key) return b.Data;
             return null;
         }
 
-        public Bone this[Joint key]
+        public Segment this[SegmentName key]
         {
             get
             {

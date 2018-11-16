@@ -21,94 +21,94 @@ namespace QualisysRealTime.Unity.Skeleton
     /// </summary>
     abstract class IKSolver
     {
-        abstract public bool SolveBoneChain(Bone[] bones, Bone target, Bone parent);
+        abstract public bool SolveSegmentChain(Segment[] segments, Segment target, Segment parent);
         protected float distanceThreshold = 0.01f;
         public ConstraintsFunctions constraints = new ConstraintsFunctions();
         public int MaxIterations = 140;
         /// <summary>
-        /// Checks whether the target is reachable for the bone chain or not
+        /// Checks whether the target is reachable for the segment chain or not
         /// </summary>
-        /// <param name="bones">The chain of bone, the IK Chain</param>
+        /// <param name="segments">The chain of segment, the IK Chain</param>
         /// <param name="target">The target</param>
         /// <returns>True if target is reachable, false otherwise</returns>
-        protected bool IsReachable(Bone[] bones, Bone target)
+        protected bool IsReachable(Segment[] segments, Segment target)
         {
             float acc = 0;
-            for (int i = 0; i < bones.Length - 1; i++)
+            for (int i = 0; i < segments.Length - 1; i++)
             {
-                acc += (bones[i].Pos - bones[i + 1].Pos).Length;
+                acc += (segments[i].Pos - segments[i + 1].Pos).Length;
             }
-            float dist = System.Math.Abs((bones[0].Pos - target.Pos).Length);
+            float dist = System.Math.Abs((segments[0].Pos - target.Pos).Length);
             if (float.IsNaN(dist) || float.IsNaN(acc))
                 return false;
             return dist < acc;
         }
         /// <summary>
-        /// Gets the total length from the root of each bone in the kinematic chain (the bone chain)
+        /// Gets the total length from the root of each segment in the kinematic chain (the segment chain)
         /// </summary>
         /// <param name="distances"></param>
-        /// <param name="bones"></param>
-        protected float[] GetDistances(ref Bone[] bones)
+        /// <param name="segments"></param>
+        protected float[] GetDistances(ref Segment[] segments)
         {
-            float[] distances = new float[bones.Length - 1];
+            float[] distances = new float[segments.Length - 1];
             for (int i = 0; i < distances.Length; i++)
             {
-                distances[i] = (bones[i].Pos - bones[i + 1].Pos).Length;
+                distances[i] = (segments[i].Pos - segments[i + 1].Pos).Length;
             }
             return distances;
         }
         /// <summary>
         /// Stretches the chain to a maximum towards the target, assuming it is unreachable
         /// </summary>
-        /// <param name="bones">The kimematic chain, the bones</param>
+        /// <param name="segments">The kimematic chain, the segments</param>
         /// <param name="target">The target to be reach towards</param>
-        /// <param name="grandparent">The parent of the first bone in the kinematic chain, used for constraints</param>
+        /// <param name="grandparent">The parent of the first segment in the kinematic chain, used for constraints</param>
         /// <returns></returns>
-        protected Bone[] TargetUnreachable(Bone[] bones, Vector3 target, Bone grandparent)
+        protected Segment[] TargetUnreachable(Segment[] segments, Vector3 target, Segment grandparent)
         {
-            float[] distances = GetDistances(ref bones);
+            float[] distances = GetDistances(ref segments);
             
             for (int i = 0; i < distances.Length; i++)
             {
                 // Position
-                float r = (target - bones[i].Pos).Length;
+                float r = (target - segments[i].Pos).Length;
                 float l = distances[i] / r;
-                Vector3 newPos = ((1 - l) * bones[i].Pos) + (l * target);
-                bones[i + 1].Pos = newPos;
+                Vector3 newPos = ((1 - l) * segments[i].Pos) + (l * target);
+                segments[i + 1].Pos = newPos;
                 // Orientation
-                bones[i].RotateTowards(bones[i + 1].Pos - bones[i].Pos);
-                if (bones[i].HasTwistConstraints)
+                segments[i].RotateTowards(segments[i + 1].Pos - segments[i].Pos);
+                if (segments[i].HasTwistConstraints)
                 {
                     Quaternion rotation2;
-                    if (constraints.CheckOrientationalConstraint(bones[i], (i > 0) ? bones[i - 1] : grandparent, out rotation2))
+                    if (constraints.CheckOrientationalConstraint(segments[i], (i > 0) ? segments[i - 1] : grandparent, out rotation2))
                     {
-                        ForwardKinematics(ref bones, rotation2, i);
+                        ForwardKinematics(ref segments, rotation2, i);
                     }
                 }
             }
-            return bones;
+            return segments;
         }
-        protected void ForwardKinematics(ref Bone[] bones, Quaternion rotation, int i = 0)
+        protected void ForwardKinematics(ref Segment[] segments, Quaternion rotation, int i = 0)
         {
-            ForwardKinematics(ref bones, rotation, i, bones.Length-1);
+            ForwardKinematics(ref segments, rotation, i, segments.Length-1);
         }
         /// <summary>
         /// Forward kinematic function
         /// </summary>
-        /// <param name="bones">The kinamatic chain, array of bones</param>
+        /// <param name="segments">The kinamatic chain, array of segments</param>
         /// <param name="rotation">The rotation to be alplied to the chain</param>
         /// <param name="i">An index of where in the chain the rotation should starts</param>
-        /// <param name="length">The amount of bones in the chain the kinamatics should be applied to</param>
-        protected void ForwardKinematics(ref Bone[] bones, Quaternion rotation, int i, int length)
+        /// <param name="length">The amount of segments in the chain the kinamatics should be applied to</param>
+        protected void ForwardKinematics(ref Segment[] segments, Quaternion rotation, int i, int length)
         {
             for (int j = length; j >= i; j--)
             {
                 if (j > i)
                 {
-                    bones[j].Pos = bones[i].Pos + Vector3.Transform((bones[j].Pos - bones[i].Pos), rotation);
+                    segments[j].Pos = segments[i].Pos + Vector3.Transform((segments[j].Pos - segments[i].Pos), rotation);
                 }
                 // rotate orientation
-                bones[j].Rotate(rotation);
+                segments[j].Rotate(rotation);
             }
         }
     }

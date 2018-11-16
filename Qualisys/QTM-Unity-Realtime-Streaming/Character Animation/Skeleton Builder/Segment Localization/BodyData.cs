@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity.Skeleton
         #region Read only data for body proportions
         public readonly static float MarkerCentreToSkinSurface = 0.009f;
         public readonly static float MarkerToSpineDist = 0.08f; // m
-        public readonly static float MidHeadToHeadJoint = 0.04f; // m
+        public readonly static float MidHeadToHeadOriginDist = 0.04f; // m
         public readonly static float SpineLength = 0.0236f; // m
         public readonly static float BMI = 24; // default
         

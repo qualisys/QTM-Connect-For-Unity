@@ -23,37 +23,37 @@ namespace QualisysRealTime.Unity.Skeleton
     /// </summary>
     class FABRIK : IKSolver
     {
-        override public bool SolveBoneChain(Bone[] bones, Bone target, Bone parent)
+        override public bool SolveSegmentChain(Segment[] segments, Segment target, Segment parent)
         {
             // Calculate distances 
-            float[] distances = GetDistances(ref bones);
+            float[] distances = GetDistances(ref segments);
 
-            double dist = Math.Abs((bones[0].Pos - target.Pos).Length);
+            double dist = Math.Abs((segments[0].Pos - target.Pos).Length);
             if (dist > distances.Sum()) // the target is unreachable
             {
-                TargetUnreachable(bones, target.Pos, parent);
+                TargetUnreachable(segments, target.Pos, parent);
                 return true;
             }
 
             // The target is reachable
-            int numberOfBones = bones.Length;
-            bones[numberOfBones - 1].Orientation = target.Orientation;
-            Vector3 root = bones[0].Pos;
+            int numberOfSegments = segments.Length;
+            segments[numberOfSegments - 1].Orientation = target.Orientation;
+            Vector3 root = segments[0].Pos;
             int iterations = 0;
             float lastDistToTarget = float.MaxValue;
 
-            float distToTarget = (bones[bones.Length - 1].Pos - target.Pos).Length;
+            float distToTarget = (segments[segments.Length - 1].Pos - target.Pos).Length;
             while (distToTarget > distanceThreshold && iterations++ < MaxIterations && distToTarget < lastDistToTarget)
             {
                 // Forward reaching
-                ForwardReaching(ref bones, ref distances, target);
+                ForwardReaching(ref segments, ref distances, target);
                 // Backward reaching
-                BackwardReaching(ref bones, ref distances, root, parent);
+                BackwardReaching(ref segments, ref distances, root, parent);
 
                 lastDistToTarget = distToTarget;
-                distToTarget = (bones[bones.Length - 1].Pos - target.Pos).Length;
+                distToTarget = (segments[segments.Length - 1].Pos - target.Pos).Length;
             }
-            bones[bones.Length - 1].Orientation = target.Orientation;
+            segments[segments.Length - 1].Orientation = target.Orientation;
 
             return (distToTarget <= distanceThreshold);
         }
@@ -62,91 +62,91 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <summary>
         /// The forward reaching phase
         /// </summary>
-        /// <param name="bones"></param>
+        /// <param name="segments"></param>
         /// <param name="distances"></param>
         /// <param name="target"></param>
-        private void ForwardReaching(ref Bone[] bones, ref float[] distances, Bone target)
+        private void ForwardReaching(ref Segment[] segments, ref float[] distances, Segment target)
         {
             
-            bones[bones.Length - 1].Pos = target.Pos;
-            bones[bones.Length - 1].Orientation = target.Orientation; //TODO if bone is endeffector, we should not look at rot constraints
-            for (int i = bones.Length - 2; i >= 0; i--)
+            segments[segments.Length - 1].Pos = target.Pos;
+            segments[segments.Length - 1].Orientation = target.Orientation; //TODO if segment is endeffector, we should not look at rot constraints
+            for (int i = segments.Length - 2; i >= 0; i--)
             {
-                SamePosCheck(ref bones, i);
+                SamePosCheck(ref segments, i);
 
                 // Position
                 Vector3 newPos;
-                float r = (bones[i + 1].Pos - bones[i].Pos).Length;
+                float r = (segments[i + 1].Pos - segments[i].Pos).Length;
                 float l = distances[i] / r;
 
-                newPos = (1 - l) * bones[i + 1].Pos + l * bones[i].Pos;
+                newPos = (1 - l) * segments[i + 1].Pos + l * segments[i].Pos;
 
-                bones[i].Pos = newPos;
+                segments[i].Pos = newPos;
 
                 // Orientation
-                bones[i].RotateTowards(bones[i + 1].Pos - bones[i].Pos);
+                segments[i].RotateTowards(segments[i + 1].Pos - segments[i].Pos);
             }
         }
         /// <summary>
         /// The backwards reaching phase
         /// </summary>
-        /// <param name="bones"></param>
+        /// <param name="segments"></param>
         /// <param name="distances"></param>
         /// <param name="root"></param>
         /// <param name="parent"></param>
-        private void BackwardReaching(ref Bone[] bones, ref float[] distances, Vector3 root, Bone parent)
+        private void BackwardReaching(ref Segment[] segments, ref float[] distances, Vector3 root, Segment parent)
         {
 
-            bones[0].Pos = root;
+            segments[0].Pos = root;
 
-            for (int i = 0; i < bones.Length - 1; i++)
+            for (int i = 0; i < segments.Length - 1; i++)
             {
-                SamePosCheck(ref bones, i);
+                SamePosCheck(ref segments, i);
                 Vector3 newPos;
                 // Position
-                float r = (bones[i + 1].Pos - bones[i].Pos).Length;
+                float r = (segments[i + 1].Pos - segments[i].Pos).Length;
                 float l = distances[i] / r;
 
-                newPos = (1 - l) * bones[i].Pos + l * bones[i + 1].Pos;
+                newPos = (1 - l) * segments[i].Pos + l * segments[i + 1].Pos;
 
-                Bone prevBone = (i > 0) ? bones[i - 1] : parent;
-                bones[i + 1].Pos = newPos;
+                Segment prevSegments = (i > 0) ? segments[i - 1] : parent;
+                segments[i + 1].Pos = newPos;
                 // Orientation
-                bones[i].RotateTowards(bones[i + 1].Pos - bones[i].Pos,bones[i].Stiffness);
-                if (bones[i].HasConstraints)
+                segments[i].RotateTowards(segments[i + 1].Pos - segments[i].Pos,segments[i].Stiffness);
+                if (segments[i].HasConstraints)
                 {
                     Quaternion rot;
-                    if (constraints.CheckOrientationalConstraint(bones[i], prevBone, out rot))
+                    if (constraints.CheckOrientationalConstraint(segments[i], prevSegments, out rot))
                     {
-                        bones[i].Rotate(rot);
+                        segments[i].Rotate(rot);
                     }
 
                 }
             }
         }
         /// <summary>
-        /// Checks whether two bones has the same position or not, then moves the bone a small amount
+        /// Checks whether two segments has the same position or not, then moves the segment a small amount
         /// </summary>
-        /// <param name="bones">The bones to be checked</param>
-        /// <param name="i">A inded of where in the array of bones we should start looking</param>
-        private void SamePosCheck(ref Bone[] bones, int i) {
-            if (bones[i+1].Pos == bones[i].Pos)
+        /// <param name="segments">The segments to be checked</param>
+        /// <param name="i">A inded of where in the array of segments we should start looking</param>
+        private void SamePosCheck(ref Segment[] segments, int i) {
+            if (segments[i+1].Pos == segments[i].Pos)
             {
                 float small = 0.001f;
                 // move one of them a small distance along the chain
-                if (i+2 < bones.Length)
+                if (i+2 < segments.Length)
                 {
-                    Vector3 pushed = Vector3.Normalize(bones[i + 2].Pos - bones[i + 1].Pos) * small;
-                        bones[i + 1].Pos += 
+                    Vector3 pushed = Vector3.Normalize(segments[i + 2].Pos - segments[i + 1].Pos) * small;
+                        segments[i + 1].Pos += 
                             !pushed.IsNaN() ? 
                             pushed : 
                             new Vector3(small, small, small); ;
                 }
                 else if (i - 1 >= 0)
                 {
-                    Vector3 pushed = bones[i - 1].Pos +
-                        Vector3.Normalize(bones[i - 1].Pos - bones[i].Pos) * small;
-                    bones[i].Pos += !pushed.IsNaN() ? pushed : new Vector3(small, small, small); ;
+                    Vector3 pushed = segments[i - 1].Pos +
+                        Vector3.Normalize(segments[i - 1].Pos - segments[i].Pos) * small;
+                    segments[i].Pos += !pushed.IsNaN() ? pushed : new Vector3(small, small, small); ;
                 }
             }
         }

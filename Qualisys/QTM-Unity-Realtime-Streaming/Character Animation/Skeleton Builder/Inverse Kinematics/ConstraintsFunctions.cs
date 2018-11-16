@@ -18,45 +18,45 @@ using OpenTK;
 namespace QualisysRealTime.Unity.Skeleton
 {
     /// <summary>
-    /// This class contains the functions for ensuring constraints of a bone
+    /// This class contains the functions for ensuring constraints of a segment
     /// </summary>
     class ConstraintsFunctions
     {
-        // An orientational constraint is the twist of the bone around its own direction vector
+        // An orientational constraint is the twist of the segment around its own direction vector
         // with respect to its parent
         // It is defined as an allowed range betwen angles [start,end]
         // where start != end && 0 < start, end <= 360
         // If both start and end is 0 no twist constraint exist
         /// <summary>
-        /// Checks if the bone has a legal rotation in regards to its parent, returns true if legal, false otherwise.
-        /// The out rotation gives the rotation the bone should be applied to to be inside the twist constraints
+        /// Checks if the segment has a legal rotation in regards to its parent, returns true if legal, false otherwise.
+        /// The out rotation gives the rotation the segment should be applied to to be inside the twist constraints
         /// </summary>
-        /// <param name="b">The bone under consideration</param>
-        /// <param name="refBone">The parent of the bone, to check whether the child has legal rotation</param>
-        /// <param name="rotation">The rotation bone b should applie to be inside the constraints</param>
+        /// <param name="segment">The segment under consideration</param>
+        /// <param name="refSegment">The parent of the segment, to check whether the child has legal rotation</param>
+        /// <param name="rotation">The rotation segment b should applie to be inside the constraints</param>
         /// <returns></returns>
-        public bool CheckOrientationalConstraint(Bone b, Bone refBone, out Quaternion rotation)
+        public bool CheckOrientationalConstraint(Segment segment, Segment refSegment, out Quaternion rotation)
         {
-            if (b.Orientation.Xyz.IsNaN() || refBone.Orientation.Xyz.IsNaN())
+            if (segment.Orientation.Xyz.IsNaN() || refSegment.Orientation.Xyz.IsNaN())
             {
                 rotation = Quaternion.Identity;
                 return false;
             }
-            Vector3 thisY = b.GetYAxis();
-            Quaternion referenceRotation = refBone.Orientation * b.ParentPointer;
+            Vector3 thisY = segment.GetYAxis();
+            Quaternion referenceRotation = refSegment.Orientation * segment.ParentPointer;
             Vector3 reference = Vector3.Transform(
                     Vector3.Transform(Vector3.UnitZ, referenceRotation),
                     QuaternionHelper2.GetRotationBetween(
                             Vector3.Transform(Vector3.UnitY, referenceRotation),
                             thisY));
 
-            float twistAngle = MathHelper.RadiansToDegrees(Vector3.CalculateAngle(reference, b.GetZAxis()));
+            float twistAngle = MathHelper.RadiansToDegrees(Vector3.CalculateAngle(reference, segment.GetZAxis()));
 
-            if (Vector3.CalculateAngle(reference, b.GetXAxis()) > Mathf.PI / 2) // b is twisted left with respect to parent
+            if (Vector3.CalculateAngle(reference, segment.GetXAxis()) > Mathf.PI / 2) // b is twisted left with respect to parent
                 twistAngle = 360 - twistAngle;
 
-            float leftLimit = b.StartTwistLimit;
-            float rightLimit = b.EndTwistLimit;
+            float leftLimit = segment.StartTwistLimit;
+            float rightLimit = segment.EndTwistLimit;
 
             float precision = 0.5f;
             bool inside = (leftLimit >= rightLimit) ? // The allowed range is on both sides of the reference vector
@@ -85,37 +85,37 @@ namespace QualisysRealTime.Unity.Skeleton
             return false;
         }
         /// <summary>
-        /// What quadrant the bone is in regarding
+        /// What quadrant the segment is in regarding
         /// </summary>
         private enum Quadrant { q1, q2, q3, q4 };
         private float precision = 0.01f;
         /// <summary>
-        /// Check the positional constraints of the bone, if the bone is inside the legal cone, returns true, otherwise false
+        /// Check the positional constraints of the segment, if the segment is inside the legal cone, returns true, otherwise false
         /// Originally modeled from Andreas Aristidou and Joan Lasenby FABRIK: A fast, iterative solver for the Inverse Kinematics problem
         /// </summary>
-        /// <param name="joint">The bone to be checked if its has a legal position</param>
+        /// <param name="segment">The segment to be checked if its has a legal position</param>
         /// <param name="parentsRots">The rotation if the parent</param>
-        /// <param name="target">The position of the joint</param>
-        /// <param name="res">The resulting position, the legal position of the bone if its legal, the same as target otherwise</param>
-        /// <param name="rot">The rotation that should be applied to the bone if it has a illegal rotation, Identity otherwise</param>
+        /// <param name="target">The position of the segment</param>
+        /// <param name="res">The resulting position, the legal position of the segment if its legal, the same as target otherwise</param>
+        /// <param name="rot">The rotation that should be applied to the segment if it has a illegal rotation, Identity otherwise</param>
         /// <returns></returns>
-        public bool CheckRotationalConstraints(Bone joint, Quaternion parentsRots, Vector3 target, out Vector3 res, out Quaternion rot)
+        public bool CheckRotationalConstraints(Segment segment, Quaternion parentsRots, Vector3 target, out Vector3 res, out Quaternion rot)
         {
-            Quaternion referenceRotation = parentsRots * joint.ParentPointer;
+            Quaternion referenceRotation = parentsRots * segment.ParentPointer;
             Vector3 L1 = Vector3.Normalize(Vector3.Transform(Vector3.UnitY, referenceRotation));
 
-            Vector3 jointPos = joint.Pos;
-            Vector4 constraints = joint.Constraints;
+            Vector3 segmentPos = segment.Pos;
+            Vector4 constraints = segment.Constraints;
             Vector3 targetPos = new Vector3(target.X, target.Y, target.Z);
-            Vector3 joint2Target = (targetPos - jointPos);
+            Vector3 segment2target = (targetPos - segmentPos);
 
             bool behind = false;
             bool reverseCone = false;
             bool sideCone = false;
             //3.1 Find the line equation L1
             //3.2 Find the projection O of the target t on line L1
-            Vector3 O = Vector3Helper.Project(joint2Target, L1);
-            if (Math.Abs(Vector3.Dot(L1, joint2Target)) < precision) // target is ortogonal with L1
+            Vector3 O = Vector3Helper.Project(segment2target, L1);
+            if (Math.Abs(Vector3.Dot(L1, segment2target)) < precision) // target is ortogonal with L1
             {
                 O = Vector3.NormalizeFast(L1) * precision;
             }
@@ -123,14 +123,14 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 behind = true;
             }
-            //3.3 Find the distance between the point O and the joint position
+            //3.3 Find the distance between the point O and the segment position
             float S = O.Length;
 
             //3.4 Map the target (rotate and translate) in such a
             //way that O is now located at the axis origin and oriented
             //according to the x and y-axis ) Now it is a 2D simplified problem
             Quaternion rotation = Quaternion.Invert(referenceRotation);//Quaternion.Invert(parent.Orientation);
-            Vector3 TRotated = Vector3.Transform(joint2Target, rotation); // align joint2target vector to  y axis get x z offset
+            Vector3 TRotated = Vector3.Transform(segment2target, rotation); // align segment2target vector to  y axis get x z offset
             Vector2 target2D = new Vector2(TRotated.X, TRotated.Z); //only intrested in the X Z cordinates
             //3.5 Find in which quadrant the target belongs 
             // Locate target in a particular quadrant
@@ -180,10 +180,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 float angle = Vector3.CalculateAngle(L2, L1);
                 Vector3 axis = Vector3.Cross(L2, L1);
                 rotation = rotation * Quaternion.FromAxisAngle(axis, angle);
-                TRotated = Vector3.Transform(joint2Target, rotation);
+                TRotated = Vector3.Transform(segment2target, rotation);
                 target2D = new Vector2(TRotated.X, TRotated.Z);
-                O = Vector3Helper.Project(joint2Target, L2);
-                if (Math.Abs(Vector3.Dot(L2, joint2Target)) < precision) // target is ortogonal with L2
+                O = Vector3Helper.Project(segment2target, L2);
+                if (Math.Abs(Vector3.Dot(L2, segment2target)) < precision) // target is ortogonal with L2
                 {
                     O = Vector3.Normalize(L2) * precision;
                 }
@@ -238,10 +238,10 @@ namespace QualisysRealTime.Unity.Skeleton
                 //the new target position
                 rotation = Quaternion.Invert(rotation);
                 Vector3 vectorToMoveTo = Vector3.Transform(newPointV3, rotation) + O;
-                Vector3 axis = Vector3.Cross(joint2Target, vectorToMoveTo);
-                float angle = Vector3.CalculateAngle(joint2Target, vectorToMoveTo);
+                Vector3 axis = Vector3.Cross(segment2target, vectorToMoveTo);
+                float angle = Vector3.CalculateAngle(segment2target, vectorToMoveTo);
                 rot = Quaternion.FromAxisAngle(axis, angle);
-                res = Vector3.Transform(joint2Target, rot) + jointPos;
+                res = Vector3.Transform(segment2target, rot) + segmentPos;
                 return true;
             }
             //3.14 end
@@ -250,7 +250,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// The new line on which the cone should be modeled around
         /// </summary>
         /// <param name="rotation">The rotation of the cone</param>
-        /// <param name="q">The quadrant the bone is inside</param>
+        /// <param name="q">The quadrant the segment is inside</param>
         /// <param name="radius">The x,y radius of the cone</param>
         /// <returns>The new Line on which the cone should be modeled</returns>
         private Vector3 GetNewL(Quaternion rotation, Quadrant q, Vector2 radius)

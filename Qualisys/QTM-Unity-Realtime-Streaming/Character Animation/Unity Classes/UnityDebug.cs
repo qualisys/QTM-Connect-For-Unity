@@ -24,19 +24,19 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <summary>
         /// Draws the twist constraints accoriding in Unity using Giszmos
         /// </summary>
-        /// <param name="b">The bone with its constraints</param>
-        /// <param name="refBone">The to be twisted against</param>
+        /// <param name="b">The segment with its constraints</param>
+        /// <param name="refSegment">The to be twisted against</param>
         /// <param name="poss">The position of where it should be drawn</param>
         /// <param name="scale">The scale of the constraints</param>
-        public static void DrawTwistConstraints(Bone b, Bone refBone, OpenTK.Vector3 poss, float scale)
+        public static void DrawTwistConstraints(Segment b, Segment refSegment, OpenTK.Vector3 poss, float scale)
         {
-            if (b.Orientation.Xyz.IsNaN() || refBone.Orientation.Xyz.IsNaN())
+            if (b.Orientation.Xyz.IsNaN() || refSegment.Orientation.Xyz.IsNaN())
             {
                 return;
             }
             OpenTK.Vector3 thisY = b.GetYAxis();
 
-            OpenTK.Quaternion referenceRotation = refBone.Orientation * b.ParentPointer;
+            OpenTK.Quaternion referenceRotation = refSegment.Orientation * b.ParentPointer;
             OpenTK.Vector3 parentY = OpenTK.Vector3.Transform(OpenTK.Vector3.UnitY, referenceRotation);
             OpenTK.Vector3 parentZ = OpenTK.Vector3.Transform(OpenTK.Vector3.UnitZ, referenceRotation);
 
@@ -58,9 +58,9 @@ namespace QualisysRealTime.Unity.Skeleton
 
             Debug.DrawLine((poss + (m*scale)).Convert(), (poss + (m2*scale)).Convert(), Color.cyan);
         }
-        public static void DrawTwistConstraints(Bone b, Bone refBone, OpenTK.Vector3 poss)
+        public static void DrawTwistConstraints(Segment b, Segment refSegment, OpenTK.Vector3 poss)
         {
-            DrawTwistConstraints(b, refBone, poss, 0.1f);
+            DrawTwistConstraints(b, refSegment, poss, 0.1f);
         }
         /// <summary>
         /// Using Unity Debug, draws the x,y,z axis of a Quaternion as x red, y green and z blue

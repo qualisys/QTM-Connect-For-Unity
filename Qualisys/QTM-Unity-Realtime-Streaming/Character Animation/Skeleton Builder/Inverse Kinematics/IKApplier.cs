@@ -20,7 +20,7 @@ using System.Linq;
 namespace QualisysRealTime.Unity.Skeleton
 {
     /// <summary>
-    /// Class for predicting missing joints position from a skeleton
+    /// Class for predicting missing segment position from a skeleton
     /// </summary>
     class IKApplier
     {
@@ -50,56 +50,56 @@ namespace QualisysRealTime.Unity.Skeleton
             lastSkel = skeleton;
         }
         /// <summary>
-        /// The function applied to each bone in the skeleton
+        /// The function applied to each segment in the skeleton
         /// </summary>
-        /// <param name="bone">The skeleton, a tree of bones</param>
-        private void TraversFunc(TreeNode<Bone> bone)
+        /// <param name="segment">The skeleton, a tree of segments</param>
+        private void TraversFunc(TreeNode<Segment> segment)
         {
-            if (!bone.Data.Exists)
+            if (!segment.Data.Exists)
             {
-                if (bone.IsRoot || bone.Parent.IsRoot) return;
+                if (segment.IsRoot || segment.Parent.IsRoot) return;
                 if (
-                       bone.Data.Name.Equals(Joint.CLAVICLE_L)
-                    || bone.Data.Name.Equals(Joint.CLAVICLE_R)
-                    || bone.Data.Name.Equals(Joint.TRAP_L)
-                    || bone.Data.Name.Equals(Joint.TRAP_R)) 
+                       segment.Data.Name.Equals(SegmentName.CLAVICLE_L)
+                    || segment.Data.Name.Equals(SegmentName.CLAVICLE_R)
+                    || segment.Data.Name.Equals(SegmentName.TRAP_L)
+                    || segment.Data.Name.Equals(SegmentName.TRAP_R)) 
                 {
-                    bone.Data.Pos = new Vector3(bone.Parent.Data.Pos); 
-                    bone.Data.Orientation = QuaternionHelper2.LookAtUp(
-                        bone.Data.Pos,
-                        bone.Children.First().Data.Pos,
-                        bone.Parent.Data.GetZAxis());
+                    segment.Data.Pos = new Vector3(segment.Parent.Data.Pos); 
+                    segment.Data.Orientation = QuaternionHelper2.LookAtUp(
+                        segment.Data.Pos,
+                        segment.Children.First().Data.Pos,
+                        segment.Parent.Data.GetZAxis());
                     return;
                 }
-                MissingJoint(bone);
+                MissingSegment(segment);
             }
         }
         /// <summary>
         /// If a joints is missing from the skeletontree, fill the joints with the previus frames joints and solve with ik if a joint is found, or return the previus frames joint pos offseted the new position
         /// </summary>
-        /// <param name="skelEnum">The enumurator to the missing bone position</param>
-        /// <param name="lastSkelEnum">The enumurator to the missing bone position from the last skeleton</param>
-        private void MissingJoint(TreeNode<Bone> missingJoint)
+        /// <param name="skelEnum">The enumurator to the missing segment position</param>
+        /// <param name="lastSkelEnum">The enumurator to the missing segment position from the last skeleton</param>
+        private void MissingSegment(TreeNode<Segment> missingJoint)
         {
             // missings joints parent from last frame is root in solution
             //root of chain 
-            TreeNode<Bone> lastSkelBone = lastSkel.Root.FindTreeNode(node => node.Data.Name.Equals(missingJoint.Data.Name));
-            List<Bone> missingChain = new List<Bone>(); // chain to be solved
+            TreeNode<Segment> lastSkelSegment = lastSkel.Root.FindTreeNode(node => node.Data.Name.Equals(missingJoint.Data.Name));
+            List<Segment> missingChain = new List<Segment>(); // chain to be solved
             // The root if the chain
-            Vector3 offset = missingJoint.Parent.Data.Pos - lastSkelBone.Parent.Data.Pos; // offset to move last frames chain to this frames' position
-            CopyFromLast(missingJoint.Parent.Data, lastSkelBone.Parent.Data);
+            Vector3 offset = missingJoint.Parent.Data.Pos - lastSkelSegment.Parent.Data.Pos; // offset to move last frames chain to this frames' position
+            CopyFromLast(missingJoint.Parent.Data, lastSkelSegment.Parent.Data);
             missingJoint.Parent.Data.Pos += offset;
             missingChain.Add(missingJoint.Parent.Data);
             bool iksolved = false;
-            IEnumerator lastSkelEnum = lastSkelBone.GetEnumerator();
-            Bone last;
+            IEnumerator lastSkelEnum = lastSkelSegment.GetEnumerator();
+            Segment last;
             foreach(var curr in missingJoint)
             {
                 lastSkelEnum.MoveNext();
-                last = ((TreeNode<Bone>)lastSkelEnum.Current).Data;
+                last = ((TreeNode<Segment>)lastSkelEnum.Current).Data;
                 if (curr.Data.Exists) // target found! it the last in list
                 {
-                    Bone target = new Bone(
+                    Segment target = new Segment(
                         curr.Data.Name,
                         new Vector3(curr.Data.Pos)
                         );
@@ -111,9 +111,9 @@ namespace QualisysRealTime.Unity.Skeleton
                     CopyFromLast(curr.Data, last);
                     curr.Data.Pos += offset;
                     missingChain.Add(curr.Data);
-                    if (!IKSolver.SolveBoneChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data))// solve with IK
+                    if (!IKSolver.SolveSegmentChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data))// solve with IK
                     {
-                        FABRIK.SolveBoneChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data);
+                        FABRIK.SolveSegmentChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data);
                     }
                         
                     iksolved = true;
@@ -128,7 +128,7 @@ namespace QualisysRealTime.Unity.Skeleton
             if (!iksolved)
             {
                 var q2 = missingJoint.Parent.Parent.Data.Orientation;
-                var q1 = lastSkelBone.Parent.Parent.Data.Orientation;
+                var q1 = lastSkelSegment.Parent.Parent.Data.Orientation;
                 FK(missingJoint.Parent, (q2 * Quaternion.Invert(q1)));
             }
             ConstraintsBeforeReturn(missingJoint.Parent, false);
@@ -138,25 +138,25 @@ namespace QualisysRealTime.Unity.Skeleton
             }
         }
         /// <summary>
-        /// Copy the position and orientation from one bone to another
+        /// Copy the position and orientation from one segment to another
         /// </summary>
-        /// <param name="curr">The bone to be copied to</param>
-        /// <param name="last">The bone to be copied from</param>
-        private void CopyFromLast(Bone curr, Bone last)
+        /// <param name="curr">The segment to be copied to</param>
+        /// <param name="last">The segment to be copied from</param>
+        private void CopyFromLast(Segment curr, Segment last)
         {
             curr.Pos = new Vector3(last.Pos);
             curr.Orientation = new Quaternion(new Vector3(last.Orientation.Xyz), last.Orientation.W);
         }
 
         /// <summary>
-        /// Checks wheter all bones is in a legal rotation and position and fixing there rotaion is that is the case
+        /// Checks wheter all segments is in a legal rotation and position and fixing there rotaion is that is the case
         /// </summary>
-        /// <param name="bone">The skeleton, a tree of bones</param>
+        /// <param name="segment">The skeleton, a tree of segments</param>
         /// <returns>true if any changes has been applied to the skeleton</returns>
-        private bool ConstraintsBeforeReturn(TreeNode<Bone> bone, bool rotational = true)
+        private bool ConstraintsBeforeReturn(TreeNode<Segment> segment, bool rotational = true)
         {
             bool anychange = false;
-            foreach (var tnb in bone)
+            foreach (var tnb in segment)
             {
                 if (tnb.IsRoot || tnb.IsLeaf) continue;
                 if (!tnb.Data.HasNaN && tnb.Data.HasConstraints)
@@ -190,32 +190,32 @@ namespace QualisysRealTime.Unity.Skeleton
             return anychange;
         }
         /// <summary>
-        /// Test wheter a bone has moved unatural much since last frame
+        /// Test wheter a segment has moved unatural much since last frame
         /// </summary>
-        /// <param name="bones">The skeleton, a tree of bones</param>
+        /// <param name="segments">The skeleton, a tree of segments</param>
         /// <returns>True if any changes has been applied to the skeleton</returns>
-        private bool JerkingTest(TreeNode<Bone> bones, bool pos = true, bool rot = true)
+        private bool JerkingTest(TreeNode<Segment> segments, bool pos = true, bool rot = true)
         {
             bool hasChanges = false;
-            foreach (TreeNode<Bone> bone in bones)
+            foreach (TreeNode<Segment> segment in segments)
             {
-                if (bone.IsRoot || bone.Data.HasNaN) continue;
-                Bone lastFrameBone = lastSkel.Root.FindTreeNode(tn => tn.Data.Name == bone.Data.Name).Data;
+                if (segment.IsRoot || segment.Data.HasNaN) continue;
+                Segment lastFrameSegment = lastSkel.Root.FindTreeNode(tn => tn.Data.Name == segment.Data.Name).Data;
 
                 #region Poss
-                if (pos && bone != bones)
+                if (pos && segment != segments)
                 { 
-                    Vector3 posInitial = lastFrameBone.Pos;
-                    Vector3 diffInitToFinalVec = (bone.Data.Pos - posInitial);
+                    Vector3 posInitial = lastFrameSegment.Pos;
+                    Vector3 diffInitToFinalVec = (segment.Data.Pos - posInitial);
                     if (diffInitToFinalVec.Length > 0.025f)
                     {
                         diffInitToFinalVec.NormalizeFast();
                         diffInitToFinalVec *= 0.025f;
                         Quaternion rotToNewPos =
                             QuaternionHelper2.RotationBetween(
-                                    bone.Parent.Data.GetYAxis(),
-                                    ((posInitial + diffInitToFinalVec) - bone.Parent.Data.Pos));
-                        FK(bone.Parent, rotToNewPos);
+                                    segment.Parent.Data.GetYAxis(),
+                                    ((posInitial + diffInitToFinalVec) - segment.Parent.Data.Pos));
+                        FK(segment.Parent, rotToNewPos);
                         hasChanges = true;
                     }
                 }
@@ -223,9 +223,9 @@ namespace QualisysRealTime.Unity.Skeleton
                 #region Rots
                 if (rot)
                 {
-                    Quaternion oriFinal = bone.Data.Orientation;
-                    Quaternion oriInitial = lastFrameBone.Orientation;
-                    if (!bone.IsLeaf)
+                    Quaternion oriFinal = segment.Data.Orientation;
+                    Quaternion oriInitial = lastFrameSegment.Orientation;
+                    if (!segment.IsLeaf)
                     {
                         float quatDiff = QuaternionHelper2.DifferenceBetween(oriFinal, oriInitial);
                         if (quatDiff > 0.03f)
@@ -234,7 +234,7 @@ namespace QualisysRealTime.Unity.Skeleton
                             Quaternion qTrans = Quaternion.Invert(
                                 Quaternion.Slerp(oriInitial, oriFinal, slerp) 
                                 * Quaternion.Invert(oriInitial));
-                            FK(bone, qTrans);
+                            FK(segment, qTrans);
                             hasChanges = true;
                         }
                     }
@@ -248,11 +248,11 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         /// <param name="bvn">The first joint to be rotated</param>
         /// <param name="rotation"> The quaternion to rotate by</param>
-        private void FK(TreeNode<Bone> bvn, Quaternion rotation)
+        private void FK(TreeNode<Segment> bvn, Quaternion rotation)
         {
             if (bvn.IsLeaf || bvn.IsRoot) return;
             Vector3 root = new Vector3(bvn.Data.Pos);
-            foreach (TreeNode<Bone> t in bvn)
+            foreach (TreeNode<Segment> t in bvn)
             {
                 if (!t.Data.Exists) break;
                 if (t != bvn)

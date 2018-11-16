@@ -24,7 +24,7 @@ namespace QualisysRealTime.Unity.Skeleton
         private BipedSkeleton skeleton;
         private BipedSkeleton skeletonBuffer;
         private MarkersPreprocessor markerPreprocessor;
-        private JointLocalization joints;
+        private SegmentLocalization segments;
         private IKApplier ikApplier;
         private SegmentTracking segmentTracking;
         
@@ -48,14 +48,14 @@ namespace QualisysRealTime.Unity.Skeleton
             if (skeleton == null || 
                 skeletonBuffer == null || 
                 markerPreprocessor == null || 
-                joints == null || 
+                segments == null || 
                 ikApplier == null)
             {
                 skeleton = new BipedSkeleton();
                 skeletonBuffer = new BipedSkeleton();
                 MarkersNames markersMap;
                 markerPreprocessor = new MarkersPreprocessor(markerData, out markersMap, bodyPrefix: MarkerPrefix);
-                joints = new JointLocalization(markersMap);
+                segments = new SegmentLocalization(markersMap);
                 ikApplier = new IKApplier(skeleton);
 
                 // Set segment tracking markers for virtual marker construction
@@ -70,9 +70,9 @@ namespace QualisysRealTime.Unity.Skeleton
             markerPreprocessor.UpdateMarkerList(markerData, out markers);
             markerPreprocessor.ProcessMarkers(out markers);
 
-            joints.BodyData.Height = BodyHeight;
-            joints.BodyData.Mass = BodyMass;
-            joints.GetJointLocations(markers, ref skeleton);
+            segments.BodyData.Height = BodyHeight;
+            segments.BodyData.Mass = BodyMass;
+            segments.GetJointLocations(markers, ref skeleton);
 
             // Try to reconstruct virtual markers
             if (UseTrackingMarkers)
@@ -80,7 +80,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 if (segmentTracking.ProcessMarkers(skeleton, markerData, ref markers, MarkerPrefix))
                 {
                     markerPreprocessor.ProcessMarkers(out markers);
-                    joints.GetJointLocations(markers, ref skeleton);
+                    segments.GetJointLocations(markers, ref skeleton);
                 }
             }
 

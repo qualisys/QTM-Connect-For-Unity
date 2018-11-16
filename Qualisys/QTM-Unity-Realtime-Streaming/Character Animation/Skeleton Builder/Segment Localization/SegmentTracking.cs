@@ -23,7 +23,7 @@ namespace QualisysRealTime.Unity.Skeleton
 		private BipedSkeleton skeleton;
 		private MarkersNames markerNames;
 		private Dictionary<string, Vector3> markers = new Dictionary<string, Vector3>();
-		private Dictionary<Joint, Dictionary<string, Vector3>> segments = new Dictionary<Joint, Dictionary<string, Vector3>>();
+		private Dictionary<SegmentName, Dictionary<string, Vector3>> segments = new Dictionary<SegmentName, Dictionary<string, Vector3>>();
 
 		private readonly string ORIGIN = "ORIGIN";
         //private readonly string DEBUG_MARKER = "L_HME";
@@ -57,7 +57,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 "L_PSIS", // Additional Tracking Marker
                 "R_PSIS"  // Additional Tracking Marker
 			};
-            this.addTrackingMarkers(Joint.PELVIS, labels);
+            this.addTrackingMarkers(SegmentName.PELVIS, labels);
 
             // Chest
             labels = new string[] {
@@ -66,7 +66,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 markerNames.chest,
                 "STRN" // Additional Tracking Marker
 			};
-            this.addTrackingMarkers(Joint.SPINE3, labels);
+            this.addTrackingMarkers(SegmentName.SPINE3, labels);
 
             // Left Upper Arm
             labels = new string[] {
@@ -75,7 +75,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.leftOuterElbow,
 				"L_UPA" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.SHOULDER_L, labels);
+			this.addTrackingMarkers(SegmentName.SHOULDER_L, labels);
 
 			// Right Upper Arm
 			labels = new string[] {
@@ -84,7 +84,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.rightOuterElbow,
 				"R_UPA" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.SHOULDER_R, labels);
+			this.addTrackingMarkers(SegmentName.SHOULDER_R, labels);
 
 			// Left Lower Arm
 			labels = new string[] {
@@ -92,7 +92,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.leftWristRadius,
 				"L_FRA" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.ELBOW_L, labels);
+			this.addTrackingMarkers(SegmentName.ELBOW_L, labels);
 
 			// Right Lower Arm
 			labels = new string[] {
@@ -100,7 +100,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.rightWristRadius,
 				"R_FRA" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.ELBOW_R, labels);
+			this.addTrackingMarkers(SegmentName.ELBOW_R, labels);
 
 			// Left Thigh
 			labels = new string[] {
@@ -109,7 +109,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.leftOuterKnee,
 				"L_THI" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.HIP_L, labels);
+			this.addTrackingMarkers(SegmentName.HIP_L, labels);
 
 			// Right Thigh
 			labels = new string[] {
@@ -118,7 +118,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.rightOuterKnee,
 				"R_THI" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.HIP_R, labels);
+			this.addTrackingMarkers(SegmentName.HIP_R, labels);
 
 			// Left Shank
 			labels = new string[] {
@@ -127,7 +127,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.leftOuterAnkle,
 				"L_TIB" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.KNEE_L, labels);
+			this.addTrackingMarkers(SegmentName.KNEE_L, labels);
 
 			// Right Shank
 			labels = new string[] {
@@ -136,7 +136,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				markerNames.rightOuterAnkle,
 				"R_TIB" // Additional Tracking Marker
 			};
-			this.addTrackingMarkers(Joint.KNEE_R, labels);
+			this.addTrackingMarkers(SegmentName.KNEE_R, labels);
 		}
 
 		/// <summary>
@@ -222,7 +222,7 @@ namespace QualisysRealTime.Unity.Skeleton
 		/// </summary>
 		/// <param name="segment">Segment.</param>
 		/// <param name="labels">Labels.</param>
-		private void addTrackingMarkers(Joint segment, string [] labels) 
+		private void addTrackingMarkers(SegmentName segment, string [] labels) 
 		{
 			var trackingMarkers = new Dictionary<string, Vector3>();
 			trackingMarkers.Add(ORIGIN, Vector3Helper.NaN);
@@ -240,7 +240,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// // Update tracking marker positions
         /// </summary>
         /// <param name="segment"></param>
-        private void updateTrackingMarkers(Joint segment)
+        private void updateTrackingMarkers(SegmentName segment)
         {
             List<string> labelList = new List<string>(this.segments[segment].Keys);
             foreach (var label in labelList)
@@ -254,7 +254,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// </summary>
         /// <returns><c>true</c>, if is tracked was segmented, <c>false</c> otherwise.</returns>
         /// <param name="segment">Segment.</param>
-        private bool segmentIsTracked(Joint segment)
+        private bool segmentIsTracked(SegmentName segment)
 		{
 			Dictionary<string, Vector3> trackingMarkers = this.segments[segment];
 
@@ -276,7 +276,7 @@ namespace QualisysRealTime.Unity.Skeleton
 		/// <param name="segment">Segment.</param>
 		/// <param name="availableMarkers">Available markers.</param>
 		/// <param name="unavailableMarkers">Unavailable markers.</param>
-		private void createVirtualMarkers(Joint segment, List<string> availableMarkers, List<string> unavailableMarkers)
+		private void createVirtualMarkers(SegmentName segment, List<string> availableMarkers, List<string> unavailableMarkers)
 		{
 			foreach(var um in unavailableMarkers) 
 			{
@@ -290,7 +290,7 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <param name="segment">Segment.</param>
         /// <param name="availableMarkers">Available markers.</param>
         /// <param name="unavailableMarker">Unavailable marker.</param>
-        private void createVirtualMarker(Joint segment, List<string> availableMarkers, string unavailableMarker)
+        private void createVirtualMarker(SegmentName segment, List<string> availableMarkers, string unavailableMarker)
         {
             if (DEBUG.enabled) UnityEngine.Debug.Log("Create virtual marker " + unavailableMarker + " for segment " + segment);
 

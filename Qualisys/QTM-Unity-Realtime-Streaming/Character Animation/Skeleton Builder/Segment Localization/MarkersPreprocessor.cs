@@ -39,7 +39,7 @@ namespace QualisysRealTime.Unity.Skeleton
         private MarkersNames m;
 
         /// <summary>
-        /// Constructor sets the markers name in the MarkesName class used for joint localization
+        /// Constructor sets the markers name in the MarkesName class used for segment localization
         /// </summary>
         /// <param name="labelMarkers">The list of labelmarkets</param>
         /// <param name="markerNames">A reference to the markers names</param>

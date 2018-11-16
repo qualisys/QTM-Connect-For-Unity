@@ -17,12 +17,12 @@ using UnityEngine;
 
 namespace QualisysRealTime.Unity.Skeleton {
     /// <summary>
-    /// Class for identifying biped bones based on most common naming conventions.
+    /// Class for identifying biped segments based on most common naming conventions.
     /// </summary>
-    public class JointNamings {
+    public class SegmentNamings {
         
         /// <summary>
-        /// Type of the bone.
+        /// Type of the segment.
         /// </summary>
         [System.Serializable]
         public enum JointObject
@@ -37,7 +37,7 @@ namespace QualisysRealTime.Unity.Skeleton {
             Thumb
         }
         /// <summary>
-        /// Bone side: Left and Right for limbs and Center for spine, head and tail.
+        /// Segment side: Left and Right for limbs and Center for spine, head and tail.
         /// </summary>
         [System.Serializable]
         public enum BodySide
@@ -48,7 +48,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         }
         
         /// <summary>
-        ///  Charcters Joint names
+        ///  Charcters Segment names
         /// </summary>
         public static string[]
             LeftSide = { " L ", "_L_", "-L-", " l ", "_l_", "-l-", "Left", "left", "CATRigL", "CATL" },
@@ -86,11 +86,11 @@ namespace QualisysRealTime.Unity.Skeleton {
             neckExclude = { "Head", "head"};
 
         /// <summary>
-        /// Returns only the bones with the specified JointObject.
+        /// Returns only the segments with the specified JointObject.
         /// </summary>
-        public static Transform[] GetBonesOfType(JointObject type, Transform[] bones)
+        public static Transform[] GetSegmentsOfType(JointObject type, Transform[] segments)
         {
-            return bones.Where(b => (b != null && GetType(b.name) == type)).ToArray();
+            return segments.Where(b => (b != null && GetType(b.name) == type)).ToArray();
         }
 
 
@@ -110,15 +110,15 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// </summary>
         /// <param name="jointType">The type of the joint </param>
         /// <param name="jointSide">The side on wich the joint should be located</param>
-        /// <param name="transforms">The bones to search among</param>
+        /// <param name="transforms">The segments to search among</param>
         /// <returns>Null if no match, otherwise the first hit</returns>
         public static Transform[] GetTypeAndSide(JointObject jointType, BodySide jointSide, Transform[] transforms)
         {
-            return GetJointsOfSide(jointSide, GetBonesOfType(jointType, transforms));
+            return GetJointsOfSide(jointSide, GetSegmentsOfType(jointType, transforms));
         }
         
         /// <summary>
-        /// Returns only the bones that match all the namings in params string[][] namings
+        /// Returns only the segments that match all the namings in params string[][] namings
         /// </summary>
         /// <returns>
         /// The matching Transforms
@@ -137,24 +137,24 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <summary>
         /// Gets the type of the joint.
         /// </summary>
-        /// <param name="boneName">The name of the joint</param>
+        /// <param name="segmentName">The name of the joint</param>
         /// <returns>The enum of the joint name</returns>
-        public static JointObject GetType(string boneName)
+        public static JointObject GetType(string segmentName)
         {
             // Type Neck
-            if (IsType(boneName, neckAlias, neckExclude)) return JointObject.Neck;
+            if (IsType(segmentName, neckAlias, neckExclude)) return JointObject.Neck;
             // Type Spine
-            if (IsType(boneName, spineAlias, spineExclude)) return JointObject.Spine;
+            if (IsType(segmentName, spineAlias, spineExclude)) return JointObject.Spine;
             // Type Head
-            if (IsType(boneName, headAlias, headExclude)) return JointObject.Head;
+            if (IsType(segmentName, headAlias, headExclude)) return JointObject.Head;
             // Type Arm
-            if (IsType(boneName, armAlias, armExclude)) return JointObject.Arm;
+            if (IsType(segmentName, armAlias, armExclude)) return JointObject.Arm;
             // Type Leg
-            if (IsType(boneName, legAlias, legExclude)) return JointObject.Leg;
+            if (IsType(segmentName, legAlias, legExclude)) return JointObject.Leg;
             // Type Finger
-            if (IsType(boneName, fingerAlias, fingerExclude)) return JointObject.Fingers;
+            if (IsType(segmentName, fingerAlias, fingerExclude)) return JointObject.Fingers;
             // Type Thumb
-            if (IsType(boneName, thumbAlias, thumbExclude)) return JointObject.Thumb;
+            if (IsType(segmentName, thumbAlias, thumbExclude)) return JointObject.Thumb;
             return JointObject.Unassigned;
         }
 
@@ -180,7 +180,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="jointSide">The side of which the joint is located</param>
         /// <param name="namings">The Names of the joints</param>
         /// <returns>The transform of the first result</returns>
-        public static Transform GetBone(Transform[] transforms, JointObject jointType, BodySide jointSide = BodySide.Center, params string[][] namings)
+        public static Transform GetSegment(Transform[] transforms, JointObject jointType, BodySide jointSide = BodySide.Center, params string[][] namings)
         {
             return GetMatch(GetTypeAndSide(jointType, jointSide, transforms), namings);
         }

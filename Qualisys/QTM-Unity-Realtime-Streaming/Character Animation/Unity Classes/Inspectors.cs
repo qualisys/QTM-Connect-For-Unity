@@ -42,8 +42,8 @@ namespace QualisysRealTime.Unity.Skeleton {
            public bool ShowMarkers = false;
            [Range(0.001f, 0.05f)]
            public float MarkerScale = 0.01f;
-           public bool MarkerBones = false;
-           public Color boneColor = Color.blue;
+           public bool MarkerSegments = false;
+           public Color segmentColor = Color.blue;
        }
     }
     [System.Serializable]

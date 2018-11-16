@@ -100,68 +100,68 @@ namespace QualisysRealTime.Unity.Skeleton
         /// http://h-anim.org/Specifications/H-Anim200x/ISO_IEC_FCD_19774/
         /// </summary>
         /// <returns></returns>
-        public static TreeNode<Bone> GetHAminSkeleton()
+        public static TreeNode<Segment> GetHAminSkeleton()
         {
-            TreeNode<Bone> root = new TreeNode<Bone>(new Bone(Joint.PELVIS,
+            TreeNode<Segment> root = new TreeNode<Segment>(new Segment(SegmentName.PELVIS,
             HAminStandard.pelvisPos, Quaternion.Identity));
-            #region bone structure
+            #region segment structure
             {
                 #region upper body 
                 #region spine and head
-                TreeNode<Bone> spine0 = root.AddChild(new Bone(Joint.SPINE0,
+                TreeNode<Segment> spine0 = root.AddChild(new Segment(SegmentName.SPINE0,
                     HAminStandard.spine0Pos,
                     HAminStandard.spine0Rot));
                 {
-                    TreeNode<Bone> spine1 = spine0.AddChild(new Bone(Joint.SPINE1,
+                    TreeNode<Segment> spine1 = spine0.AddChild(new Segment(SegmentName.SPINE1,
                         HAminStandard.spine1Pos,
                         HAminStandard.spine1Rot));
                     {
-                        TreeNode<Bone> spine3 = spine1.AddChild(new Bone(Joint.SPINE3,
+                        TreeNode<Segment> spine3 = spine1.AddChild(new Segment(SegmentName.SPINE3,
                             HAminStandard.spine3Pos,
                             HAminStandard.spine3Rot));
                     {
-                        TreeNode<Bone> neck = spine3.AddChild(new Bone(Joint.NECK,
+                        TreeNode<Segment> neck = spine3.AddChild(new Segment(SegmentName.NECK,
                             HAminStandard.neckPos,
                             HAminStandard.neckRot));
                         {
-                            TreeNode<Bone> head = neck.AddChild(new Bone(Joint.HEAD,
+                            TreeNode<Segment> head = neck.AddChild(new Segment(SegmentName.HEAD,
                                 HAminStandard.headPos,
                                 HAminStandard.headRot));
                             {
-                                head.AddChild(new Bone(Joint.HEADTOP, HAminStandard.headTopPos, QuaternionHelper2.Zero));
+                                head.AddChild(new Segment(SegmentName.HEADTOP, HAminStandard.headTopPos, QuaternionHelper2.Zero));
                             }
                         }
                 #endregion
                         #region arm left
-                        TreeNode<Bone> clavicleLeft = spine3.AddChild(new Bone(Joint.CLAVICLE_L,
+                        TreeNode<Segment> clavicleLeft = spine3.AddChild(new Segment(SegmentName.CLAVICLE_L,
                             HAminStandard.spine3Pos,
                             HAminStandard.clavicleLeftRot));
                         {
-                            TreeNode<Bone> shoulderLeft = clavicleLeft.AddChild(new Bone(Joint.SHOULDER_L,
+                            TreeNode<Segment> shoulderLeft = clavicleLeft.AddChild(new Segment(SegmentName.SHOULDER_L,
                                 HAminStandard.shoulderLeftPos,
                                 HAminStandard.shoulderLeftRot));
                             {
-                                TreeNode<Bone> elbowLeft = shoulderLeft.AddChild(new Bone(Joint.ELBOW_L,
+                                TreeNode<Segment> elbowLeft = shoulderLeft.AddChild(new Segment(SegmentName.ELBOW_L,
                                     HAminStandard.elbowLeftPos,
                                     HAminStandard.elbowLeftRot));
                                 {
-                                    TreeNode<Bone> wristLeft = elbowLeft.AddChild(new Bone(Joint.WRIST_L,
+                                    TreeNode<Segment> wristLeft = elbowLeft.AddChild(new Segment(SegmentName.WRIST_L,
                                         HAminStandard.wristLeftPos,
                                         HAminStandard.wristLeftRot));
                                     {
-                                        TreeNode<Bone> handLeft = wristLeft.AddChild(new Bone(Joint.HAND_L,
+                                        TreeNode<Segment> handLeft = wristLeft.AddChild(new Segment(SegmentName.HAND_L,
                                             HAminStandard.handLeftPos,
                                             HAminStandard.handLeftRot));
                                         {
-                                            handLeft.AddChild(new Bone(Joint.INDEX_L,
+                                            handLeft.AddChild(new Segment(SegmentName.INDEX_L,
                                             HAminStandard.indexLeftPos,
                                             QuaternionHelper2.Zero));
                                         }
-                                        TreeNode<Bone> trapezoidLeft = wristLeft.AddChild(new Bone(Joint.TRAP_L,
+                                        TreeNode<Segment> trapezoidLeft = wristLeft.AddChild(new Segment(SegmentName.TRAP_L,
                                                 HAminStandard.wristLeftPos,
                                                 HAminStandard.trapezoidLeftRot));
                                         {
-                                            trapezoidLeft.AddChild(new Bone(Joint.THUMB_L,
+                                            trapezoidLeft.AddChild(new Segment(SegmentName.THUMB_L,
                                             HAminStandard.thumbLeftPos,
                                             QuaternionHelper2.Zero));
                                         }
@@ -171,40 +171,40 @@ namespace QualisysRealTime.Unity.Skeleton
                         }
                         #endregion
                         #region arm right
-                        TreeNode<Bone> clavicleRight = 
-                            spine3.AddChild(new Bone(Joint.CLAVICLE_R,
+                        TreeNode<Segment> clavicleRight = 
+                            spine3.AddChild(new Segment(SegmentName.CLAVICLE_R,
                             HAminStandard.spine3Pos,
                             HAminStandard.clavicleRightRot));
                         {
-                            TreeNode<Bone> shoulderRight = 
-                                clavicleRight.AddChild(new Bone(Joint.SHOULDER_R,
+                            TreeNode<Segment> shoulderRight = 
+                                clavicleRight.AddChild(new Segment(SegmentName.SHOULDER_R,
                                 HAminStandard.shoulderRightPos,
                                 HAminStandard.shoulderRightRot));
                             {
-                                TreeNode<Bone> elbowRight = 
-                                    shoulderRight.AddChild(new Bone(Joint.ELBOW_R,
+                                TreeNode<Segment> elbowRight = 
+                                    shoulderRight.AddChild(new Segment(SegmentName.ELBOW_R,
                                     HAminStandard.elbowRightPos,
                                     HAminStandard.elbowRightRot));
                                 {
-                                    TreeNode<Bone> wristRight = 
-                                        elbowRight.AddChild(new Bone(Joint.WRIST_R,
+                                    TreeNode<Segment> wristRight = 
+                                        elbowRight.AddChild(new Segment(SegmentName.WRIST_R,
                                         HAminStandard.wristRightPos,
                                         HAminStandard.wristRightRot));    
                                     {
-                                        TreeNode<Bone> handRight = 
-                                            wristRight.AddChild(new Bone(Joint.HAND_R,
+                                        TreeNode<Segment> handRight = 
+                                            wristRight.AddChild(new Segment(SegmentName.HAND_R,
                                             HAminStandard.handRightPos,
                                             HAminStandard.handRightRot));
                                         {
-                                            handRight.AddChild(new Bone(Joint.INDEX_R,
+                                            handRight.AddChild(new Segment(SegmentName.INDEX_R,
                                             HAminStandard.indexRightPos,
                                             QuaternionHelper2.Zero));
-                                        TreeNode<Bone> trapezoidRight = 
-                                            wristRight.AddChild(new Bone(Joint.TRAP_R,
+                                        TreeNode<Segment> trapezoidRight = 
+                                            wristRight.AddChild(new Segment(SegmentName.TRAP_R,
                                             HAminStandard.wristRightPos,
                                             HAminStandard.trapezoidRightRot));
                                         {
-                                            trapezoidRight.AddChild(new Bone(Joint.THUMB_R,
+                                            trapezoidRight.AddChild(new Segment(SegmentName.THUMB_R,
                                             HAminStandard.thumbRightPos,
                                             QuaternionHelper2.Zero));
                                         }
@@ -219,29 +219,29 @@ namespace QualisysRealTime.Unity.Skeleton
                 }
                 #endregion
                 #region legs left
-                TreeNode<Bone> hipLeft = 
-                    root.AddChild(new Bone(Joint.HIP_L,
+                TreeNode<Segment> hipLeft = 
+                    root.AddChild(new Segment(SegmentName.HIP_L,
                         HAminStandard.hipLeftPos,
                         HAminStandard.hipLeftRot));
                 {
 
-                    TreeNode<Bone> kneeLeft = 
-                        hipLeft.AddChild(new Bone(Joint.KNEE_L,
+                    TreeNode<Segment> kneeLeft = 
+                        hipLeft.AddChild(new Segment(SegmentName.KNEE_L,
                             HAminStandard.kneeLeftPos,
                             HAminStandard.kneeLeftRot));
                     {
-                        TreeNode<Bone> ankleLeft = 
-                            kneeLeft.AddChild(new Bone(Joint.ANKLE_L,
+                        TreeNode<Segment> ankleLeft = 
+                            kneeLeft.AddChild(new Segment(SegmentName.ANKLE_L,
                                 HAminStandard.ankleLeftPos,
                                 HAminStandard.ankleLeftRot));
                         {
-                            TreeNode<Bone> footBaseLeft = 
-                                ankleLeft.AddChild(new Bone(Joint.FOOTBASE_L, 
+                            TreeNode<Segment> footBaseLeft = 
+                                ankleLeft.AddChild(new Segment(SegmentName.FOOTBASE_L, 
                                     HAminStandard.footBaseLeftPos, 
                                     HAminStandard.footBaseLeftRot));
                             {
                                 footBaseLeft.AddChild(
-                                    new Bone(Joint.TOE_L, 
+                                    new Segment(SegmentName.TOE_L, 
                                         HAminStandard.toeLeftPos, 
                                         QuaternionHelper2.Zero)
                                     );
@@ -251,28 +251,28 @@ namespace QualisysRealTime.Unity.Skeleton
                 }
                 #endregion
                 #region legs right
-                TreeNode<Bone> hipRight = 
-                    root.AddChild(new Bone(Joint.HIP_R,
+                TreeNode<Segment> hipRight = 
+                    root.AddChild(new Segment(SegmentName.HIP_R,
                         HAminStandard.hipRightPos,
                         HAminStandard.hipRightRot));
                 {
-                    TreeNode<Bone> kneeRight = 
-                        hipRight.AddChild(new Bone(Joint.KNEE_R,
+                    TreeNode<Segment> kneeRight = 
+                        hipRight.AddChild(new Segment(SegmentName.KNEE_R,
                             HAminStandard.kneeRightPos,
                             HAminStandard.kneeRightRot));
                     {
-                        TreeNode<Bone> ankleRight = 
-                            kneeRight.AddChild(new Bone(Joint.ANKLE_R,
+                        TreeNode<Segment> ankleRight = 
+                            kneeRight.AddChild(new Segment(SegmentName.ANKLE_R,
                                 HAminStandard.ankleRightPos,
                                 HAminStandard.ankleRightRot));
                         {
-                            TreeNode<Bone> footBaseRight = 
-                                ankleRight.AddChild(new Bone(Joint.FOOTBASE_R,
+                            TreeNode<Segment> footBaseRight = 
+                                ankleRight.AddChild(new Segment(SegmentName.FOOTBASE_R,
                                     HAminStandard.footBaseRightPos,
                                     HAminStandard.footBaseRightRot));
                             {
                                 footBaseRight.AddChild(
-                                    new Bone(Joint.TOE_R, 
+                                    new Segment(SegmentName.TOE_R, 
                                         HAminStandard.toeRightPos, 
                                         QuaternionHelper2.Zero));
                             }

@@ -18,7 +18,7 @@ namespace QualisysRealTime.Unity
         private HumanPose mHumanPose = new HumanPose();
         private GameObject mStreamedRootObject;
         private Dictionary<uint, GameObject> mQTmJointIdToGameObject;
-        private Dictionary<string, string> mMecanimToQtmJointNames = new Dictionary<string, string>();
+        private Dictionary<string, string> mMecanimToQtmSegmentNames = new Dictionary<string, string>();
 
         private HumanPoseHandler mSourcePoseHandler;
         private HumanPoseHandler mDestiationPoseHandler;
@@ -99,12 +99,12 @@ namespace QualisysRealTime.Unity
             for (int index = 0; index < HumanTrait.BoneName.Length; index++)
             {
                 var humanBoneName = HumanTrait.BoneName[index];
-                if (mMecanimToQtmJointNames.ContainsKey(humanBoneName))
+                if (mMecanimToQtmSegmentNames.ContainsKey(humanBoneName))
                 {
                     var bone = new HumanBone()
                     {
                         humanName = humanBoneName,
-                        boneName = mMecanimToQtmJointNames[humanBoneName],
+                        boneName = mMecanimToQtmSegmentNames[humanBoneName],
                     };
                     bone.limit.useDefaultValues = true;
                     humanBones.Add(bone);
@@ -121,7 +121,7 @@ namespace QualisysRealTime.Unity
                 scale = Vector3.one,
             });
 
-            // Create remaining T-Pose bone definitions from Qtm joints
+            // Create remaining T-Pose segment definitions from Qtm joints
             foreach (var qssJoint in mQtmSkeleton.QssJoints.ToList())
             {
                 skeletonBones.Add(new SkeletonBone()
@@ -154,29 +154,29 @@ namespace QualisysRealTime.Unity
 
         private void CreateQtmToMecanimJointNameMap(string skeletonName)
         {
-            mMecanimToQtmJointNames.Add("RightShoulder", skeletonName + "_RightShoulder");
-            mMecanimToQtmJointNames.Add("RightUpperArm", skeletonName + "_RightArm");
-            mMecanimToQtmJointNames.Add("RightLowerArm", skeletonName + "_RightForeArm");
-            mMecanimToQtmJointNames.Add("RightHand", skeletonName + "_RightHand");
-            mMecanimToQtmJointNames.Add("LeftShoulder", skeletonName + "_LeftShoulder");
-            mMecanimToQtmJointNames.Add("LeftUpperArm", skeletonName + "_LeftArm");
-            mMecanimToQtmJointNames.Add("LeftLowerArm", skeletonName + "_LeftForeArm");
-            mMecanimToQtmJointNames.Add("LeftHand", skeletonName + "_LeftHand");
+            mMecanimToQtmSegmentNames.Add("RightShoulder", skeletonName + "_RightShoulder");
+            mMecanimToQtmSegmentNames.Add("RightUpperArm", skeletonName + "_RightArm");
+            mMecanimToQtmSegmentNames.Add("RightLowerArm", skeletonName + "_RightForeArm");
+            mMecanimToQtmSegmentNames.Add("RightHand", skeletonName + "_RightHand");
+            mMecanimToQtmSegmentNames.Add("LeftShoulder", skeletonName + "_LeftShoulder");
+            mMecanimToQtmSegmentNames.Add("LeftUpperArm", skeletonName + "_LeftArm");
+            mMecanimToQtmSegmentNames.Add("LeftLowerArm", skeletonName + "_LeftForeArm");
+            mMecanimToQtmSegmentNames.Add("LeftHand", skeletonName + "_LeftHand");
 
-            mMecanimToQtmJointNames.Add("RightUpperLeg", skeletonName + "_RightUpLeg");
-            mMecanimToQtmJointNames.Add("RightLowerLeg", skeletonName + "_RightLeg");
-            mMecanimToQtmJointNames.Add("RightFoot", skeletonName + "_RightFoot");
-            mMecanimToQtmJointNames.Add("RightToeBase", skeletonName + "_RightToeBase");
-            mMecanimToQtmJointNames.Add("LeftUpperLeg", skeletonName + "_LeftUpLeg");
-            mMecanimToQtmJointNames.Add("LeftLowerLeg", skeletonName + "_LeftLeg");
-            mMecanimToQtmJointNames.Add("LeftFoot", skeletonName + "_LeftFoot");
-            mMecanimToQtmJointNames.Add("LeftToeBase", skeletonName + "_LeftToeBase");
+            mMecanimToQtmSegmentNames.Add("RightUpperLeg", skeletonName + "_RightUpLeg");
+            mMecanimToQtmSegmentNames.Add("RightLowerLeg", skeletonName + "_RightLeg");
+            mMecanimToQtmSegmentNames.Add("RightFoot", skeletonName + "_RightFoot");
+            mMecanimToQtmSegmentNames.Add("RightToeBase", skeletonName + "_RightToeBase");
+            mMecanimToQtmSegmentNames.Add("LeftUpperLeg", skeletonName + "_LeftUpLeg");
+            mMecanimToQtmSegmentNames.Add("LeftLowerLeg", skeletonName + "_LeftLeg");
+            mMecanimToQtmSegmentNames.Add("LeftFoot", skeletonName + "_LeftFoot");
+            mMecanimToQtmSegmentNames.Add("LeftToeBase", skeletonName + "_LeftToeBase");
 
-            mMecanimToQtmJointNames.Add("Hips", skeletonName + "_Hips");
-            mMecanimToQtmJointNames.Add("Spine", skeletonName + "_Spine");
-            mMecanimToQtmJointNames.Add("Chest", skeletonName + "_Spine1");
-            mMecanimToQtmJointNames.Add("Neck", skeletonName + "_Neck");
-            mMecanimToQtmJointNames.Add("Head", skeletonName + "_Head");
+            mMecanimToQtmSegmentNames.Add("Hips", skeletonName + "_Hips");
+            mMecanimToQtmSegmentNames.Add("Spine", skeletonName + "_Spine");
+            mMecanimToQtmSegmentNames.Add("Chest", skeletonName + "_Spine1");
+            mMecanimToQtmSegmentNames.Add("Neck", skeletonName + "_Neck");
+            mMecanimToQtmSegmentNames.Add("Head", skeletonName + "_Head");
             /*
             mMecanimToQtmJointNames.Add("Left Thumb Proximal", skeletonName + "_LeftHandThumb1");
             mMecanimToQtmJointNames.Add("Left Thumb Intermediate", skeletonName + "_LeftHandThumb2");

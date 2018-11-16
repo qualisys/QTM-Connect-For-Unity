@@ -321,7 +321,7 @@ namespace QTMRealTimeSDK.Data
     /// <summary>Data for Skeleton</summary>
     public struct Skeleton
     {
-        // <summary>Joint data</summary>
+        // <summary>Segment data</summary>
         public List<SkeletonJoint> Joints;
         /// <summary>Sample number</summary>
         public uint SampleNumber;

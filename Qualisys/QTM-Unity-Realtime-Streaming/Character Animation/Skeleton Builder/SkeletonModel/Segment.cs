@@ -18,7 +18,7 @@ using OpenTK;
 namespace QualisysRealTime.Unity.Skeleton
 {
     [System.Serializable]
-    public class Bone : IEquatable<Bone>
+    public class Segment : IEquatable<Segment>
     {
         #region Name, pos, rot and constraints getters and setters
         public bool Exists
@@ -29,8 +29,8 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             get { return pos.IsNaN() || orientation.IsNaN(); }
         }
-        private Joint name;
-        public Joint Name
+        private SegmentName name;
+        public SegmentName Name
         {
             get { return name; }
         }
@@ -53,7 +53,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
         #region constraints getters and setters
 
-        // An orientational constraint is the twist of the bone around its own direction vector
+        // An orientational constraint is the twist of the segment around its own direction vector
         // with respect to its parent
         // It is defined as an allowed range betwen angles [start,end]
         // where start != end && 0 < start, end <= 360
@@ -104,23 +104,23 @@ namespace QualisysRealTime.Unity.Skeleton
         #endregion
 
         #region Constructors
-        public Bone(Joint name)
+        public Segment(SegmentName name)
         {
             this.name = name;
         }
 
-        public Bone(Joint name, Vector3 position)
+        public Segment(SegmentName name, Vector3 position)
             : this(name)
         {
             pos = position;
         }
 
-        public Bone(Joint name, Vector3 position, Quaternion orientation)
+        public Segment(SegmentName name, Vector3 position, Quaternion orientation)
             : this(name, position)
         {
             this.orientation = orientation;
         }
-        public Bone(Joint name, Vector3 position, Quaternion orientation, Vector4 constriants)
+        public Segment(SegmentName name, Vector3 position, Quaternion orientation, Vector4 constriants)
             : this(name, position, orientation)
         { 
             Constraints = constriants;
@@ -159,7 +159,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
         #endregion
 
-        public bool Equals(Bone other)
+        public bool Equals(Segment other)
         {
             return name.Equals(other.Name) && orientation.Equals(other.Orientation) && pos.Equals(other.Pos);
         }
@@ -172,25 +172,25 @@ namespace QualisysRealTime.Unity.Skeleton
         public bool IsArm()
         {
             return
-                //name == Joint.CLAVICLE_L ||
-                //name == Joint.CLAVICLE_R ||
-                name == Joint.SHOULDER_L ||
-                name == Joint.SHOULDER_R ||
-                name == Joint.ELBOW_L ||
-                name == Joint.ELBOW_R ||
-                name == Joint.HAND_L ||
-                name == Joint.HAND_R;
+                //name == Segment.CLAVICLE_L ||
+                //name == Segment.CLAVICLE_R ||
+                name == SegmentName.SHOULDER_L ||
+                name == SegmentName.SHOULDER_R ||
+                name == SegmentName.ELBOW_L ||
+                name == SegmentName.ELBOW_R ||
+                name == SegmentName.HAND_L ||
+                name == SegmentName.HAND_R;
         }
 
         public bool IsLeg()
         {
             return
-                name == Joint.HIP_L ||
-                name == Joint.HIP_R ||
-                name == Joint.KNEE_L ||
-                name == Joint.KNEE_R ||
-                name == Joint.ANKLE_L ||
-                name == Joint.ANKLE_R;
+                name == SegmentName.HIP_L ||
+                name == SegmentName.HIP_R ||
+                name == SegmentName.KNEE_L ||
+                name == SegmentName.KNEE_R ||
+                name == SegmentName.ANKLE_L ||
+                name == SegmentName.ANKLE_R;
         }
     }
 }

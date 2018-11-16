@@ -56,12 +56,12 @@ namespace QualisysRealTime.Unity.Skeleton
         public Vector3 kneeLeft;
     }
 
-    class JointLocalization
+    class SegmentLocalization
     {
         private Values o = new Values();
 
-        // Contains all functions for finding joint position
-        private List<Action<Bone>> jcFuncs;
+        // Contains all functions for finding segment position
+        private List<Action<Segment>> jcFuncs;
         private Dictionary<string, Vector3> markers;
         private MarkersNames m;
 
@@ -80,12 +80,12 @@ namespace QualisysRealTime.Unity.Skeleton
         /// Setting up for joint localization
         /// </summary>
         /// <param name="markers">The aliases of the marker names</param>
-        public JointLocalization(MarkersNames markerNames)
+        public SegmentLocalization(MarkersNames markerNames)
         {
             this.m = markerNames;
             bd = new BodyData(m);
 
-            jcFuncs = new List<Action<Bone>>() {
+            jcFuncs = new List<Action<Segment>>() {
                     (b) => Pelvis(b),
                     (b) => SpineRoot(b),
                     (b) => MidSpine(b),
@@ -142,24 +142,24 @@ namespace QualisysRealTime.Unity.Skeleton
         }
 
         /// <summary>
-        /// Recursive function to set the new bone position and rotation
+        /// Recursive function to set the new segment position and rotation
         /// </summary>
-        /// <param name="currBone">The current bone</param>
+        /// <param name="currentSegment">The current segment</param>
         /// <param name="index">The index of where we are in the tree</param>
-        private void SetJointsRecursive(TreeNode<Bone> currBone, ref int index) 
+        private void SetJointsRecursive(TreeNode<Segment> currentSegment, ref int index) 
         {
-            jcFuncs[index++](currBone.Data);
-            if (!currBone.IsLeaf) SetJointsRecursive(currBone.Children, ref index);
+            jcFuncs[index++](currentSegment.Data);
+            if (!currentSegment.IsLeaf) SetJointsRecursive(currentSegment.Children, ref index);
         }
 
         /// <summary>
         /// Helper function
         /// </summary>
-        /// <param name="boneList"></param>
+        /// <param name="segmentList"></param>
         /// <param name="index"></param>
-        private void SetJointsRecursive(ICollection<TreeNode<Bone>> boneList, ref int index)
+        private void SetJointsRecursive(ICollection<TreeNode<Segment>> segmentList, ref int index)
         {
-            foreach (var b in boneList)
+            foreach (var b in segmentList)
             {
                 SetJointsRecursive(b, ref index);
             }
@@ -906,13 +906,13 @@ namespace QualisysRealTime.Unity.Skeleton
         #endregion
 
         #region Getters - Pelvis to Head
-        private void Pelvis(Bone b)
+        private void Pelvis(Segment b)
         {
             b.Pos = Vector3Helper.MidPoint(HipJointRight, HipJointLeft); 
             b.Orientation = HipOrientation;
         }
 
-        private void SpineRoot(Bone b)
+        private void SpineRoot(Segment b)
         {
             Vector3 target = !Spine1.IsNaN() ? Spine1 : SternumClavicle;
             Vector3 pos = markers[m.bodyBase] + HipForward * BodyData.MarkerToSpineDist;
@@ -920,19 +920,19 @@ namespace QualisysRealTime.Unity.Skeleton
             b.Orientation = QuaternionHelper2.LookAtUp(pos, target, HipForward);
         }
 
-        private void MidSpine(Bone b)
+        private void MidSpine(Segment b)
         {
             b.Pos = Spine1;
             b.Orientation = QuaternionHelper2.LookAtRight(Spine1, SternumClavicle,  HipJointLeft - HipJointRight);
         }
 
-        private void SpineEnd(Bone b)
+        private void SpineEnd(Segment b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = ChestOrientation;
         }
 
-        private void Neck(Bone b)
+        private void Neck(Segment b)
         {
             Vector3 up = Vector3.Transform(UnitY, ChestOrientation);
             Vector3 pos = SternumClavicle + up * BodyData.SpineLength * 2;
@@ -940,44 +940,44 @@ namespace QualisysRealTime.Unity.Skeleton
             b.Orientation = QuaternionHelper2.LookAtUp(pos, Head, ChestForward);
         }
 
-        private void GetHead(Bone b)
+        private void GetHead(Segment b)
         {
             b.Pos = Head;
             b.Orientation = HeadOrientation;
         }
 
-        private void GetHeadTop(Bone b)
+        private void GetHeadTop(Segment b)
         {
-            b.Pos = Head + Vector3.Transform(UnitY, HeadOrientation) * (BodyData.MidHeadToHeadJoint * 2);
+            b.Pos = Head + Vector3.Transform(UnitY, HeadOrientation) * (BodyData.MidHeadToHeadOriginDist * 2);
         }        
         #endregion
 
         #region Getters - Legs
-        private void UpperLegLeft(Bone b)
+        private void UpperLegLeft(Segment b)
         {
             b.Pos = HipJointLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(HipJointLeft, KneeLeft, HipJointRight-HipJointLeft );
         }
 
-        private void UpperLegRight(Bone b)
+        private void UpperLegRight(Segment b)
         {
             b.Pos = HipJointRight;
             b.Orientation = QuaternionHelper2.LookAtRight(HipJointRight, KneeRight, HipJointRight - HipJointLeft);
         }
 
-        private void LowerLegLeft(Bone b)
+        private void LowerLegLeft(Segment b)
         {
             b.Pos = KneeLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(KneeLeft, AnkleLeft, KneeForwardLeft); 
         }
 
-        private void LowerLegRight(Bone b)
+        private void LowerLegRight(Segment b)
         {
             b.Pos = KneeRight;
             b.Orientation = QuaternionHelper2.LookAtRight(KneeRight, AnkleRight, KneeForwardRight);
         }
 
-        private void GetAnkleLeft(Bone b)
+        private void GetAnkleLeft(Segment b)
         {
             b.Pos = AnkleLeft;
             if (markers[m.leftInnerAnkle].IsNaN())
@@ -992,7 +992,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
         }
 
-        private void GetAnkleRight(Bone b)
+        private void GetAnkleRight(Segment b)
         {
             b.Pos = AnkleRight;
             if (markers[m.rightInnerAnkle].IsNaN())
@@ -1007,112 +1007,112 @@ namespace QualisysRealTime.Unity.Skeleton
             }
         }
 
-        private void GetFootBaseLeft(Bone b)
+        private void GetFootBaseLeft(Segment b)
         {
             b.Pos = FootBaseLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(b.Pos, markers[m.leftToe2], LowerLegUpLeft);
         }
 
-        private void GetFootBaseRight(Bone b)
+        private void GetFootBaseRight(Segment b)
         {
             b.Pos = FootBaseRight;
             b.Orientation = QuaternionHelper2.LookAtUp(b.Pos, markers[m.rightToe2], LowerLegUpRight);
         }
 
-        private void GetFootLeft(Bone b)
+        private void GetFootLeft(Segment b)
         {
             b.Pos = markers[m.leftToe2];
         }
 
-        private void GetFootRight(Bone b)
+        private void GetFootRight(Segment b)
         {
             b.Pos = markers[m.rightToe2];
         }        
         #endregion
 
         #region Getters - Arms
-        private void GetShoulderLeft(Bone b)
+        private void GetShoulderLeft(Segment b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = QuaternionHelper2.LookAtUp(SternumClavicle, ShoulderLeft, ChestForward);
         }
 
-        private void GetShoulderRight(Bone b)
+        private void GetShoulderRight(Segment b)
         {
             b.Pos = SternumClavicle;
             b.Orientation = QuaternionHelper2.LookAtUp(SternumClavicle, ShoulderRight, ChestForward);
         }
 
-        private void GetUpperArmLeft(Bone b)
+        private void GetUpperArmLeft(Segment b)
         {
             b.Pos = ShoulderLeft;
             b.Orientation = QuaternionHelper2.LookAtRight(ShoulderLeft, ElbowLeft, markers[m.leftInnerElbow] - markers[m.leftOuterElbow]);
         }
 
-        private void GetUpperArmRight(Bone b)
+        private void GetUpperArmRight(Segment b)
         {
             b.Pos = ShoulderRight;
             b.Orientation = QuaternionHelper2.LookAtRight(ShoulderRight, ElbowRight, markers[m.rightOuterElbow] - markers[m.rightInnerElbow]);
         }
 
-        private void GetLowerArmLeft(Bone b)
+        private void GetLowerArmLeft(Segment b)
         {
             b.Pos = ElbowLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(ElbowLeft, WristLeft, LowerArmForwardLeft);
         }
 
-        private void GetLowerArmRight(Bone b)
+        private void GetLowerArmRight(Segment b)
         {
             b.Pos = ElbowRight;
             b.Orientation = QuaternionHelper2.LookAtUp(ElbowRight, WristRight, LowerArmForwardRight);
         }
 
-        private void GetWristLeft(Bone b)
+        private void GetWristLeft(Segment b)
         {
             b.Pos = WristLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(WristLeft, markers[m.leftHand], LowerArmForwardLeft);
         }
 
-        private void GetWristRight(Bone b)
+        private void GetWristRight(Segment b)
         {
             b.Pos = WristRight;
             b.Orientation = QuaternionHelper2.LookAtUp(WristRight, markers[m.rightHand], LowerArmForwardRight);
         }
 
         #region Getters - Hands
-        private void GetTrapLeft(Bone b)
+        private void GetTrapLeft(Segment b)
         {
             b.Pos = WristLeft;
             b.Orientation = QuaternionHelper2.LookAtUp(WristLeft, markers[m.leftThumb], LowerArmForwardLeft);
         }
-        private void GetTrapRight(Bone b)
+        private void GetTrapRight(Segment b)
         {
             b.Pos = WristRight;
             b.Orientation = QuaternionHelper2.LookAtUp(WristRight, markers[m.rightThumb], LowerArmForwardRight);
         }
-        private void GetHandLeft(Bone b)
+        private void GetHandLeft(Segment b)
         {
             b.Pos = markers[m.leftHand];
             b.Orientation = QuaternionHelper2.LookAtUp(markers[m.leftHand], markers[m.leftIndex], LowerArmForwardLeft);
         }
-        private void GetHandRight(Bone b)
+        private void GetHandRight(Segment b)
         {
             b.Pos = markers[m.rightHand];
             b.Orientation = QuaternionHelper2.LookAtUp(markers[m.rightHand], markers[m.rightIndex], LowerArmForwardRight);
         }
-        private void GetThumbLeft(Bone b)
+        private void GetThumbLeft(Segment b)
         {
             b.Pos = markers[m.leftThumb];
         }
-        private void GetThumbRight(Bone b)
+        private void GetThumbRight(Segment b)
         {
             b.Pos = markers[m.rightThumb];
         }
-        private void GetIndexLeft(Bone b)
+        private void GetIndexLeft(Segment b)
         {
             b.Pos = markers[m.leftIndex];
         }
-        private void GetIndexRight(Bone b)
+        private void GetIndexRight(Segment b)
         {
             b.Pos = markers[m.rightIndex];
         }

@@ -62,22 +62,22 @@ namespace QTMRealTimeSDK.Settings
         }
     }
 
-    /// <summary>3D Bone Settings from QTM</summary>
-    public class SettingsBone : SettingsBase
+    /// <summary>3D Segment Settings from QTM</summary>
+    public class SettingsSegment : SettingsBase
     {
-        /// <summary>name of marker bone starts from </summary>
+        /// <summary>name of marker segment starts from </summary>
         [XmlAttribute("From")]
         public string From;
 
-        /// <summary>name of marker bone ends at</summary>
+        /// <summary>name of marker segment ends at</summary>
         [XmlAttribute("To")]
         public string To;
 
-        /// <summary>Color of marker bone</summary>
+        /// <summary>Color of marker segment</summary>
         [XmlAttribute("Color")]
         public int Color;
 
-        SettingsBone()
+        SettingsSegment()
         {
             Color = 0xEEEEEE;
         }
@@ -96,9 +96,9 @@ namespace QTMRealTimeSDK.Settings
         [XmlElement("Label")]
         public List<Settings3DLabel> Labels;
 
-        [XmlArray("Bones")]
-        [XmlArrayItem("Bone", typeof(SettingsBone))]
-        public SettingsBone[] Bones;
+        [XmlArray("Segments")]
+        [XmlArrayItem("Segment", typeof(SettingsSegment))]
+        public SettingsSegment[] Segments;
 
         public Settings3D()
         {
@@ -215,7 +215,7 @@ namespace QTMRealTimeSDK.Settings
         public float W;
     }
 
-    /// <summary>Joint</summary>
+    /// <summary>Segment</summary>
     public class SettingSkeletonJoint
     {
         [XmlAttribute("Name")]

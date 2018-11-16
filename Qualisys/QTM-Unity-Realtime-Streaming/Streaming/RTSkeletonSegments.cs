@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace QualisysRealTime.Unity
 {
-    class RTSkeletonJoints : MonoBehaviour
+    class RTSkeletonSegments : MonoBehaviour
     {
         public string SkeletonName = "Put QTM skeleton name here";
 

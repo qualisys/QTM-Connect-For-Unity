@@ -33,10 +33,10 @@ namespace QualisysRealTime.Unity
         public float Residual;
     }
 
-    // Class for user bones
-    public class Bone
+    // Class for user segments
+    public class Segment
     {
-        public Bone() { }
+        public Segment() { }
         public string From;
         public LabeledMarker FromMarker;
         public string To;
@@ -58,7 +58,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public float[] Values;
     }
-    public class QssJoint
+    public class QssSegment
     {
         public string Name;
         public uint Id;
@@ -71,7 +71,7 @@ namespace QualisysRealTime.Unity
     public class QssSkeleton
     {
         public string Name;
-        public Dictionary<uint, QssJoint> QssJoints = new Dictionary<uint, QssJoint>();
+        public Dictionary<uint, QssSegment> QssJoints = new Dictionary<uint, QssSegment>();
     }
 
     public static class MarkerConverter

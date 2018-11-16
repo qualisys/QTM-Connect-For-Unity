@@ -22,7 +22,7 @@ namespace QualisysRealTime.Unity.Skeleton
         Model1, Model2, Model3, Model4, Model5, Model6, Model7, Model8, Model9, EmptyModel
     }
     [System.Serializable]
-    public class BoneRotations
+    public class SegmentRotations
     {
         public Vector3
         root = new Vector3(0f, 0f, 270f),
@@ -55,7 +55,7 @@ namespace QualisysRealTime.Unity.Skeleton
         headCamera = new Vector3(0f, 270f, 270f);
     }
     [System.Serializable]
-    public class Model1 : BoneRotations
+    public class Model1 : SegmentRotations
     {
         public Model1()
         {
@@ -90,7 +90,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model2 : BoneRotations
+    public class Model2 : SegmentRotations
     {
         public Model2()
         {
@@ -125,7 +125,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model3 : BoneRotations
+    public class Model3 : SegmentRotations
     {
         public Model3()
         {
@@ -160,7 +160,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model4 : BoneRotations
+    public class Model4 : SegmentRotations
     {
         public Model4()
         {
@@ -195,7 +195,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model5 : BoneRotations
+    public class Model5 : SegmentRotations
     {
         public Model5()
         {
@@ -230,7 +230,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model6 : BoneRotations
+    public class Model6 : SegmentRotations
     {
         public Model6()
         {
@@ -265,7 +265,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model7 : BoneRotations
+    public class Model7 : SegmentRotations
     {
         public Model7()
         {
@@ -303,7 +303,7 @@ namespace QualisysRealTime.Unity.Skeleton
     }
     /* E. Wolf, 2016-04-28 */
     [System.Serializable]
-    public class Model8 : BoneRotations
+    public class Model8 : SegmentRotations
     {
         public Model8()
         {
@@ -340,7 +340,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Model9 : BoneRotations
+    public class Model9 : SegmentRotations
     {
         public Model9()
         {
@@ -375,7 +375,7 @@ namespace QualisysRealTime.Unity.Skeleton
         }
     }
     [System.Serializable]
-    public class Empty : BoneRotations
+    public class Empty : SegmentRotations
     {
         public Empty()
         {

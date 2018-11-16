@@ -11,13 +11,13 @@ namespace QualisysRealTime.Unity.Skeleton
     {
         RTCharacterStream c;
         SerializedObject cSerializedObject;
-        SerializedProperty boneRotation;
+        SerializedProperty segmentRotation;
 
         void OnEnable()
         {
             c = (RTCharacterStream)target;
             cSerializedObject = new SerializedObject(target);
-			boneRotation = cSerializedObject.FindProperty("boneRotation");
+			segmentRotation = cSerializedObject.FindProperty("segmentRotation");
         }
 
         public override void OnInspectorGUI()
@@ -85,7 +85,7 @@ namespace QualisysRealTime.Unity.Skeleton
             GUILayout.Space(5);
 
             guiContent.text = "Solve gaps using IK";
-            guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
+            guiContent.tooltip = "When markers are missing, the rotation and position of segments will be unknown.\nCheck this to use IK to predict segment positions in the skeleton";
             if (EditorGUILayout.Toggle(guiContent, c.UseIK) != c.UseIK)
             {
                 c.UseIK = !c.UseIK;
@@ -93,7 +93,7 @@ namespace QualisysRealTime.Unity.Skeleton
             }
 
             guiContent.text = "Use Tracking Markers";
-            //guiContent.tooltip = "When markers are missing, the rotation and position of bones will be unknown.\nCheck this to use IK to predict bone positions in the skeleton";
+            //guiContent.tooltip = "When markers are missing, the rotation and position of segments will be unknown.\nCheck this to use IK to predict segment positions in the skeleton";
             if (EditorGUILayout.Toggle(guiContent, c.UseTrackingMarkers) != c.UseTrackingMarkers)
             {
                 c.UseTrackingMarkers = !c.UseTrackingMarkers;
@@ -118,7 +118,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
             GUILayout.Space(5);
             guiContent.text = "Character rotation model";
-            guiContent.tooltip = "Characters have different definition of how each bone rotation, test different models if the character looks strange.\n\nHint: Change in Play mode will not be saved!";
+            guiContent.tooltip = "Characters have different definition of how each segment rotation, test different models if the character looks strange.\n\nHint: Change in Play mode will not be saved!";
             CharacterModels m = (CharacterModels)EditorGUILayout.EnumPopup(guiContent, c.model);
 			if (m != c.model)
             {
@@ -129,7 +129,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 guiContent.text = "Character rotations";
                 guiContent.tooltip = "Fix each limb rotation by defining the euler angels here.";
-                EditorGUILayout.PropertyField(boneRotation, guiContent, true);
+                EditorGUILayout.PropertyField(segmentRotation, guiContent, true);
                 cSerializedObject.ApplyModifiedProperties();
             }
             EditorGUI.indentLevel--;

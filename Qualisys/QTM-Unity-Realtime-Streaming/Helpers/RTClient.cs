@@ -28,8 +28,8 @@ namespace QualisysRealTime.Unity
         private List<UnlabeledMarker> mUnlabeledMarkers;
         public List<UnlabeledMarker> UnlabeledMarkers { get { return mUnlabeledMarkers; } }
 
-        private List<Bone> mBones;
-        public List<Bone> Bones { get { return mBones; } }
+        private List<Segment> mSegments;
+        public List<Segment> Segments { get { return mSegments; } }
 
         private List<GazeVector> mGazeVectors;
         public List<GazeVector> GazeVectors { get { return mGazeVectors; } }
@@ -155,7 +155,7 @@ namespace QualisysRealTime.Unity
                 {
                     foreach (var joint in skeletonData[skeletonIndex].Joints)
                     {
-                        QssJoint qssJoint;
+                        QssSegment qssJoint;
                         if (!mSkeletons[skeletonIndex].QssJoints.TryGetValue(joint.Id, out qssJoint))
                             continue;
 
@@ -217,7 +217,7 @@ namespace QualisysRealTime.Unity
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
-            mBones = new List<Bone>();
+            mSegments = new List<Segment>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
             mSkeletons = new List<QssSkeleton>();
@@ -416,7 +416,7 @@ namespace QualisysRealTime.Unity
             mBodies.Clear();
             mMarkers.Clear();
             mUnlabeledMarkers.Clear();
-            mBones.Clear();
+            mSegments.Clear();
             mGazeVectors.Clear();
             mAnalogChannels.Clear();
             mStreamingStatus = false;
@@ -513,7 +513,7 @@ namespace QualisysRealTime.Unity
                 qssSkeleton.Name = skeleton.Name;
                 foreach (var joint in skeleton.Joints)
                 {
-                    var qssJoint = new QssJoint();
+                    var qssJoint = new QssSegment();
                     qssJoint.Name = joint.Name;
                     qssJoint.Id = joint.Id;
                     qssJoint.ParentId = joint.ParentId;
@@ -571,25 +571,25 @@ namespace QualisysRealTime.Unity
                     mMarkers.Add(newMarker);
                 }
 
-                // Save bone settings
-                if (mProtocol.Settings3D.Bones != null)
+                // Save segment settings
+                if (mProtocol.Settings3D.Segments != null)
                 {
-                    Bones.Clear();
+                    Segments.Clear();
 
-                    //Save bone settings
-                    foreach (var settingsBone in mProtocol.Settings3D.Bones)
+                    //Save segment settings
+                    foreach (var settingsSegment in mProtocol.Settings3D.Segments)
                     {
-                        Bone bone = new Bone();
-                        bone.From = settingsBone.From;
-                        bone.FromMarker = GetMarker(settingsBone.From);
-                        bone.To = settingsBone.To;
-                        bone.ToMarker = GetMarker(settingsBone.To);
-                        bone.Color.r = (settingsBone.Color) & 0xFF;
-                        bone.Color.g = (settingsBone.Color >> 8) & 0xFF;
-                        bone.Color.b = (settingsBone.Color >> 16) & 0xFF;
-                        bone.Color /= 255;
-                        bone.Color.a = 1F;
-                        mBones.Add(bone);
+                        Segment segment = new Segment();
+                        segment.From = settingsSegment.From;
+                        segment.FromMarker = GetMarker(settingsSegment.From);
+                        segment.To = settingsSegment.To;
+                        segment.ToMarker = GetMarker(settingsSegment.To);
+                        segment.Color.r = (settingsSegment.Color) & 0xFF;
+                        segment.Color.g = (settingsSegment.Color >> 8) & 0xFF;
+                        segment.Color.b = (settingsSegment.Color >> 16) & 0xFF;
+                        segment.Color /= 255;
+                        segment.Color.a = 1F;
+                        mSegments.Add(segment);
                     }
                 }
 
