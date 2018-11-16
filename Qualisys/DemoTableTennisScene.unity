@@ -1181,40 +1181,40 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 400096, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+    - target: {fileID: 4117779874138162, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 89c8910cc87bc714b9d05155edb03269, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 7d98be35fbde8e0488f7d15c9de3b52c, type: 2}
   m_IsPrefabAsset: 0
 --- !u!1 &1512419061
 GameObject:
@@ -1367,59 +1367,6 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1573888110}
   m_CullTransparentMesh: 0
---- !u!1 &1638209387 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100096, guid: 89c8910cc87bc714b9d05155edb03269,
-    type: 3}
-  m_PrefabInternal: {fileID: 1398435746}
---- !u!114 &1638209388
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1638209387}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e22831535c1c974987dcf5def1646f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ActorMarkerPrefix: 
-  actorHeight: 0
-  actorMass: 0
-  ScaleMovementToSize: 0
-  UseIK: 1
-  UseTrackingMarkers: 1
-  UseFingers: 0
-  model: 5
-  segmentRotation:
-    root: {x: 0, y: 0, z: 270}
-    hip: {x: 0, y: 270, z: 0}
-    spine: {x: 0, y: 270, z: 0}
-    neck: {x: 0, y: 270, z: 0}
-    head: {x: 0, y: 270, z: 0}
-    legUpperLeft: {x: 0, y: 270, z: 0}
-    legLowerLeft: {x: 0, y: 270, z: 0}
-    footLeft: {x: 0, y: 270, z: 90}
-    legUpperRight: {x: 0, y: 270, z: 0}
-    legLowerRight: {x: 0, y: 270, z: 0}
-    footRight: {x: 0, y: 270, z: 90}
-    clavicleLeft: {x: 0, y: 90, z: 0}
-    armUpperLeft: {x: 0, y: 90, z: 0}
-    armLowerLeft: {x: 0, y: 90, z: 0}
-    handLeft: {x: 0, y: 180, z: 0}
-    thumbLeft: {x: 0, y: 180, z: 0}
-    fingersLeft: {x: 0, y: 180, z: 0}
-    clavicleRight: {x: 0, y: 90, z: 0}
-    armUpperRight: {x: 0, y: 90, z: 0}
-    armLowerRight: {x: 0, y: 90, z: 0}
-    handRight: {x: 0, y: 0, z: 0}
-    thumbRight: {x: 0, y: 0, z: 0}
-    fingersRight: {x: 0, y: 0, z: 0}
-    headCamera: {x: 0, y: 270, z: 270}
-  headCam:
-    UseHeadCamera: 0
-    UseVRHeadSetRotation: 1
-    CameraOffset: {x: 0, y: 0.11, z: 0.11}
 --- !u!1 &1674188395
 GameObject:
   m_ObjectHideFlags: 0

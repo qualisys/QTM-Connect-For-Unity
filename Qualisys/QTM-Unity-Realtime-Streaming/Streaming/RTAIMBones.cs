@@ -8,7 +8,7 @@ using QTMRealTimeSDK;
 namespace QualisysRealTime.Unity
 {
     /// Stream AIMBones from QTM
-    public class RTAIMBone : MonoBehaviour
+    public class RTAIMBones : MonoBehaviour
     {
         private RTClient rtClient;
         private List<LineRenderer> lineRenderers;
