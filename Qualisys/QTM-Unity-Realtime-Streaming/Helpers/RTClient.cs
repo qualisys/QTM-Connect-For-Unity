@@ -28,8 +28,8 @@ namespace QualisysRealTime.Unity
         private List<UnlabeledMarker> mUnlabeledMarkers;
         public List<UnlabeledMarker> UnlabeledMarkers { get { return mUnlabeledMarkers; } }
 
-        private List<Segment> mSegments;
-        public List<Segment> Segments { get { return mSegments; } }
+        private List<AIMBone> mAIMBones;
+        public List<AIMBone> AIMBones { get { return mAIMBones; } }
 
         private List<GazeVector> mGazeVectors;
         public List<GazeVector> GazeVectors { get { return mGazeVectors; } }
@@ -217,7 +217,7 @@ namespace QualisysRealTime.Unity
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
-            mSegments = new List<Segment>();
+            mAIMBones = new List<AIMBone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
             mSkeletons = new List<QssSkeleton>();
@@ -416,7 +416,7 @@ namespace QualisysRealTime.Unity
             mBodies.Clear();
             mMarkers.Clear();
             mUnlabeledMarkers.Clear();
-            mSegments.Clear();
+            mAIMBones.Clear();
             mGazeVectors.Clear();
             mAnalogChannels.Clear();
             mStreamingStatus = false;
@@ -571,25 +571,25 @@ namespace QualisysRealTime.Unity
                     mMarkers.Add(newMarker);
                 }
 
-                // Save segment settings
-                if (mProtocol.Settings3D.Segments != null)
+                // Save aimBone settings
+                if (mProtocol.Settings3D.SettingsAimBones != null)
                 {
-                    Segments.Clear();
+                    AIMBones.Clear();
 
-                    //Save segment settings
-                    foreach (var settingsSegment in mProtocol.Settings3D.Segments)
+                    //Save aimBone settings
+                    foreach (var aimBoneSetting in mProtocol.Settings3D.SettingsAimBones)
                     {
-                        Segment segment = new Segment();
-                        segment.From = settingsSegment.From;
-                        segment.FromMarker = GetMarker(settingsSegment.From);
-                        segment.To = settingsSegment.To;
-                        segment.ToMarker = GetMarker(settingsSegment.To);
-                        segment.Color.r = (settingsSegment.Color) & 0xFF;
-                        segment.Color.g = (settingsSegment.Color >> 8) & 0xFF;
-                        segment.Color.b = (settingsSegment.Color >> 16) & 0xFF;
-                        segment.Color /= 255;
-                        segment.Color.a = 1F;
-                        mSegments.Add(segment);
+                        AIMBone aimBone = new AIMBone();
+                        aimBone.From = aimBoneSetting.From;
+                        aimBone.FromMarker = GetMarker(aimBoneSetting.From);
+                        aimBone.To = aimBoneSetting.To;
+                        aimBone.ToMarker = GetMarker(aimBoneSetting.To);
+                        aimBone.Color.r = (aimBoneSetting.Color) & 0xFF;
+                        aimBone.Color.g = (aimBoneSetting.Color >> 8) & 0xFF;
+                        aimBone.Color.b = (aimBoneSetting.Color >> 16) & 0xFF;
+                        aimBone.Color /= 255;
+                        aimBone.Color.a = 1F;
+                        mAIMBones.Add(aimBone);
                     }
                 }
 

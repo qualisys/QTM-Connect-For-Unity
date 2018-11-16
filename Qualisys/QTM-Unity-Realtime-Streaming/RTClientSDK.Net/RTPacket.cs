@@ -309,7 +309,7 @@ namespace QTMRealTimeSDK.Data
     }
 
     /// <summary>Data for Skeleton joint</summary>
-    public struct SkeletonJoint
+    public struct SkeletonSegment
     {
         /// <summary>ID</summary>
         public uint Id;
@@ -322,7 +322,7 @@ namespace QTMRealTimeSDK.Data
     public struct Skeleton
     {
         // <summary>Segment data</summary>
-        public List<SkeletonJoint> Joints;
+        public List<SkeletonSegment> Joints;
         /// <summary>Sample number</summary>
         public uint SampleNumber;
         /// <summary>ID</summary>
@@ -998,10 +998,10 @@ namespace QTMRealTimeSDK.Data
                                 //skeleton.Id = BitConvert.GetUInt32(mData, ref position);
                                 skeleton.JointCount = BitConvert.GetUInt32(mData, ref position);
 
-                                skeleton.Joints = new List<SkeletonJoint>();
+                                skeleton.Joints = new List<SkeletonSegment>();
                                 for (int joint = 0; joint < skeleton.JointCount; joint++)
                                 {
-                                    SkeletonJoint skeletonJoint = new SkeletonJoint();
+                                    SkeletonSegment skeletonJoint = new SkeletonSegment();
                                     skeletonJoint.Id = BitConvert.GetUInt32(mData, ref position);
                                     skeletonJoint.Position = BitConvert.GetPoint(mData, ref position);
                                     skeletonJoint.Rotation.X = BitConvert.GetFloat(mData, ref position);

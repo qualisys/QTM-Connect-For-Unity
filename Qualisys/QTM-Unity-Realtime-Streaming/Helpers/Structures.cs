@@ -33,10 +33,10 @@ namespace QualisysRealTime.Unity
         public float Residual;
     }
 
-    // Class for user segments
-    public class Segment
+    // Class for aim bones
+    public class AIMBone
     {
-        public Segment() { }
+        public AIMBone() { }
         public string From;
         public LabeledMarker FromMarker;
         public string To;

@@ -7,11 +7,11 @@ using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity
 {
-    /// Stream segments from QTM
-    public class RTSegments : MonoBehaviour
+    /// Stream AIMBones from QTM
+    public class RTAIMBone : MonoBehaviour
     {
         private RTClient rtClient;
-        private List<LineRenderer> segments;
+        private List<LineRenderer> lineRenderers;
         private GameObject allSegments;
         private Material material;
         public bool visibleSegments = true;
@@ -21,7 +21,7 @@ namespace QualisysRealTime.Unity
         void Start()
         {
             rtClient = RTClient.GetInstance();
-            segments = new List<LineRenderer>();
+            lineRenderers = new List<LineRenderer>();
             allSegments = new GameObject("Segments");
             allSegments.transform.parent = transform;
             allSegments.transform.localPosition = Vector3.zero;
@@ -31,26 +31,26 @@ namespace QualisysRealTime.Unity
 
         private void InitiateSegments()
         {
-            foreach (var segment in segments)
+            foreach (var segment in lineRenderers)
             {
                 Destroy(segment.gameObject);
             }
 
-            segments.Clear();
+            lineRenderers.Clear();
 
-            var segmentData = rtClient.Segments;
+            var aimBoneData = rtClient.AIMBones;
 
 
-            for (int i = 0; i < segmentData.Count; i++)
+            for (int i = 0; i < aimBoneData.Count; i++)
             {
                 LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
-                lineRenderer.name = segmentData[i].From + " to " + segmentData[i].To;
+                lineRenderer.name = aimBoneData[i].From + " to " + aimBoneData[i].To;
                 lineRenderer.transform.parent = allSegments.transform;
                 lineRenderer.transform.localPosition = Vector3.zero;
                 lineRenderer.material = material;
-                lineRenderer.material.color = segmentData[i].Color;
+                lineRenderer.material.color = aimBoneData[i].Color;
                 lineRenderer.useWorldSpace = false;
-                segments.Add(lineRenderer);
+                lineRenderers.Add(lineRenderer);
             }
         }
 
@@ -64,29 +64,29 @@ namespace QualisysRealTime.Unity
             if (rtClient == null) rtClient = RTClient.GetInstance();
             if (!rtClient.GetStreamingStatus()) return;
 
-            var segmentData = rtClient.Segments;
+            var aimBoneData = rtClient.AIMBones;
 
-            if (segmentData == null || segmentData.Count == 0) return;
+            if (aimBoneData == null || aimBoneData.Count == 0) return;
 
-            if (segments.Count != segmentData.Count) InitiateSegments();
+            if (lineRenderers.Count != aimBoneData.Count) InitiateSegments();
 
             allSegments.SetActive(true);
-            for (int i = 0; i < segmentData.Count; i++)
+            for (int i = 0; i < aimBoneData.Count; i++)
             {
-                if (segmentData[i].FromMarker.Position.magnitude > 0
-                    && segmentData[i].ToMarker.Position.magnitude > 0)
+                if (aimBoneData[i].FromMarker.Position.magnitude > 0
+                    && aimBoneData[i].ToMarker.Position.magnitude > 0)
                 {
-                    segments[i].SetPosition(0, segmentData[i].FromMarker.Position);
-                    segments[i].SetPosition(1, segmentData[i].ToMarker.Position);
-                    segments[i].startWidth = segmentScale;
-                    segments[i].endWidth = segmentScale;
+                    lineRenderers[i].SetPosition(0, aimBoneData[i].FromMarker.Position);
+                    lineRenderers[i].SetPosition(1, aimBoneData[i].ToMarker.Position);
+                    lineRenderers[i].startWidth = segmentScale;
+                    lineRenderers[i].endWidth = segmentScale;
 
-                    segments[i].gameObject.SetActive(true);
+                    lineRenderers[i].gameObject.SetActive(true);
                 }
                 else
                 {
                     //hide segments if we cant find markers.
-                    segments[i].gameObject.SetActive(false);
+                    lineRenderers[i].gameObject.SetActive(false);
                 }
             }
         }
