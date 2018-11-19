@@ -58,7 +58,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public float[] Values;
     }
-    public class QssSegment
+    public class QtmSkeletonSegment
     {
         public string Name;
         public uint Id;
@@ -68,10 +68,10 @@ namespace QualisysRealTime.Unity
         public Vector3 TPosition = Vector3.zero;
         public Quaternion TRotation = Quaternion.identity;
     }
-    public class QssSkeleton
+    public class QtmSkeleton
     {
         public string Name;
-        public Dictionary<uint, QssSegment> QssJoints = new Dictionary<uint, QssSegment>();
+        public Dictionary<uint, QtmSkeletonSegment> QtmSkeletonSegments = new Dictionary<uint, QtmSkeletonSegment>();
     }
 
     public static class MarkerConverter

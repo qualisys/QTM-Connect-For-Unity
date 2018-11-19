@@ -23,13 +23,13 @@ namespace QualisysRealTime.Unity.Skeleton
         public override void OnInspectorGUI()
         {
             cSerializedObject.Update();
-            if (!c.jointsFound)
+            if (!c.segmentsFound)
             {
                 GUILayout.Space(5);
 
                 GUIStyle warningStyle = new GUIStyle();
                 warningStyle.richText = true;
-                GUILayout.Label("<color=maroon>Warning: Not all character joints was found!</color>", warningStyle);
+                GUILayout.Label("<color=maroon>Warning: Not all character segments was found!</color>", warningStyle);
                 GUILayout.Label("<color=maroon>              Animation may look strange or not work at all.</color>", warningStyle);
 
                 GUILayout.Space(5);
@@ -144,7 +144,7 @@ namespace QualisysRealTime.Unity.Skeleton
             EditorGUI.indentLevel++;
 
             guiContent.text = "Camera offset from head";
-            guiContent.tooltip = "The vector offset from the head joint to the camera, if zero, the camera will be placed in the middle of the head.\n\nHint: Change the Field of View in the camera settings in the Inspector under character -> CameraAnchor -> Camera";
+            guiContent.tooltip = "The vector offset from the head segment to the camera, if zero, the camera will be placed in the middle of the head.\n\nHint: Change the Field of View in the camera settings in the Inspector under character -> CameraAnchor -> Camera";
             c.headCam.CameraOffset = EditorGUILayout.Vector3Field(guiContent, c.headCam.CameraOffset);
 
             guiContent.text = "Set head rotation to VR device";

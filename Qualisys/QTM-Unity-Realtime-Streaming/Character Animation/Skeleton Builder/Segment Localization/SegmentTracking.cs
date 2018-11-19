@@ -46,7 +46,7 @@ namespace QualisysRealTime.Unity.Skeleton
 				this.markers.Add(lm[i].Label, lm[i].Position);
 			}
 
-			// Add the tracking markers for the joints / segments
+			// Add the tracking markers for the segments
 			string[] labels;
 
             // Hips

@@ -14,7 +14,7 @@ namespace QualisysRealTime.Unity
 
         protected RTClient rtClient;
 
-        private Dictionary<uint, GameObject> goJoints = null;
+        private Dictionary<uint, GameObject> goSegments = null;
 
         // Use this for initialization
         void Start()
@@ -32,30 +32,30 @@ namespace QualisysRealTime.Unity
                 if (skeleton.Name != SkeletonName)
                     continue;
 
-                if (goJoints == null)
+                if (goSegments == null)
                 {
-                    goJoints = new Dictionary<uint, GameObject>();
+                    goSegments = new Dictionary<uint, GameObject>();
 
-                    foreach (var joint in skeleton.QssJoints.ToList())
+                    foreach (var qtmSkeletonSegment in skeleton.QtmSkeletonSegments.ToList())
                     {
-                        GameObject goJoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        goJoint.GetComponent<Renderer>().material.color = Color.green;
-                        goJoint.name = joint.Value.Name;
-                        goJoint.transform.parent = joint.Value.ParentId == 0 ? this.gameObject.transform : goJoints[joint.Value.ParentId].transform;
-                        goJoint.transform.localPosition = joint.Value.TPosition;
-                        goJoint.transform.localRotation = joint.Value.TRotation;
-                        goJoint.SetActive(false);
-                        goJoints.Add(joint.Key, goJoint);
+                        GameObject goSegment = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        goSegment.GetComponent<Renderer>().material.color = Color.green;
+                        goSegment.name = qtmSkeletonSegment.Value.Name;
+                        goSegment.transform.parent = qtmSkeletonSegment.Value.ParentId == 0 ? this.gameObject.transform : goSegments[qtmSkeletonSegment.Value.ParentId].transform;
+                        goSegment.transform.localPosition = qtmSkeletonSegment.Value.TPosition;
+                        goSegment.transform.localRotation = qtmSkeletonSegment.Value.TRotation;
+                        goSegment.SetActive(false);
+                        goSegments.Add(qtmSkeletonSegment.Key, goSegment);
                     }
                 }
                 else
                 {
-                    foreach (var joint in skeleton.QssJoints.ToList())
+                    foreach (var qtmSkeletonSegment in skeleton.QtmSkeletonSegments.ToList())
                     {
-                        var goJoint = goJoints[joint.Key];
-                        goJoint.SetActive(true);
-                        goJoint.transform.localPosition = joint.Value.Position;
-                        goJoint.transform.localRotation = joint.Value.Rotation;
+                        var goSegment = goSegments[qtmSkeletonSegment.Key];
+                        goSegment.SetActive(true);
+                        goSegment.transform.localPosition = qtmSkeletonSegment.Value.Position;
+                        goSegment.transform.localRotation = qtmSkeletonSegment.Value.Rotation;
                     }
                 }
                 break;

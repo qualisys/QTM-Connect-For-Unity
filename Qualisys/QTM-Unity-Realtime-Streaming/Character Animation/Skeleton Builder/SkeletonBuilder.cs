@@ -72,7 +72,7 @@ namespace QualisysRealTime.Unity.Skeleton
 
             segments.BodyData.Height = BodyHeight;
             segments.BodyData.Mass = BodyMass;
-            segments.GetJointLocations(markers, ref skeleton);
+            segments.GetSegmentLocations(markers, ref skeleton);
 
             // Try to reconstruct virtual markers
             if (UseTrackingMarkers)
@@ -80,7 +80,7 @@ namespace QualisysRealTime.Unity.Skeleton
                 if (segmentTracking.ProcessMarkers(skeleton, markerData, ref markers, MarkerPrefix))
                 {
                     markerPreprocessor.ProcessMarkers(out markers);
-                    segments.GetJointLocations(markers, ref skeleton);
+                    segments.GetSegmentLocations(markers, ref skeleton);
                 }
             }
 

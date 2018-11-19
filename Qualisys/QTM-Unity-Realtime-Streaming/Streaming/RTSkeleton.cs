@@ -17,14 +17,14 @@ namespace QualisysRealTime.Unity
 
         private HumanPose mHumanPose = new HumanPose();
         private GameObject mStreamedRootObject;
-        private Dictionary<uint, GameObject> mQTmJointIdToGameObject;
+        private Dictionary<uint, GameObject> mQTmSegmentIdToGameObject;
         private Dictionary<string, string> mMecanimToQtmSegmentNames = new Dictionary<string, string>();
 
         private HumanPoseHandler mSourcePoseHandler;
         private HumanPoseHandler mDestiationPoseHandler;
 
         protected RTClient rtClient;
-        private QssSkeleton mQtmSkeleton;
+        private QtmSkeleton mQtmSkeleton;
 
         void Start()
         {
@@ -58,13 +58,13 @@ namespace QualisysRealTime.Unity
                 buildingSkeleton = true;
 
                 mStreamedRootObject = new GameObject(this.SkeletonName);
-                mQTmJointIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeleton.QssJoints.Count);
-                foreach (var joint in mQtmSkeleton.QssJoints.ToList())
+                mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeleton.QtmSkeletonSegments.Count);
+                foreach (var qtmSkeletonSegment in mQtmSkeleton.QtmSkeletonSegments.ToList())
                 {
-                    var jointGameObject = new GameObject(this.SkeletonName + "_" + joint.Value.Name);
-                    jointGameObject.transform.parent = joint.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmJointIdToGameObject[joint.Value.ParentId].transform;
-                    jointGameObject.transform.localPosition = joint.Value.TPosition;
-                    mQTmJointIdToGameObject[joint.Value.Id] = jointGameObject;
+                    var go = new GameObject(this.SkeletonName + "_" + qtmSkeletonSegment.Value.Name);
+                    go.transform.parent = qtmSkeletonSegment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[qtmSkeletonSegment.Value.ParentId].transform;
+                    go.transform.localPosition = qtmSkeletonSegment.Value.TPosition;
+                    mQTmSegmentIdToGameObject[qtmSkeletonSegment.Value.Id] = go;
                 }
 
                 BuildMecanimAvatarFromQtmTPose();
@@ -76,14 +76,14 @@ namespace QualisysRealTime.Unity
             if (mQtmSkeleton == null)
                 return;
 
-            // Update all the joint transforms
-            foreach (var joint in mQtmSkeleton.QssJoints.ToList())
+            // Update all the transforms
+            foreach (var qtmSkeletonSegment in mQtmSkeleton.QtmSkeletonSegments.ToList())
             {
-                GameObject jointGameObject;
-                if (mQTmJointIdToGameObject.TryGetValue(joint.Key, out jointGameObject))
+                GameObject go;
+                if (mQTmSegmentIdToGameObject.TryGetValue(qtmSkeletonSegment.Key, out go))
                 {
-                    jointGameObject.transform.localPosition = joint.Value.Position;
-                    jointGameObject.transform.localRotation = joint.Value.Rotation;
+                    go.transform.localPosition = qtmSkeletonSegment.Value.Position;
+                    go.transform.localRotation = qtmSkeletonSegment.Value.Rotation;
                 }
             }
             if (mSourcePoseHandler != null && mDestiationPoseHandler != null)
@@ -95,7 +95,7 @@ namespace QualisysRealTime.Unity
 
         private void BuildMecanimAvatarFromQtmTPose()
         {
-            var humanBones = new List<HumanBone>(mQtmSkeleton.QssJoints.Count);
+            var humanBones = new List<HumanBone>(mQtmSkeleton.QtmSkeletonSegments.Count);
             for (int index = 0; index < HumanTrait.BoneName.Length; index++)
             {
                 var humanBoneName = HumanTrait.BoneName[index];
@@ -112,7 +112,7 @@ namespace QualisysRealTime.Unity
             }
 
             // Set up the T-pose and game object name mappings.
-            var skeletonBones = new List<SkeletonBone>(mQtmSkeleton.QssJoints.Count + 1);
+            var skeletonBones = new List<SkeletonBone>(mQtmSkeleton.QtmSkeletonSegments.Count + 1);
             skeletonBones.Add(new SkeletonBone()
             {
                 name = this.SkeletonName,
@@ -122,12 +122,12 @@ namespace QualisysRealTime.Unity
             });
 
             // Create remaining T-Pose segment definitions from Qtm joints
-            foreach (var qssJoint in mQtmSkeleton.QssJoints.ToList())
+            foreach (var qssSegment in mQtmSkeleton.QtmSkeletonSegments.ToList())
             {
                 skeletonBones.Add(new SkeletonBone()
                 {
-                    name = this.SkeletonName + "_" + qssJoint.Value.Name,
-                    position = qssJoint.Value.TPosition,
+                    name = this.SkeletonName + "_" + qssSegment.Value.Name,
+                    position = qssSegment.Value.TPosition,
                     rotation = Quaternion.identity,
                     scale = Vector3.one,
                 });

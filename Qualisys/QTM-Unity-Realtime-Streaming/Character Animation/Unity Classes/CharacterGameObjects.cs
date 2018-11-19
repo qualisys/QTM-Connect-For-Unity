@@ -180,9 +180,9 @@ namespace QualisysRealTime.Unity.Skeleton {
                 }
             }
             // Find head segment
-            if (!head) head = SegmentNamings.GetSegment(transforms, SegmentNamings.JointObject.Head);
+            if (!head) head = SegmentNamings.GetSegment(transforms, SegmentNamings.SegmentObject.Head);
             // Find Neck
-            if (!neck) neck = SegmentNamings.GetSegment(transforms, SegmentNamings.JointObject.Neck);
+            if (!neck) neck = SegmentNamings.GetSegment(transforms, SegmentNamings.SegmentObject.Neck);
             // Find Pelvis
             if (!pelvis) pelvis = SegmentNamings.GetMatch(transforms, SegmentNamings.pelvisAlias);
             //if pelvis not found, pelvis is common ancestor of the thighs
@@ -272,8 +272,8 @@ namespace QualisysRealTime.Unity.Skeleton {
         {
             if (leftHand.childCount <= 0 || rightHand.childCount <= 0) return;
             var children = leftHand.GetDirectChildren();
-            thumbLeft = SegmentNamings.GetSegment(children, SegmentNamings.JointObject.Thumb, SegmentNamings.BodySide.Left);
-            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Fingers, SegmentNamings.BodySide.Left, children);
+            thumbLeft = SegmentNamings.GetSegment(children, SegmentNamings.SegmentObject.Thumb, SegmentNamings.BodySide.Left);
+            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Fingers, SegmentNamings.BodySide.Left, children);
             if (results.Length == 4)
             {
                 fingersLeft = new Transform[4];
@@ -298,8 +298,8 @@ namespace QualisysRealTime.Unity.Skeleton {
             }
 
             children = rightHand.GetDirectChildren();
-            thumbRight = SegmentNamings.GetSegment(children, SegmentNamings.JointObject.Thumb, SegmentNamings.BodySide.Right);
-            results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Fingers, SegmentNamings.BodySide.Right, rightHand.GetDirectChildren());
+            thumbRight = SegmentNamings.GetSegment(children, SegmentNamings.SegmentObject.Thumb, SegmentNamings.BodySide.Right);
+            results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Fingers, SegmentNamings.BodySide.Right, rightHand.GetDirectChildren());
             if (results.Length == 4)
             {
                 fingersRight = new Transform[4];
@@ -329,7 +329,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="transforms"></param>
         public void AddLeftArm(Transform[] transforms)
         {
-            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Arm, SegmentNamings.BodySide.Left, transforms);
+            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Arm, SegmentNamings.BodySide.Left, transforms);
             if (results.Length == 4)
             {
                 if (!leftClavicle) leftClavicle = results[0];
@@ -351,7 +351,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="transforms"></param>
         public void AddRightArm(Transform[] transforms)
         {
-            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Arm, SegmentNamings.BodySide.Right, transforms);
+            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Arm, SegmentNamings.BodySide.Right, transforms);
             if (results.Length == 4)
             {
                 if (!rightClavicle) rightClavicle = results[0];
@@ -373,7 +373,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="transforms"></param>
         public void AddLeftLeg(Transform[] transforms)
         {
-            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Leg, SegmentNamings.BodySide.Left, transforms);
+            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Leg, SegmentNamings.BodySide.Left, transforms);
             if (results.Length == 3 || results.Length == 4)
             {
                 if (leftThigh == null) leftThigh = results[0];
@@ -387,7 +387,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// <param name="transforms"></param>
         public void AddRightLeg(Transform[] transforms)
         {
-            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.JointObject.Leg, SegmentNamings.BodySide.Right, transforms);
+            Transform[] results = SegmentNamings.GetTypeAndSide(SegmentNamings.SegmentObject.Leg, SegmentNamings.BodySide.Right, transforms);
             if (results.Length == 3 || results.Length == 4)
             {
                 if (rightThigh == null) rightThigh = results[0];

@@ -75,25 +75,25 @@ namespace QualisysRealTime.Unity.Skeleton
             }
         }
         /// <summary>
-        /// If a joints is missing from the skeletontree, fill the joints with the previus frames joints and solve with ik if a joint is found, or return the previus frames joint pos offseted the new position
+        /// If a segments is missing from the skeletontree, fill the segments with the previus frames segments and solve with ik if a segment is found, or return the previus frames segment pos offseted the new position
         /// </summary>
         /// <param name="skelEnum">The enumurator to the missing segment position</param>
         /// <param name="lastSkelEnum">The enumurator to the missing segment position from the last skeleton</param>
-        private void MissingSegment(TreeNode<Segment> missingJoint)
+        private void MissingSegment(TreeNode<Segment> missingSegment)
         {
-            // missings joints parent from last frame is root in solution
+            // missings segments parent from last frame is root in solution
             //root of chain 
-            TreeNode<Segment> lastSkelSegment = lastSkel.Root.FindTreeNode(node => node.Data.Name.Equals(missingJoint.Data.Name));
+            TreeNode<Segment> lastSkelSegment = lastSkel.Root.FindTreeNode(node => node.Data.Name.Equals(missingSegment.Data.Name));
             List<Segment> missingChain = new List<Segment>(); // chain to be solved
             // The root if the chain
-            Vector3 offset = missingJoint.Parent.Data.Pos - lastSkelSegment.Parent.Data.Pos; // offset to move last frames chain to this frames' position
-            CopyFromLast(missingJoint.Parent.Data, lastSkelSegment.Parent.Data);
-            missingJoint.Parent.Data.Pos += offset;
-            missingChain.Add(missingJoint.Parent.Data);
+            Vector3 offset = missingSegment.Parent.Data.Pos - lastSkelSegment.Parent.Data.Pos; // offset to move last frames chain to this frames' position
+            CopyFromLast(missingSegment.Parent.Data, lastSkelSegment.Parent.Data);
+            missingSegment.Parent.Data.Pos += offset;
+            missingChain.Add(missingSegment.Parent.Data);
             bool iksolved = false;
             IEnumerator lastSkelEnum = lastSkelSegment.GetEnumerator();
             Segment last;
-            foreach(var curr in missingJoint)
+            foreach(var curr in missingSegment)
             {
                 lastSkelEnum.MoveNext();
                 last = ((TreeNode<Segment>)lastSkelEnum.Current).Data;
@@ -111,9 +111,9 @@ namespace QualisysRealTime.Unity.Skeleton
                     CopyFromLast(curr.Data, last);
                     curr.Data.Pos += offset;
                     missingChain.Add(curr.Data);
-                    if (!IKSolver.SolveSegmentChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data))// solve with IK
+                    if (!IKSolver.SolveSegmentChain(missingChain.ToArray(), target, missingSegment.Parent.Parent.Data))// solve with IK
                     {
-                        FABRIK.SolveSegmentChain(missingChain.ToArray(), target, missingJoint.Parent.Parent.Data);
+                        FABRIK.SolveSegmentChain(missingChain.ToArray(), target, missingSegment.Parent.Parent.Data);
                     }
                         
                     iksolved = true;
@@ -127,14 +127,14 @@ namespace QualisysRealTime.Unity.Skeleton
             // If target not found on chain, rotate the body according to its grandparents knowed diffrence
             if (!iksolved)
             {
-                var q2 = missingJoint.Parent.Parent.Data.Orientation;
+                var q2 = missingSegment.Parent.Parent.Data.Orientation;
                 var q1 = lastSkelSegment.Parent.Parent.Data.Orientation;
-                FK(missingJoint.Parent, (q2 * Quaternion.Invert(q1)));
+                FK(missingSegment.Parent, (q2 * Quaternion.Invert(q1)));
             }
-            ConstraintsBeforeReturn(missingJoint.Parent, false);
-            if (iksolved && Interpolation && (missingJoint.Data.IsArm() || missingJoint.Data.IsLeg()))
+            ConstraintsBeforeReturn(missingSegment.Parent, false);
+            if (iksolved && Interpolation && (missingSegment.Data.IsArm() || missingSegment.Data.IsLeg()))
             {
-                JerkingTest(missingJoint.Parent, false, true);
+                JerkingTest(missingSegment.Parent, false, true);
             }
         }
         /// <summary>
@@ -244,9 +244,9 @@ namespace QualisysRealTime.Unity.Skeleton
             return hasChanges;
         }
         /// <summary>
-        /// Rotate the first joint, and move the rest according to a Quaternion
+        /// Rotate the first segment, and move the rest according to a Quaternion
         /// </summary>
-        /// <param name="bvn">The first joint to be rotated</param>
+        /// <param name="bvn">The first segment to be rotated</param>
         /// <param name="rotation"> The quaternion to rotate by</param>
         private void FK(TreeNode<Segment> bvn, Quaternion rotation)
         {

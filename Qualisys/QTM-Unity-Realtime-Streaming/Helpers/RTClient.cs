@@ -37,8 +37,8 @@ namespace QualisysRealTime.Unity
         private List<AnalogChannel> mAnalogChannels;
         public List<AnalogChannel> AnalogChannels { get { return mAnalogChannels; } }
 
-        private List<QssSkeleton> mSkeletons;
-        public List<QssSkeleton> Skeletons { get { return mSkeletons; } }
+        private List<QtmSkeleton> mSkeletons;
+        public List<QtmSkeleton> Skeletons { get { return mSkeletons; } }
 
 
         private Axis mUpAxis;
@@ -153,10 +153,10 @@ namespace QualisysRealTime.Unity
             {
                 for (int skeletonIndex = 0; skeletonIndex < skeletonData.Count; skeletonIndex++)
                 {
-                    foreach (var joint in skeletonData[skeletonIndex].Joints)
+                    foreach (var joint in skeletonData[skeletonIndex].Segments)
                     {
-                        QssSegment qssJoint;
-                        if (!mSkeletons[skeletonIndex].QssJoints.TryGetValue(joint.Id, out qssJoint))
+                        QtmSkeletonSegment qssJoint;
+                        if (!mSkeletons[skeletonIndex].QtmSkeletonSegments.TryGetValue(joint.Id, out qssJoint))
                             continue;
 
                         qssJoint.Position = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
@@ -167,7 +167,7 @@ namespace QualisysRealTime.Unity
                         //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
                         //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
 
-                        mSkeletons[skeletonIndex].QssJoints[joint.Id] = qssJoint;
+                        mSkeletons[skeletonIndex].QtmSkeletonSegments[joint.Id] = qssJoint;
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace QualisysRealTime.Unity
             mBones = new List<Bone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
-            mSkeletons = new List<QssSkeleton>();
+            mSkeletons = new List<QtmSkeleton>();
 
             mStreamingStatus = false;
             mPacket = RTPacket.ErrorPacket;
@@ -509,18 +509,18 @@ namespace QualisysRealTime.Unity
             var settings = mProtocol.SkeletonSettings;
             foreach (var skeleton in settings.Skeletons)
             {
-                QssSkeleton qssSkeleton = new QssSkeleton();
-                qssSkeleton.Name = skeleton.Name;
+                QtmSkeleton qtmSkeleton = new QtmSkeleton();
+                qtmSkeleton.Name = skeleton.Name;
                 foreach (var joint in skeleton.Joints)
                 {
-                    var qssJoint = new QssSegment();
-                    qssJoint.Name = joint.Name;
-                    qssJoint.Id = joint.Id;
-                    qssJoint.ParentId = joint.ParentId;
+                    var qtmSkeletonSegment = new QtmSkeletonSegment();
+                    qtmSkeletonSegment.Name = joint.Name;
+                    qtmSkeletonSegment.Id = joint.Id;
+                    qtmSkeletonSegment.ParentId = joint.ParentId;
 
                     // Set rotation and position to work with unity
-                    qssJoint.TPosition = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
-                    qssJoint.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
+                    qtmSkeletonSegment.TPosition = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
+                    qtmSkeletonSegment.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
                     //Vector3 position = new Vector3(joint.Position.X, joint.Position.Z, joint.Position.Y);
                     //position /= 1000;
 
@@ -535,9 +535,9 @@ namespace QualisysRealTime.Unity
                     //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
                     //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
 
-                    qssSkeleton.QssJoints.Add(qssJoint.Id, qssJoint);
+                    qtmSkeleton.QtmSkeletonSegments.Add(qtmSkeletonSegment.Id, qtmSkeletonSegment);
                 }
-                mSkeletons.Add(qssSkeleton);
+                mSkeletons.Add(qtmSkeleton);
             }
             return true;
         }

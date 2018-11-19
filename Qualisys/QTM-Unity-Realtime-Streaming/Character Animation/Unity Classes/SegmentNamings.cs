@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity.Skeleton {
         /// Type of the segment.
         /// </summary>
         [System.Serializable]
-        public enum JointObject
+        public enum SegmentObject
         {
             Unassigned,
             Spine,
@@ -86,35 +86,35 @@ namespace QualisysRealTime.Unity.Skeleton {
             neckExclude = { "Head", "head"};
 
         /// <summary>
-        /// Returns only the segments with the specified JointObject.
+        /// Returns only the transforms with the specified SegmentObject name.
         /// </summary>
-        public static Transform[] GetSegmentsOfType(JointObject type, Transform[] segments)
+        public static Transform[] GetTransformsOfType(SegmentObject type, Transform[] transforms)
         {
-            return segments.Where(b => (b != null && GetType(b.name) == type)).ToArray();
+            return transforms.Where(b => (b != null && GetType(b.name) == type)).ToArray();
         }
 
 
         /// <summary>
-        /// Returns only the joints with the specified Side.
+        /// Returns only the transforms with the specified Side.
         /// </summary>
-        /// <param name="jointSide">The side of the joint</param>
-        /// <param name="joints">The Transforms where to search</param>
+        /// <param name="bodySide">The side of the body</param>
+        /// <param name="transforms">The Transforms where to search</param>
         /// <returns>A list of matching Transforms</returns>
-        public static Transform[] GetJointsOfSide(BodySide jointSide, Transform[] joints)
+        public static Transform[] GetTransformsOfSide(BodySide bodySide, Transform[] transforms)
         {
-            return joints.Where(j => (j != null && GetSideOfJointName(j.name) == jointSide)).ToArray();
+            return transforms.Where(j => (j != null && GetBodySideFromName(j.name) == bodySide)).ToArray();
         }
 
         /// <summary>
-        /// Gets the joint of given joint type and joint side.
+        /// Gets the segment of given segment type and segment side.
         /// </summary>
-        /// <param name="jointType">The type of the joint </param>
-        /// <param name="jointSide">The side on wich the joint should be located</param>
+        /// <param name="segmentGroup">The type of the segment </param>
+        /// <param name="bodySide">The side on wich the segment should be located</param>
         /// <param name="transforms">The segments to search among</param>
         /// <returns>Null if no match, otherwise the first hit</returns>
-        public static Transform[] GetTypeAndSide(JointObject jointType, BodySide jointSide, Transform[] transforms)
+        public static Transform[] GetTypeAndSide(SegmentObject segmentGroup, BodySide bodySide, Transform[] transforms)
         {
-            return GetJointsOfSide(jointSide, GetSegmentsOfType(jointType, transforms));
+            return GetTransformsOfSide(bodySide, GetTransformsOfType(segmentGroup, transforms));
         }
         
         /// <summary>
@@ -135,85 +135,85 @@ namespace QualisysRealTime.Unity.Skeleton {
         }
 
         /// <summary>
-        /// Gets the type of the joint.
+        /// Gets SegmentObject from a segment name.
         /// </summary>
-        /// <param name="segmentName">The name of the joint</param>
-        /// <returns>The enum of the joint name</returns>
-        public static JointObject GetType(string segmentName)
+        /// <param name="segmentName">The name of the segment</param>
+        /// <returns>The enum of the segment name</returns>
+        public static SegmentObject GetType(string segmentName)
         {
             // Type Neck
-            if (IsType(segmentName, neckAlias, neckExclude)) return JointObject.Neck;
+            if (IsType(segmentName, neckAlias, neckExclude)) return SegmentObject.Neck;
             // Type Spine
-            if (IsType(segmentName, spineAlias, spineExclude)) return JointObject.Spine;
+            if (IsType(segmentName, spineAlias, spineExclude)) return SegmentObject.Spine;
             // Type Head
-            if (IsType(segmentName, headAlias, headExclude)) return JointObject.Head;
+            if (IsType(segmentName, headAlias, headExclude)) return SegmentObject.Head;
             // Type Arm
-            if (IsType(segmentName, armAlias, armExclude)) return JointObject.Arm;
+            if (IsType(segmentName, armAlias, armExclude)) return SegmentObject.Arm;
             // Type Leg
-            if (IsType(segmentName, legAlias, legExclude)) return JointObject.Leg;
+            if (IsType(segmentName, legAlias, legExclude)) return SegmentObject.Leg;
             // Type Finger
-            if (IsType(segmentName, fingerAlias, fingerExclude)) return JointObject.Fingers;
+            if (IsType(segmentName, fingerAlias, fingerExclude)) return SegmentObject.Fingers;
             // Type Thumb
-            if (IsType(segmentName, thumbAlias, thumbExclude)) return JointObject.Thumb;
-            return JointObject.Unassigned;
+            if (IsType(segmentName, thumbAlias, thumbExclude)) return SegmentObject.Thumb;
+            return SegmentObject.Unassigned;
         }
 
         /// <summary>
-        /// Gets the joint side.
+        /// Gets the BodySide from a segment name.
         /// </summary>
-        /// <param name="jointName">The name of the joint</param>
+        /// <param name="name">The name string</param>
         /// <returns>The enum representing the side</returns>
-        public static BodySide GetSideOfJointName(string jointName)
+        public static BodySide GetBodySideFromName(string name)
         {
-            if (Matches(jointName, LeftSide) || LastLetter(jointName) == "L" || FirstLetter(jointName) == "L")
+            if (Matches(name, LeftSide) || LastLetter(name) == "L" || FirstLetter(name) == "L")
                 return BodySide.Left;
-            else if (Matches(jointName, RightSide) || LastLetter(jointName) == "R" || FirstLetter(jointName) == "R")
+            else if (Matches(name, RightSide) || LastLetter(name) == "R" || FirstLetter(name) == "R")
                 return BodySide.Right;
             return BodySide.Center;
         }
 
         /// <summary>
-        /// Returns a tranform from a given JointType
+        /// Returns a tranform from a given segmentObject
         /// </summary>
         /// <param name="transforms">The transform to be searched</param>
-        /// <param name="jointType">The type of the joint to be returned</param>
-        /// <param name="jointSide">The side of which the joint is located</param>
-        /// <param name="namings">The Names of the joints</param>
+        /// <param name="segmentObject">The type of the segment to be returned</param>
+        /// <param name="bodySide">The side of which the segment is located</param>
+        /// <param name="namings">The Names of the segments</param>
         /// <returns>The transform of the first result</returns>
-        public static Transform GetSegment(Transform[] transforms, JointObject jointType, BodySide jointSide = BodySide.Center, params string[][] namings)
+        public static Transform GetSegment(Transform[] transforms, SegmentObject segmentObject, BodySide bodySide = BodySide.Center, params string[][] namings)
         {
-            return GetMatch(GetTypeAndSide(jointType, jointSide, transforms), namings);
+            return GetMatch(GetTypeAndSide(segmentObject, bodySide, transforms), namings);
         }
         /// <summary>
-        /// Returns true if the joint matches the given names and not the given exlusions
+        /// Returns true if the segment matches the given names and not the given exlusions
         /// </summary>
-        /// <param name="jointName">The name of the joint</param>
+        /// <param name="name">The name of the segment</param>
         /// <param name="aliases">The names to be matched</param>
-        /// <param name="exclusions">The name the joint cannot contain</param>
+        /// <param name="exclusions">The name the segment cannot contain</param>
         /// <returns>True if match, false otherwise</returns>
-        private static bool IsType(string jointName, string[] aliases, string[] exclusions)
+        private static bool IsType(string name, string[] aliases, string[] exclusions)
         {
-            return Matches(jointName, aliases) && !Exclude(jointName, exclusions);
+            return Matches(name, aliases) && !Exclude(name, exclusions);
         }
         /// <summary>
         /// Returns true if the possible names matches the given name expect the exluded names
         /// </summary>
-        /// <param name="jointName">The given name</param>
+        /// <param name="segmentName">The given name</param>
         /// <param name="possibleNames">The possible names</param>
         /// <returns>True if no match among the exluded and a match with the given, false otherwise</returns>
-        private static bool Matches(string jointName, string[] possibleNames)
+        private static bool Matches(string segmentName, string[] possibleNames)
         {
-            return !Exclude(jointName, exludeName) && possibleNames.Any(nc => jointName.Contains(nc));
+            return !Exclude(segmentName, exludeName) && possibleNames.Any(nc => segmentName.Contains(nc));
         }
         /// <summary>
         /// Returns true if the given names math the exclusions
         /// </summary>
-        /// <param name="jointName">The given joint name</param>
+        /// <param name="segmentName">The given segment name</param>
         /// <param name="exclusions">The names to match</param>
         /// <returns>True if match, false otherwise</returns>
-        private static bool Exclude(string jointName, string[] exclusions)
+        private static bool Exclude(string segmentName, string[] exclusions)
         {
-            return exclusions.Any(nc => jointName.Contains(nc));
+            return exclusions.Any(nc => segmentName.Contains(nc));
         }
         /// <summary>
         /// Returns the first letter of the string

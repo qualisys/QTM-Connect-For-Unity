@@ -23,7 +23,7 @@ namespace QualisysRealTime.Unity.Skeleton
         public HeadCam headCam;
 
         internal Camera headCamera = new Camera();
-        internal bool jointsFound = true;
+        internal bool segmentsFound = true;
 
         protected RTClient rtClient;
         protected Vector3 pos;
@@ -31,10 +31,10 @@ namespace QualisysRealTime.Unity.Skeleton
         protected BipedSkeleton skeleton;
 
         private SkeletonBuilder skeletonBuilder;
-        private CharacterGameObjects charactersJoints = new CharacterGameObjects();
-        public CharacterGameObjects Joints
+        private CharacterGameObjects characterTransforms = new CharacterGameObjects();
+        public CharacterGameObjects Transforms
         {
-            get { return charactersJoints; }
+            get { return characterTransforms; }
         }
         private float scale = 0;
 
@@ -49,7 +49,7 @@ namespace QualisysRealTime.Unity.Skeleton
             rtClient = RTClient.GetInstance();
 
             //Find all joints of the characters
-            jointsFound = charactersJoints.SetLimbs(this.transform, UseFingers);
+            segmentsFound = characterTransforms.SetLimbs(this.transform, UseFingers);
             //charactersJoints.PrintAll();
 
             // disable the animation
@@ -91,7 +91,7 @@ namespace QualisysRealTime.Unity.Skeleton
         {
             if (DEBUG.enabled) Debug.Log("Reset Skeleton...");
 
-            charactersJoints.SetLimbs(this.transform, UseFingers);
+            characterTransforms.SetLimbs(this.transform, UseFingers);
             //charactersJoints.PrintAll();
 
             skeletonBuilder = new SkeletonBuilder();
@@ -121,106 +121,106 @@ namespace QualisysRealTime.Unity.Skeleton
                 switch (b.Data.Name)
                 {
                     case SegmentName.PELVIS:
-                        SetJointRotation(charactersJoints.pelvis, b.Data, segmentRotation.hip);
-                        if (charactersJoints.pelvis && !b.Data.Pos.IsNaN())
+                        SetTransformRotation(characterTransforms.pelvis, b.Data, segmentRotation.hip);
+                        if (characterTransforms.pelvis && !b.Data.Pos.IsNaN())
                         {
                             if (defaultPelvisPosition == Vector3.zero)
-                                defaultPelvisPosition = charactersJoints.pelvis.position;
+                                defaultPelvisPosition = characterTransforms.pelvis.position;
 
-                            charactersJoints.pelvis.position = transform.position + footOffset + transform.rotation *
+                            characterTransforms.pelvis.position = transform.position + footOffset + transform.rotation *
                                 ((ScaleMovementToSize && scale > 0) ?
                                 (b.Data.Pos * scale * transform.localScale.magnitude).Convert()
                                 : b.Data.Pos.Convert());
                         }
                         break;
                     case SegmentName.SPINE0:
-                        if (charactersJoints.spine.Length > 0)
-                            SetJointRotation(charactersJoints.spine[0], b.Data, segmentRotation.spine);
+                        if (characterTransforms.spine.Length > 0)
+                            SetTransformRotation(characterTransforms.spine[0], b.Data, segmentRotation.spine);
                         break;
                     case SegmentName.SPINE1:
-                        if (charactersJoints.spine.Length > 1)
-                            SetJointRotation(charactersJoints.spine[1], b.Data, segmentRotation.spine);
+                        if (characterTransforms.spine.Length > 1)
+                            SetTransformRotation(characterTransforms.spine[1], b.Data, segmentRotation.spine);
                         break;
                     case SegmentName.SPINE3:
-                        if (charactersJoints.spine.Length > 2)
-                            SetJointRotation(charactersJoints.spine[2], b.Data, segmentRotation.spine);
+                        if (characterTransforms.spine.Length > 2)
+                            SetTransformRotation(characterTransforms.spine[2], b.Data, segmentRotation.spine);
                         break;
                     case SegmentName.NECK:
-                        SetJointRotation(charactersJoints.neck, b.Data, segmentRotation.neck);
+                        SetTransformRotation(characterTransforms.neck, b.Data, segmentRotation.neck);
                         break;
                     case SegmentName.HEAD:
                         if (headCam.UseHeadCamera)
                             SetCameraPosition(b.Data);
                         if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
                         {
-                            SetJointRotation(charactersJoints.head, b.Data, segmentRotation.head);
+                            SetTransformRotation(characterTransforms.head, b.Data, segmentRotation.head);
                         }
                         else if (headCamera)
                         {
-                            charactersJoints.head.rotation =
+                            characterTransforms.head.rotation =
                                 headCamera.transform.rotation * Quaternion.Euler(segmentRotation.headCamera);
                         }
-                        else SetJointRotation(charactersJoints.head, b.Data, segmentRotation.head);
+                        else SetTransformRotation(characterTransforms.head, b.Data, segmentRotation.head);
                         break;
                     case SegmentName.HIP_L:
-                        SetJointRotation(charactersJoints.leftThigh, b.Data, segmentRotation.legUpperLeft);
+                        SetTransformRotation(characterTransforms.leftThigh, b.Data, segmentRotation.legUpperLeft);
                         break;
                     case SegmentName.HIP_R:
-                        SetJointRotation(charactersJoints.rightThigh, b.Data, segmentRotation.legUpperRight);
+                        SetTransformRotation(characterTransforms.rightThigh, b.Data, segmentRotation.legUpperRight);
                         break;
                     case SegmentName.KNEE_L:
-                        SetJointRotation(charactersJoints.leftCalf, b.Data, segmentRotation.legLowerLeft);
+                        SetTransformRotation(characterTransforms.leftCalf, b.Data, segmentRotation.legLowerLeft);
                         break;
                     case SegmentName.KNEE_R:
-                        SetJointRotation(charactersJoints.rightCalf, b.Data, segmentRotation.legLowerRight);
+                        SetTransformRotation(characterTransforms.rightCalf, b.Data, segmentRotation.legLowerRight);
                         break;
                     case SegmentName.FOOTBASE_L:
-                        SetJointRotation(charactersJoints.leftFoot, b.Data, segmentRotation.footLeft);
+                        SetTransformRotation(characterTransforms.leftFoot, b.Data, segmentRotation.footLeft);
                         break;
                     case SegmentName.FOOTBASE_R:
-                        SetJointRotation(charactersJoints.rightFoot, b.Data, segmentRotation.footRight);
+                        SetTransformRotation(characterTransforms.rightFoot, b.Data, segmentRotation.footRight);
                         break;
                     case SegmentName.CLAVICLE_L:
-                        SetJointRotation(charactersJoints.leftClavicle, b.Data, segmentRotation.clavicleLeft);
+                        SetTransformRotation(characterTransforms.leftClavicle, b.Data, segmentRotation.clavicleLeft);
                         break;
                     case SegmentName.CLAVICLE_R:
-                        SetJointRotation(charactersJoints.rightClavicle, b.Data, segmentRotation.clavicleRight);
+                        SetTransformRotation(characterTransforms.rightClavicle, b.Data, segmentRotation.clavicleRight);
                         break;
                     case SegmentName.SHOULDER_L:
-                        SetJointRotation(charactersJoints.leftUpperArm, b.Data, segmentRotation.armUpperLeft);
+                        SetTransformRotation(characterTransforms.leftUpperArm, b.Data, segmentRotation.armUpperLeft);
                         break;
                     case SegmentName.SHOULDER_R:
-                        SetJointRotation(charactersJoints.rightUpperArm, b.Data, segmentRotation.armUpperRight);
+                        SetTransformRotation(characterTransforms.rightUpperArm, b.Data, segmentRotation.armUpperRight);
                         break;
                     case SegmentName.ELBOW_L:
-                        SetJointRotation(charactersJoints.leftForearm, b.Data, segmentRotation.armLowerLeft);
+                        SetTransformRotation(characterTransforms.leftForearm, b.Data, segmentRotation.armLowerLeft);
                         break;
                     case SegmentName.ELBOW_R:
-                        SetJointRotation(charactersJoints.rightForearm, b.Data, segmentRotation.armLowerRight);
+                        SetTransformRotation(characterTransforms.rightForearm, b.Data, segmentRotation.armLowerRight);
                         break;
                     case SegmentName.WRIST_L:
-                        SetJointRotation(charactersJoints.leftHand, b.Data, segmentRotation.handLeft);
+                        SetTransformRotation(characterTransforms.leftHand, b.Data, segmentRotation.handLeft);
                         break;
                     case SegmentName.WRIST_R:
-                        SetJointRotation(charactersJoints.rightHand, b.Data, segmentRotation.handRight);
+                        SetTransformRotation(characterTransforms.rightHand, b.Data, segmentRotation.handRight);
                         break;
                     case SegmentName.HAND_L:
-                        if (UseFingers && charactersJoints.fingersLeft != null)
-                            foreach (var fing in charactersJoints.fingersLeft)
-                                SetJointRotation(fing, b.Data, segmentRotation.fingersLeft);
+                        if (UseFingers && characterTransforms.fingersLeft != null)
+                            foreach (var fing in characterTransforms.fingersLeft)
+                                SetTransformRotation(fing, b.Data, segmentRotation.fingersLeft);
                         break;
                     case SegmentName.HAND_R:
-                        if (UseFingers && charactersJoints.fingersRight != null)
-                            foreach (var fing in charactersJoints.fingersRight)
-                                SetJointRotation(fing, b.Data, segmentRotation.fingersRight);
+                        if (UseFingers && characterTransforms.fingersRight != null)
+                            foreach (var fing in characterTransforms.fingersRight)
+                                SetTransformRotation(fing, b.Data, segmentRotation.fingersRight);
                         break;
                     case SegmentName.TRAP_L:
                         if (UseFingers)
-                            SetJointRotation(charactersJoints.thumbLeft, b.Data, segmentRotation.thumbLeft);
+                            SetTransformRotation(characterTransforms.thumbLeft, b.Data, segmentRotation.thumbLeft);
                         break;
                     case SegmentName.TRAP_R:
                         if (UseFingers)
-                            SetJointRotation(charactersJoints.thumbRight, b.Data, segmentRotation.thumbRight);
+                            SetTransformRotation(characterTransforms.thumbRight, b.Data, segmentRotation.thumbRight);
                         break;
                     case SegmentName.ANKLE_L:
                     case SegmentName.ANKLE_R:
@@ -233,15 +233,15 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <summary>
         /// Sets the rotation of the Transform from Segment object to 
         /// </summary>
-        /// <param name="go">Segment Transform</param>
+        /// <param name="transform">Transform</param>
         /// <param name="b">Segment</param>
         /// <param name="euler">Euler angels</param>
-        private void SetJointRotation(Transform go, Segment b, Vector3 euler)
+        private void SetTransformRotation(Transform transform, Segment b, Vector3 euler)
         {
-            if (go && !b.HasNaN)
+            if (transform && !b.HasNaN)
             {
-                go.rotation =
-                    transform.rotation
+                transform.rotation =
+                    base.transform.rotation
                     * b.Orientation.Convert()
                     * Quaternion.Euler(euler)
                     * Quaternion.Euler(segmentRotation.root);
@@ -254,9 +254,9 @@ namespace QualisysRealTime.Unity.Skeleton
         /// <returns>A scaling factor to be applied to the positional vector</returns>
         private float FindScale()
         {
-            var calf = charactersJoints.leftCalf.position;
-            var thigh = charactersJoints.leftThigh.position;
-            var foot = charactersJoints.leftFoot.position;
+            var calf = characterTransforms.leftCalf.position;
+            var thigh = characterTransforms.leftThigh.position;
+            var foot = characterTransforms.leftFoot.position;
             float pelvisHeight = (calf - thigh).magnitude + (thigh - foot).magnitude;
             var hip = skeleton[SegmentName.HIP_L].Pos;
             var knee = skeleton[SegmentName.KNEE_L].Pos;
@@ -275,8 +275,8 @@ namespace QualisysRealTime.Unity.Skeleton
             if (DEBUG.enabled) Debug.Log("Calibrate character...");
 
             // Calculate offset between characters hip height and actors hip height
-            charactersJoints.pelvis.position -= footOffset;
-            footOffset = (defaultPelvisPosition - charactersJoints.pelvis.position).y * Vector3.up;
+            characterTransforms.pelvis.position -= footOffset;
+            footOffset = (defaultPelvisPosition - characterTransforms.pelvis.position).y * Vector3.up;
 
             if (DEBUG.enabled) Debug.Log("Set Foot Offset to " + footOffset);
 
@@ -339,7 +339,7 @@ namespace QualisysRealTime.Unity.Skeleton
             {
                 var cameraAnchor = headCamera.transform.parent;
                 cameraAnchor.position =
-                    charactersJoints.head.position
+                    characterTransforms.head.position
                     + (headCamera.transform.rotation * headCam.CameraOffset);
                 if (headCam.UseHeadCamera && !headCam.UseVRHeadSetRotation && headCamera)
                 {
