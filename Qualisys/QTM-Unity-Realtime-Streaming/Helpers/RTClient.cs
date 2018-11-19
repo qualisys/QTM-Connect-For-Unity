@@ -28,8 +28,8 @@ namespace QualisysRealTime.Unity
         private List<UnlabeledMarker> mUnlabeledMarkers;
         public List<UnlabeledMarker> UnlabeledMarkers { get { return mUnlabeledMarkers; } }
 
-        private List<AIMBone> mAIMBones;
-        public List<AIMBone> AIMBones { get { return mAIMBones; } }
+        private List<Bone> mBones;
+        public List<Bone> Bones { get { return mBones; } }
 
         private List<GazeVector> mGazeVectors;
         public List<GazeVector> GazeVectors { get { return mGazeVectors; } }
@@ -217,7 +217,7 @@ namespace QualisysRealTime.Unity
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
-            mAIMBones = new List<AIMBone>();
+            mBones = new List<Bone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
             mSkeletons = new List<QssSkeleton>();
@@ -416,7 +416,7 @@ namespace QualisysRealTime.Unity
             mBodies.Clear();
             mMarkers.Clear();
             mUnlabeledMarkers.Clear();
-            mAIMBones.Clear();
+            mBones.Clear();
             mGazeVectors.Clear();
             mAnalogChannels.Clear();
             mStreamingStatus = false;
@@ -571,25 +571,25 @@ namespace QualisysRealTime.Unity
                     mMarkers.Add(newMarker);
                 }
 
-                // Save aimBone settings
-                if (mProtocol.Settings3D.SettingsAimBones != null)
+                // Save Bone settings
+                if (mProtocol.Settings3D.SettingsBones != null)
                 {
-                    AIMBones.Clear();
+                    Bones.Clear();
 
-                    //Save aimBone settings
-                    foreach (var aimBoneSetting in mProtocol.Settings3D.SettingsAimBones)
+                    //Save Bone settings
+                    foreach (var BoneSetting in mProtocol.Settings3D.SettingsBones)
                     {
-                        AIMBone aimBone = new AIMBone();
-                        aimBone.From = aimBoneSetting.From;
-                        aimBone.FromMarker = GetMarker(aimBoneSetting.From);
-                        aimBone.To = aimBoneSetting.To;
-                        aimBone.ToMarker = GetMarker(aimBoneSetting.To);
-                        aimBone.Color.r = (aimBoneSetting.Color) & 0xFF;
-                        aimBone.Color.g = (aimBoneSetting.Color >> 8) & 0xFF;
-                        aimBone.Color.b = (aimBoneSetting.Color >> 16) & 0xFF;
-                        aimBone.Color /= 255;
-                        aimBone.Color.a = 1F;
-                        mAIMBones.Add(aimBone);
+                        Bone Bone = new Bone();
+                        Bone.From = BoneSetting.From;
+                        Bone.FromMarker = GetMarker(BoneSetting.From);
+                        Bone.To = BoneSetting.To;
+                        Bone.ToMarker = GetMarker(BoneSetting.To);
+                        Bone.Color.r = (BoneSetting.Color) & 0xFF;
+                        Bone.Color.g = (BoneSetting.Color >> 8) & 0xFF;
+                        Bone.Color.b = (BoneSetting.Color >> 16) & 0xFF;
+                        Bone.Color /= 255;
+                        Bone.Color.a = 1F;
+                        mBones.Add(Bone);
                     }
                 }
 

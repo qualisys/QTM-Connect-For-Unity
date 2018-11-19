@@ -7,8 +7,8 @@ using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity
 {
-    /// Stream AIMBones from QTM
-    public class RTAIMBones : MonoBehaviour
+    /// Stream Bones from QTM
+    public class RTBones : MonoBehaviour
     {
         private RTClient rtClient;
         private List<LineRenderer> lineRenderers;
@@ -38,22 +38,22 @@ namespace QualisysRealTime.Unity
 
             lineRenderers.Clear();
 
-            var aimBoneData = rtClient.AIMBones;
+            var BoneData = rtClient.Bones;
 
 
-            for (int i = 0; i < aimBoneData.Count; i++)
+            for (int i = 0; i < BoneData.Count; i++)
             {
                 LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
-                lineRenderer.name = aimBoneData[i].From + " to " + aimBoneData[i].To;
+                lineRenderer.name = BoneData[i].From + " to " + BoneData[i].To;
                 lineRenderer.transform.parent = allSegments.transform;
                 lineRenderer.transform.localPosition = Vector3.zero;
                 lineRenderer.material = material;
-                lineRenderer.material.color = aimBoneData[i].Color;
+                lineRenderer.material.color = BoneData[i].Color;
                 lineRenderer.useWorldSpace = false;
                 lineRenderers.Add(lineRenderer);
             }
         }
-
+        
         void Update()
         {
             if (!visibleSegments)
@@ -64,20 +64,20 @@ namespace QualisysRealTime.Unity
             if (rtClient == null) rtClient = RTClient.GetInstance();
             if (!rtClient.GetStreamingStatus()) return;
 
-            var aimBoneData = rtClient.AIMBones;
+            var BoneData = rtClient.Bones;
 
-            if (aimBoneData == null || aimBoneData.Count == 0) return;
+            if (BoneData == null || BoneData.Count == 0) return;
 
-            if (lineRenderers.Count != aimBoneData.Count) InitiateSegments();
+            if (lineRenderers.Count != BoneData.Count) InitiateSegments();
 
             allSegments.SetActive(true);
-            for (int i = 0; i < aimBoneData.Count; i++)
+            for (int i = 0; i < BoneData.Count; i++)
             {
-                if (aimBoneData[i].FromMarker.Position.magnitude > 0
-                    && aimBoneData[i].ToMarker.Position.magnitude > 0)
+                if (BoneData[i].FromMarker.Position.magnitude > 0
+                    && BoneData[i].ToMarker.Position.magnitude > 0)
                 {
-                    lineRenderers[i].SetPosition(0, aimBoneData[i].FromMarker.Position);
-                    lineRenderers[i].SetPosition(1, aimBoneData[i].ToMarker.Position);
+                    lineRenderers[i].SetPosition(0, BoneData[i].FromMarker.Position);
+                    lineRenderers[i].SetPosition(1, BoneData[i].ToMarker.Position);
                     lineRenderers[i].startWidth = segmentScale;
                     lineRenderers[i].endWidth = segmentScale;
 

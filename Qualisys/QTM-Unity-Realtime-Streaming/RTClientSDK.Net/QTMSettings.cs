@@ -63,7 +63,7 @@ namespace QTMRealTimeSDK.Settings
     }
 
     /// <summary>3D Segment Settings from QTM</summary>
-    public class SettingsAIMBone : SettingsBase
+    public class SettingsBone : SettingsBase
     {
         /// <summary>name of marker segment starts from </summary>
         [XmlAttribute("From")]
@@ -77,7 +77,7 @@ namespace QTMRealTimeSDK.Settings
         [XmlAttribute("Color")]
         public int Color;
 
-        SettingsAIMBone()
+        SettingsBone()
         {
             Color = 0xEEEEEE;
         }
@@ -97,8 +97,8 @@ namespace QTMRealTimeSDK.Settings
         public List<Settings3DLabel> Labels;
 
         [XmlArray("Bones")]
-        [XmlArrayItem("Bone", typeof(SettingsAIMBone))]
-        public SettingsAIMBone[] SettingsAimBones;
+        [XmlArrayItem("Bone", typeof(SettingsBone))]
+        public SettingsBone[] SettingsBones;
 
         public Settings3D()
         {

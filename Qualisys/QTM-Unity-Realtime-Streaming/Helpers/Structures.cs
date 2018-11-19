@@ -34,9 +34,9 @@ namespace QualisysRealTime.Unity
     }
 
     // Class for aim bones
-    public class AIMBone
+    public class Bone
     {
-        public AIMBone() { }
+        public Bone() { }
         public string From;
         public LabeledMarker FromMarker;
         public string To;
