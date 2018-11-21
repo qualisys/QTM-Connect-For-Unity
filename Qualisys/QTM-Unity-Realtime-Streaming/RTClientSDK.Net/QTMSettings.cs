@@ -235,7 +235,7 @@ namespace QTMRealTimeSDK.Settings
     {
         [XmlAttribute("Name")]
         public string Name;
-        [XmlElement("Joint")]
+        [XmlElement("Segment")]
         public List<SettingSkeletonJoint> Joints;
     }
 

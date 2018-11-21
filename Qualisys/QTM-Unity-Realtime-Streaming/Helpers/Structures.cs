@@ -2,7 +2,6 @@
 //
 using UnityEngine;
 using System.Collections.Generic;
-using QualisysRealTime.Unity.Skeleton;
 
 namespace QualisysRealTime.Unity
 {
@@ -73,21 +72,5 @@ namespace QualisysRealTime.Unity
         public string Name;
         public Dictionary<uint, QssJoint> QssJoints = new Dictionary<uint, QssJoint>();
     }
-
-    public static class MarkerConverter
-    {
-        public static List<Marker> Convert(this List<LabeledMarker> labeledMarkers)
-        {
-            var newList = new List<Marker>();
-            foreach (var labeledMarker in labeledMarkers)
-            {
-                var m = new Marker();
-                m.Label = labeledMarker.Name;
-                m.Position = labeledMarker.Position.Convert();
-                m.Residual = labeledMarker.Residual;
-                newList.Add(m);
-            }
-            return newList;
-        }
-    }
+    
 }
