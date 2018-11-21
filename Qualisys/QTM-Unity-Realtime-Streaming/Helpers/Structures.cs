@@ -57,7 +57,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public float[] Values;
     }
-    public class QssJoint
+    public class Segment
     {
         public string Name;
         public uint Id;
@@ -67,10 +67,10 @@ namespace QualisysRealTime.Unity
         public Vector3 TPosition = Vector3.zero;
         public Quaternion TRotation = Quaternion.identity;
     }
-    public class QssSkeleton
+    public class Skeleton
     {
         public string Name;
-        public Dictionary<uint, QssJoint> QssJoints = new Dictionary<uint, QssJoint>();
+        public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
     }
     
 }
