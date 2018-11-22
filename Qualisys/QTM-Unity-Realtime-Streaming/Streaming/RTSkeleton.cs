@@ -45,6 +45,7 @@ namespace QualisysRealTime.Unity
                     GameObject.Destroy(mStreamedRootObject);
                 
                 mStreamedRootObject = new GameObject(this.SkeletonName);
+
                 mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
 
                 foreach (var segment in mQtmSkeletonCache.Segments.ToList())
@@ -57,6 +58,7 @@ namespace QualisysRealTime.Unity
 
                 BuildMecanimAvatarFromQtmTPose();
 
+                mStreamedRootObject.transform.SetParent(this.transform, false);
                 mStreamedRootObject.transform.Rotate(new Vector3(0,90,0), Space.Self);
                 return;
             }
@@ -136,8 +138,6 @@ namespace QualisysRealTime.Unity
 
             mSourcePoseHandler = new HumanPoseHandler(mSourceAvatar, mStreamedRootObject.transform);
             mDestiationPoseHandler = new HumanPoseHandler(DestinationAvatar, this.transform);
-
-            mStreamedRootObject.transform.parent = this.gameObject.transform;
         }
 
         private void CreateMecanimToQtmSegmentNames(string skeletonName)
