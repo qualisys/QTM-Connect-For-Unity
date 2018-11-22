@@ -47,7 +47,7 @@ namespace QTMRealTimeSDK
             /// <summary>Latest major version of protocol</summary>
             public const int MAJOR_VERSION = 1;
             /// <summary>Latest minor version of protocol</summary>
-            public const int MINOR_VERSION = 18;
+            public const int MINOR_VERSION = 19;
             /// <summary>Maximum camera count</summary>
             public const int MAX_CAMERA_COUNT = 256;
             /// <summary>Maximum Analog device count</summary>
