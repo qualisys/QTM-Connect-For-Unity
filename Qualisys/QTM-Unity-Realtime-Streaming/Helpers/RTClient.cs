@@ -208,12 +208,11 @@ namespace QualisysRealTime.Unity
         {
             // New instance of protocol, contains a RT packet
             mProtocol = new RTProtocol();
-            
             // we register our function "process" as a callback for when protocol receives real time data packets
             // (eventDataCallback is also available to listen to events)
             mProtocol.RealTimeDataCallback += Process;
             mProtocol.EventDataCallback += Events;
-            
+
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
@@ -255,6 +254,22 @@ namespace QualisysRealTime.Unity
                 }
             }
             return null;
+        }
+
+        public Skeleton GetSkeleton(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            foreach (var skeleton in Skeletons)
+            {
+                if (skeleton.Name == name)
+                {
+                    return skeleton;
+                }
+            }
+            return null;
+
         }
 
         // Get marker data from streamed data

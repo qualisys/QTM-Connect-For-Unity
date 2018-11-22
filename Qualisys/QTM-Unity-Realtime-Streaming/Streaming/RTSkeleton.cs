@@ -24,42 +24,30 @@ namespace QualisysRealTime.Unity
         private HumanPoseHandler mDestiationPoseHandler;
 
         protected RTClient rtClient;
-        private Skeleton mQtmSkeleton;
-
-        void Start()
-        {
-            CreateMecanimToQtmSegmentNames(SkeletonName);
-        }
-
-        bool buildingSkeleton = false;
+        private Skeleton mQtmSkeletonCache;
 
         void Update()
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
+            
+            var skeleton = rtClient.GetSkeleton(SkeletonName);
 
-            if (mQtmSkeleton == null)
+            if (mQtmSkeletonCache != skeleton)
             {
-                // setup mecanim and qtm segment data
-                foreach (var skeleton in rtClient.Skeletons)
-                {
-                    if (skeleton.Name != SkeletonName)
-                        continue;
+                mQtmSkeletonCache = skeleton;
 
-                    this.mQtmSkeleton = skeleton;
-                    break;
-                }
-
-                if (mQtmSkeleton == null)
+                if (mQtmSkeletonCache == null)
                     return;
 
-                if (buildingSkeleton)
-                    return;
+                CreateMecanimToQtmSegmentNames(SkeletonName);
 
-                buildingSkeleton = true;
-
+                if(mStreamedRootObject != null)
+                    GameObject.Destroy(mStreamedRootObject);
+                
                 mStreamedRootObject = new GameObject(this.SkeletonName);
-                mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeleton.Segments.Count);
-                foreach (var segment in mQtmSkeleton.Segments.ToList())
+                mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
+
+                foreach (var segment in mQtmSkeletonCache.Segments.ToList())
                 {
                     var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
                     gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
@@ -69,15 +57,15 @@ namespace QualisysRealTime.Unity
 
                 BuildMecanimAvatarFromQtmTPose();
 
-                buildingSkeleton = false;
+                mStreamedRootObject.transform.Rotate(new Vector3(0,90,0), Space.Self);
                 return;
             }
 
-            if (mQtmSkeleton == null)
+            if (mQtmSkeletonCache == null)
                 return;
 
             // Update all the game objects
-            foreach (var segment in mQtmSkeleton.Segments.ToList())
+            foreach (var segment in mQtmSkeletonCache.Segments.ToList())
             {
                 GameObject gameObject;
                 if (mQTmSegmentIdToGameObject.TryGetValue(segment.Key, out gameObject))
@@ -95,7 +83,7 @@ namespace QualisysRealTime.Unity
 
         private void BuildMecanimAvatarFromQtmTPose()
         {
-            var humanBones = new List<HumanBone>(mQtmSkeleton.Segments.Count);
+            var humanBones = new List<HumanBone>(mQtmSkeletonCache.Segments.Count);
             for (int index = 0; index < HumanTrait.BoneName.Length; index++)
             {
                 var humanBoneName = HumanTrait.BoneName[index];
@@ -112,7 +100,7 @@ namespace QualisysRealTime.Unity
             }
 
             // Set up the T-pose and game object name mappings.
-            var skeletonBones = new List<SkeletonBone>(mQtmSkeleton.Segments.Count + 1);
+            var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count + 1);
             skeletonBones.Add(new SkeletonBone()
             {
                 name = this.SkeletonName,
@@ -122,7 +110,7 @@ namespace QualisysRealTime.Unity
             });
 
             // Create remaining T-Pose bone definitions from Qtm segments
-            foreach (var segment in mQtmSkeleton.Segments.ToList())
+            foreach (var segment in mQtmSkeletonCache.Segments.ToList())
             {
                 skeletonBones.Add(new SkeletonBone()
                 {
@@ -154,6 +142,7 @@ namespace QualisysRealTime.Unity
 
         private void CreateMecanimToQtmSegmentNames(string skeletonName)
         {
+            mMecanimToQtmSegmentNames.Clear();
             mMecanimToQtmSegmentNames.Add("RightShoulder", skeletonName + "_RightShoulder");
             mMecanimToQtmSegmentNames.Add("RightUpperArm", skeletonName + "_RightArm");
             mMecanimToQtmSegmentNames.Add("RightLowerArm", skeletonName + "_RightForeArm");
