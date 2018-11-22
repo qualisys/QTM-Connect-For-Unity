@@ -106,9 +106,9 @@ namespace QTMRealTimeSDK
         /// <summary>Gaze vector settings from QTM</summary>
         public SettingsGazeVectors GazeVectorSettings { get { return mGazeVectorSettings; } }
 
-        private SettingsSkeletons mSkeletonSettings;
+        private SkeletonSettingsCollection mSkeletonSettingsCollection;
         /// <summary>Skeleton settings from QTM</summary>
-        public SettingsSkeletons SkeletonSettings { get { return mSkeletonSettings; } }
+        public SkeletonSettingsCollection SkeletonSettingsCollection { get { return mSkeletonSettingsCollection; } }
 
         private bool mBroadcastSocketCreated = false;
         private Thread mProcessStreamthread;
@@ -274,7 +274,7 @@ namespace QTMRealTimeSDK
             mAnalogSettings = null;
             mForceSettings = null;
             mGazeVectorSettings = null;
-            mSkeletonSettings = null;
+            mSkeletonSettingsCollection = null;
             mGeneralSettings = null;
             mImageSettings = null;
         }
@@ -942,7 +942,7 @@ namespace QTMRealTimeSDK
         /// <returns>Returns true if settings was retrieved</returns>
         public bool GetSkeletonSettings()
         {
-            return GetSettings("Skeleton", "Skeletons", out mSkeletonSettings);
+            return GetSettings("Skeleton", "Skeletons", out mSkeletonSettingsCollection);
         }
 
         internal bool GetSettings<TSettings>(string settingsName, string settingXmlName, out TSettings settingObject)

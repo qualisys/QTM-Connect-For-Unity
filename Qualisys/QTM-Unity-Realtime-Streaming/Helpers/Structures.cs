@@ -2,7 +2,6 @@
 //
 using UnityEngine;
 using System.Collections.Generic;
-using QualisysRealTime.Unity.Skeleton;
 
 namespace QualisysRealTime.Unity
 {
@@ -58,7 +57,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public float[] Values;
     }
-    public class QssJoint
+    public class Segment
     {
         public string Name;
         public uint Id;
@@ -68,26 +67,10 @@ namespace QualisysRealTime.Unity
         public Vector3 TPosition = Vector3.zero;
         public Quaternion TRotation = Quaternion.identity;
     }
-    public class QssSkeleton
+    public class Skeleton
     {
         public string Name;
-        public Dictionary<uint, QssJoint> QssJoints = new Dictionary<uint, QssJoint>();
+        public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
     }
-
-    public static class MarkerConverter
-    {
-        public static List<Marker> Convert(this List<LabeledMarker> labeledMarkers)
-        {
-            var newList = new List<Marker>();
-            foreach (var labeledMarker in labeledMarkers)
-            {
-                var m = new Marker();
-                m.Label = labeledMarker.Name;
-                m.Position = labeledMarker.Position.Convert();
-                m.Residual = labeledMarker.Residual;
-                newList.Add(m);
-            }
-            return newList;
-        }
-    }
+    
 }

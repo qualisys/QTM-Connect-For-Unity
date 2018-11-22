@@ -308,8 +308,8 @@ namespace QTMRealTimeSDK.Data
         public uint Frame;
     }
 
-    /// <summary>Data for Skeleton joint</summary>
-    public struct SkeletonJoint
+    /// <summary>Data for Skeleton Segment</summary>
+    public struct SegmentData
     {
         /// <summary>ID</summary>
         public uint Id;
@@ -319,16 +319,16 @@ namespace QTMRealTimeSDK.Data
         public QuaternionRotation Rotation;
     }
     /// <summary>Data for Skeleton</summary>
-    public struct Skeleton
+    public struct SkeletonData
     {
-        // <summary>Joint data</summary>
-        public List<SkeletonJoint> Joints;
+        // <summary>Segment data</summary>
+        public List<SegmentData> SegmentDataList;
         /// <summary>Sample number</summary>
         public uint SampleNumber;
         /// <summary>ID</summary>
         public uint Id;
-        /// <summary>Number of joints</summary>
-        public uint JointCount;
+        /// <summary>Number of Segments</summary>
+        public uint SegmentCount;
     }
 
     #endregion
@@ -396,7 +396,7 @@ namespace QTMRealTimeSDK.Data
         List<CameraImage> mImageData;
         List<GazeVector> mGazeVectorData;
         List<Timecode> mTimecodeData;
-        List<Skeleton> mSkeletonData;
+        List<SkeletonData> mSkeletonData;
 
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace QTMRealTimeSDK.Data
             mGazeVectorData = new List<GazeVector>();
 
             mTimecodeData = new List<Timecode>();
-            mSkeletonData = new List<Skeleton>();
+            mSkeletonData = new List<SkeletonData>();
 
             ClearData();
         }
@@ -993,22 +993,22 @@ namespace QTMRealTimeSDK.Data
                             int skeletonCount = BitConvert.GetInt32(mData, ref position);
                             for (int i = 0; i < skeletonCount; i++)
                             {
-                                Skeleton skeleton = new Skeleton();
+                                SkeletonData skeleton = new SkeletonData();
 
                                 //skeleton.Id = BitConvert.GetUInt32(mData, ref position);
-                                skeleton.JointCount = BitConvert.GetUInt32(mData, ref position);
+                                skeleton.SegmentCount = BitConvert.GetUInt32(mData, ref position);
 
-                                skeleton.Joints = new List<SkeletonJoint>();
-                                for (int joint = 0; joint < skeleton.JointCount; joint++)
+                                skeleton.SegmentDataList = new List<SegmentData>();
+                                for (int j = 0; j < skeleton.SegmentCount; j++)
                                 {
-                                    SkeletonJoint skeletonJoint = new SkeletonJoint();
-                                    skeletonJoint.Id = BitConvert.GetUInt32(mData, ref position);
-                                    skeletonJoint.Position = BitConvert.GetPoint(mData, ref position);
-                                    skeletonJoint.Rotation.X = BitConvert.GetFloat(mData, ref position);
-                                    skeletonJoint.Rotation.Y = BitConvert.GetFloat(mData, ref position);
-                                    skeletonJoint.Rotation.Z = BitConvert.GetFloat(mData, ref position);
-                                    skeletonJoint.Rotation.W = BitConvert.GetFloat(mData, ref position);
-                                    skeleton.Joints.Add(skeletonJoint);
+                                    SegmentData segmentData = new SegmentData();
+                                    segmentData.Id = BitConvert.GetUInt32(mData, ref position);
+                                    segmentData.Position = BitConvert.GetPoint(mData, ref position);
+                                    segmentData.Rotation.X = BitConvert.GetFloat(mData, ref position);
+                                    segmentData.Rotation.Y = BitConvert.GetFloat(mData, ref position);
+                                    segmentData.Rotation.Z = BitConvert.GetFloat(mData, ref position);
+                                    segmentData.Rotation.W = BitConvert.GetFloat(mData, ref position);
+                                    skeleton.SegmentDataList.Add(segmentData);
                                 }
                                 mSkeletonData.Add(skeleton);
                             }
@@ -1619,7 +1619,7 @@ namespace QTMRealTimeSDK.Data
         /// Get skeleton from all cameras
         /// </summary>
         /// <returns>list of all images</returns>
-        public List<Skeleton> GetSkeletonData()
+        public List<SkeletonData> GetSkeletonData()
         {
             lock (packetLock)
             {
@@ -1631,7 +1631,7 @@ namespace QTMRealTimeSDK.Data
         /// </summary>
         /// <param name="index">index to get data from.(not camera index!)</param>
         /// <returns>Gaze vector from index</returns>
-        public Skeleton GetSkeletonData(int index)
+        public SkeletonData GetSkeletonData(int index)
         {
             lock (packetLock)
             {

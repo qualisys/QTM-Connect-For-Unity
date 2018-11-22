@@ -215,8 +215,8 @@ namespace QTMRealTimeSDK.Settings
         public float W;
     }
 
-    /// <summary>Joint</summary>
-    public class SettingSkeletonJoint
+    /// <summary>SettingsSegment</summary>
+    public class SettingSkeletonSegment
     {
         [XmlAttribute("Name")]
         public string Name;
@@ -230,21 +230,21 @@ namespace QTMRealTimeSDK.Settings
         public Rotation Rotation;
     }
 
-    /// <summary>Skeleton</summary>
+    /// <summary>SettingSkeleton</summary>
     public class SettingSkeleton
     {
         [XmlAttribute("Name")]
         public string Name;
-        [XmlElement("Joint")]
-        public List<SettingSkeletonJoint> Joints;
+        [XmlElement("Segment")]
+        public List<SettingSkeletonSegment> SettingSegmentList;
     }
 
     /// <summary>Skeleton Settings from QTM</summary>
     [XmlRoot("Skeletons")]
-    public class SettingsSkeletons : SettingsBase
+    public class SkeletonSettingsCollection : SettingsBase
     {
         [XmlElement("Skeleton")]
-        public List<SettingSkeleton> Skeletons;
+        public List<SettingSkeleton> SettingSkeletonList;
     }
 
     /// <summary>General settings for Camera System</summary>

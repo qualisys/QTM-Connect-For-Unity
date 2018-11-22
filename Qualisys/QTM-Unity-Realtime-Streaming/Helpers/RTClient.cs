@@ -37,8 +37,8 @@ namespace QualisysRealTime.Unity
         private List<AnalogChannel> mAnalogChannels;
         public List<AnalogChannel> AnalogChannels { get { return mAnalogChannels; } }
 
-        private List<QssSkeleton> mSkeletons;
-        public List<QssSkeleton> Skeletons { get { return mSkeletons; } }
+        private List<Skeleton> mSkeletons;
+        public List<Skeleton> Skeletons { get { return mSkeletons; } }
 
 
         private Axis mUpAxis;
@@ -153,21 +153,15 @@ namespace QualisysRealTime.Unity
             {
                 for (int skeletonIndex = 0; skeletonIndex < skeletonData.Count; skeletonIndex++)
                 {
-                    foreach (var joint in skeletonData[skeletonIndex].Joints)
+                    foreach (var segmentData in skeletonData[skeletonIndex].SegmentDataList)
                     {
-                        QssJoint qssJoint;
-                        if (!mSkeletons[skeletonIndex].QssJoints.TryGetValue(joint.Id, out qssJoint))
+                        Segment targetSegment;
+                        if (!mSkeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
                             continue;
 
-                        qssJoint.Position = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
-                        qssJoint.Rotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
-                        //qssJoint.Rotation.z *= -1;
-                        //qssJoint.Rotation.w *= -1;
-
-                        //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                        //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
-
-                        mSkeletons[skeletonIndex].QssJoints[joint.Id] = qssJoint;
+                        targetSegment.Position = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
+                        targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
+                        mSkeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
                     }
                 }
             }
@@ -214,13 +208,18 @@ namespace QualisysRealTime.Unity
         {
             // New instance of protocol, contains a RT packet
             mProtocol = new RTProtocol();
+            // we register our function "process" as a callback for when protocol receives real time data packets
+            // (eventDataCallback is also available to listen to events)
+            mProtocol.RealTimeDataCallback += Process;
+            mProtocol.EventDataCallback += Events;
+
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
             mBones = new List<Bone>();
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
-            mSkeletons = new List<QssSkeleton>();
+            mSkeletons = new List<Skeleton>();
 
             mStreamingStatus = false;
             mPacket = RTPacket.ErrorPacket;
@@ -255,6 +254,22 @@ namespace QualisysRealTime.Unity
                 }
             }
             return null;
+        }
+
+        public Skeleton GetSkeleton(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            foreach (var skeleton in Skeletons)
+            {
+                if (skeleton.Name == name)
+                {
+                    return skeleton;
+                }
+            }
+            return null;
+
         }
 
         // Get marker data from streamed data
@@ -506,38 +521,25 @@ namespace QualisysRealTime.Unity
                 return false;
 
             mSkeletons.Clear();
-            var settings = mProtocol.SkeletonSettings;
-            foreach (var skeleton in settings.Skeletons)
+            var skeletonSettings = mProtocol.SkeletonSettingsCollection;
+            foreach (var settingSkeleton in skeletonSettings.SettingSkeletonList)
             {
-                QssSkeleton qssSkeleton = new QssSkeleton();
-                qssSkeleton.Name = skeleton.Name;
-                foreach (var joint in skeleton.Joints)
+                Skeleton skeleton = new Skeleton();
+                skeleton.Name = settingSkeleton.Name;
+                foreach (var settingSegment in settingSkeleton.SettingSegmentList)
                 {
-                    var qssJoint = new QssJoint();
-                    qssJoint.Name = joint.Name;
-                    qssJoint.Id = joint.Id;
-                    qssJoint.ParentId = joint.ParentId;
+                    var segment = new Segment();
+                    segment.Name = settingSegment.Name;
+                    segment.Id = settingSegment.Id;
+                    segment.ParentId = settingSegment.ParentId;
 
                     // Set rotation and position to work with unity
-                    qssJoint.TPosition = new Vector3(joint.Position.X / 1000, joint.Position.Z / 1000, joint.Position.Y / 1000);
-                    qssJoint.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Z, joint.Rotation.Y, -joint.Rotation.W);
-                    //Vector3 position = new Vector3(joint.Position.X, joint.Position.Z, joint.Position.Y);
-                    //position /= 1000;
+                    segment.TPosition = new Vector3(settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
+                    segment.TRotation = new Quaternion(settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
 
-                    ////qssJoint.TPosition = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    ////qssJoint.TPosition.z *= -1;
-
-                    //qssJoint.TRotation = new Quaternion(joint.Rotation.X, joint.Rotation.Y, joint.Rotation.Z, joint.Rotation.W);
-                    //qssJoint.Rotation = mCoordinateSystemChange * new Quaternion(joint.Rotation.X, joint.Rotation.Y, joint.Rotation.Z, joint.Rotation.W);
-                    //qssJoint.Rotation.z *= -1;
-                    //qssJoint.Rotation.w *= -1;
-
-                    //qssJoint.Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                    //qssJoint.Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
-
-                    qssSkeleton.QssJoints.Add(qssJoint.Id, qssJoint);
+                    skeleton.Segments.Add(segment.Id, segment);
                 }
-                mSkeletons.Add(qssSkeleton);
+                mSkeletons.Add(skeleton);
             }
             return true;
         }
@@ -674,10 +676,6 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-            // we register our function "process" as a callback for when protocol receives real time data packets
-            // (eventDataCallback is also available to listen to events)
-            mProtocol.RealTimeDataCallback += Process;
-            mProtocol.EventDataCallback += Events;
 
             //Start streaming and get the settings
             if (mProtocol.StreamFrames(streamRate, -1, streamedTypes, udpPort))
