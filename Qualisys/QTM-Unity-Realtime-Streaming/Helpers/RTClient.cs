@@ -208,6 +208,12 @@ namespace QualisysRealTime.Unity
         {
             // New instance of protocol, contains a RT packet
             mProtocol = new RTProtocol();
+            
+            // we register our function "process" as a callback for when protocol receives real time data packets
+            // (eventDataCallback is also available to listen to events)
+            mProtocol.RealTimeDataCallback += Process;
+            mProtocol.EventDataCallback += Events;
+            
             mBodies = new List<SixDOFBody>();
             mMarkers = new List<LabeledMarker>();
             mUnlabeledMarkers = new List<UnlabeledMarker>();
@@ -655,10 +661,6 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-            // we register our function "process" as a callback for when protocol receives real time data packets
-            // (eventDataCallback is also available to listen to events)
-            mProtocol.RealTimeDataCallback += Process;
-            mProtocol.EventDataCallback += Events;
 
             //Start streaming and get the settings
             if (mProtocol.StreamFrames(streamRate, -1, streamedTypes, udpPort))
