@@ -59,7 +59,7 @@ namespace QualisysRealTime.Unity
                 BuildMecanimAvatarFromQtmTPose();
 
                 mStreamedRootObject.transform.SetParent(this.transform, false);
-                mStreamedRootObject.transform.Rotate(new Vector3(0,90,0), Space.Self);
+                mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
                 return;
             }
 
@@ -164,6 +164,7 @@ namespace QualisysRealTime.Unity
             mMecanimToQtmSegmentNames.Add("Hips", skeletonName + "_Hips");
             mMecanimToQtmSegmentNames.Add("Spine", skeletonName + "_Spine");
             mMecanimToQtmSegmentNames.Add("Chest", skeletonName + "_Spine1");
+            mMecanimToQtmSegmentNames.Add("UpperChest", skeletonName + "_Spine2");
             mMecanimToQtmSegmentNames.Add("Neck", skeletonName + "_Neck");
             mMecanimToQtmSegmentNames.Add("Head", skeletonName + "_Head");
             /*
