@@ -421,7 +421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00004440843}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 278, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &489129808
@@ -553,10 +553,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 24
+    m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -568,7 +568,7 @@ MonoBehaviour:
 
     2. Dock the ''QTM Streaming'' tab on a suitable location
 
-    3. Open the file ''DemoTableTennis.qtm'' in QTM
+    3. Open the file ''DemoGazeQtm.qtm'' in QTM
 
     4. In QTM, go to Play > Play with Real-Time Output
 
