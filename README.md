@@ -29,6 +29,7 @@ Continue as above from step 5.
 
 The scripts below can be attached to GameObjects for streaming data from QTM. They are built using the [Qualisys Real-time Client SDK for .NET](https://github.com/qualisys/RTClientSDK.Net).
 
+* *RTSkeleton.cs* - Add this script to use qtm skeleton data to drive mecanim humanoid character in Unity.
 * *RTMarker.cs* - Add this script to a Game object to set the position of game object from a specific labeled marker name.
 * *RTUnlabeledMarker.cs* - Add this script to a Game object to set the position of game object from a specific unlabeled marker id.
 * *RTMarkerStream.cs* - Add this script to a Game object to visualize marker positions (using spheres) streamed from Qualisys Track Manager.
@@ -39,6 +40,7 @@ The scripts below can be attached to GameObjects for streaming data from QTM. Th
 * *RTGazeStream.cs* - Add this script to visualize gaze vectors as lines.
 * *RTAnalog.cs* - Example script to display how to get data from a specific analog channel (using name).
 * *RTAnalogIMU.cs* - Add this script and set analog channel names for IMU data (X, Y, Z, W).
+
 
 ### Helpers
 
