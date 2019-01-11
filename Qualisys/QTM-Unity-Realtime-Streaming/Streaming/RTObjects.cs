@@ -76,7 +76,7 @@ namespace QualisysRealTime.Unity
 
             for (int i = 0; i < bodies.Count; i++)
             {
-                if (bodies[i].Position.magnitude > 0)
+                if (!float.IsNaN(bodies[i].Position.sqrMagnitude))
                 {
                     bodiesGO[i].name = bodies[i].Name;
                     bodiesGO[i].GetComponent<Renderer>().material.color = bodies[i].Color;

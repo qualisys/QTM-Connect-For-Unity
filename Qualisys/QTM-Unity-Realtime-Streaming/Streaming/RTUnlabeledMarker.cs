@@ -16,7 +16,7 @@ namespace QualisysRealTime.Unity
 
         public virtual void applyMarkerTransform()
         {
-            if (marker.Position.magnitude > 0) //just to avoid error when position is NaN
+            if (!float.IsNaN(marker.Position.sqrMagnitude)) //just to avoid error when position is NaN
             {
                 transform.position = marker.Position + PositionOffset;
                 if (transform.parent)
