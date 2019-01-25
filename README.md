@@ -1,31 +1,20 @@
 # Qualisys Unity SDK
 
-This repository houses Unity components for streaming marker, 6DOF and bone data to Unity from [Qualisys Track Manager (QTM)](http://www.qualisys.com/products/software/qtm).
+This repository houses Unity components for streaming data from [Qualisys Track Manager (QTM)](http://www.qualisys.com/products/software/qtm) to Unity.
 
-These components are also available as a single, complete package that can be imported into Unity - [download here](http://www.qualisys.com/download/Qualisys-Real-Time-Streaming.unitypackage).
-
-## Usage Example
-
-1. Start QTM and start streaming real-time, from camera system or from a measurement file.
-2. In your Unity project, select *Import Package > Custom Package*.
-3. Show the QTM Streaming window using the menu option *Window > Qualisys  > RTClient*.
-4. Attach the *RTMarkerStream.cs* script to a GameObject, or attach the *RTCharacterStream.cs* script to a character GameObject. (To get started, you can use an empty GameObject, and a character can be imported from *Window > Asset Store > 3D Models > Characters*.)
-5. Enter "play" mode to verify.
-6. All available QTM servers on the network will be automatically discovered and listed under *Server Settings* in the QTM Streaming window.
-7. Press *Connect*. Unity will receive and display marker data.
-
-### For character animation
-
-After step 3 above:
-
-1. Add a character to the scene (e.g. from *Window > Asset Store > 3D Models > Characters*, import a Character).
-2. Attach the *RTCharacterStream.cs* script to the character GameObject.
-
-Continue as above from step 5.
+## Example Usage
+Character animation using QTM Real-Time Output
+1. In your Unity project, select *Import Package > Custom Package* and import this package.
+2. Double click the file DemoSkeletonScene.qtm to launch QTM.
+3. In QTM. Start streaming by pressing ctrl+shift+space or selecting *Play > Play with Real-Time Output*
+4. In Unity, open the scene DemoSkeletonScene.
+5. Press play.
+6. Connect to localhost using the right side menu.
+Note that you can also use the editor window to connect to QTM. It's located under *Window > Qualisys > RTClient*
 
 ## Contents
 
-### Streaming
+### Components
 
 The scripts below can be attached to GameObjects for streaming data from QTM. They are built using the [Qualisys Real-time Client SDK for .NET](https://github.com/qualisys/RTClientSDK.Net).
 
@@ -36,11 +25,9 @@ The scripts below can be attached to GameObjects for streaming data from QTM. Th
 * *RTBones.cs* - Add this script to a Game object to visualize user defined bones (using line gizmos).
 * *RTObject.cs* - Add this script to a Game object to get 6DOF object positions and rotations streamed from Qualisys Track Manager.
 * *RTObjectMarkers.cs* - Add this script to Game objects of a 6DOF object body markers.
-* *RTCharacterStream.cs* - Add this script to a Unity character to animate the character from marker streamed from Qualisys Track Manager.
 * *RTGazeStream.cs* - Add this script to visualize gaze vectors as lines.
 * *RTAnalog.cs* - Example script to display how to get data from a specific analog channel (using name).
 * *RTAnalogIMU.cs* - Add this script and set analog channel names for IMU data (X, Y, Z, W).
-
 
 ### Helpers
 
@@ -53,7 +40,3 @@ These are helper scripts used to communicate with QTM and add functionality to t
 ### RTClientSDK.Net
 
 The Unity SDK includes a packaged version of the [Qualisys Real-time client SDK for .Net](https://github.com/qualisys/RTClientSDK.Net).
-
-### Character Animation
-
-Components for real-time character animation.
