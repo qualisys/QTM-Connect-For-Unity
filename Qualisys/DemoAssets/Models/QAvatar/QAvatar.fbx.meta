@@ -1,0 +1,704 @@
+fileFormatVersion: 2
+guid: d5ba52808b56a934a9b637a2e5990966
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Face
+    100002: Head
+    100004: Hips
+    100006: LeafLeftArmRollBone1
+    100008: LeafLeftForeArmRollBone1
+    100010: LeafLeftLegRollBone1
+    100012: LeafLeftUpLegRollBoe1
+    100014: LeafRightArmRollBone1
+    100016: LeafRightForeArmRollBone1
+    100018: LeafRightLegRollBone1
+    100020: LeafRightUpLegRollBone1
+    100022: LeftArm
+    100024: LeftFoot
+    100026: LeftForeArm
+    100028: LeftHand
+    100030: LeftLeg
+    100032: LeftShoulder
+    100034: LeftToeBase
+    100036: LeftUpLeg
+    100038: MESH
+    100040: Neck
+    100042: //RootNode
+    100044: Qualisys_avatar_face_A
+    100046: Qualisys_avatar_face_A2
+    100048: Qualisys_avatar_face_A3
+    100050: Qualisys_avatar_face_M
+    100052: Qualisys_avatar_face_M2
+    100054: Qualisys_avatar_face_M3
+    100056: Qualisys_avatar_face_W
+    100058: Qualisys_avatar_face_W2
+    100060: Qualisys_avatar_face_W3
+    100062: Qualisys_avatar_Glasses
+    100064: Qualisys_avatar_main_Hands_0
+    100066: Qualisys_avatar_main_Legs
+    100068: Qualisys_avatar_main_Torso
+    100070: Qualisys_avatar_mask
+    100072: Reference
+    100074: RightArm
+    100076: RightFoot
+    100078: RightForeArm
+    100080: RightHand
+    100082: RightLeg
+    100084: RightShoulder
+    100086: RightToeBase
+    100088: RightUpLeg
+    100090: Spine
+    100092: Spine1
+    100094: Spine2
+    400000: Face
+    400002: Head
+    400004: Hips
+    400006: LeafLeftArmRollBone1
+    400008: LeafLeftForeArmRollBone1
+    400010: LeafLeftLegRollBone1
+    400012: LeafLeftUpLegRollBoe1
+    400014: LeafRightArmRollBone1
+    400016: LeafRightForeArmRollBone1
+    400018: LeafRightLegRollBone1
+    400020: LeafRightUpLegRollBone1
+    400022: LeftArm
+    400024: LeftFoot
+    400026: LeftForeArm
+    400028: LeftHand
+    400030: LeftLeg
+    400032: LeftShoulder
+    400034: LeftToeBase
+    400036: LeftUpLeg
+    400038: MESH
+    400040: Neck
+    400042: //RootNode
+    400044: Qualisys_avatar_face_A
+    400046: Qualisys_avatar_face_A2
+    400048: Qualisys_avatar_face_A3
+    400050: Qualisys_avatar_face_M
+    400052: Qualisys_avatar_face_M2
+    400054: Qualisys_avatar_face_M3
+    400056: Qualisys_avatar_face_W
+    400058: Qualisys_avatar_face_W2
+    400060: Qualisys_avatar_face_W3
+    400062: Qualisys_avatar_Glasses
+    400064: Qualisys_avatar_main_Hands_0
+    400066: Qualisys_avatar_main_Legs
+    400068: Qualisys_avatar_main_Torso
+    400070: Qualisys_avatar_mask
+    400072: Reference
+    400074: RightArm
+    400076: RightFoot
+    400078: RightForeArm
+    400080: RightHand
+    400082: RightLeg
+    400084: RightShoulder
+    400086: RightToeBase
+    400088: RightUpLeg
+    400090: Spine
+    400092: Spine1
+    400094: Spine2
+    2100000: visor_mat
+    2100002: face_mat
+    2100004: mask_mat
+    2100006: face_2_mat
+    2100008: face_3_mat
+    2100010: face_w_mat
+    2100012: face_w3_mat
+    2100014: face_w2_mat
+    2100016: face_a3_mat
+    2100018: face_a_mat
+    2100020: face_a2_mat
+    2100022: body_mat
+    4300000: Qualisys_avatar_Glasses
+    4300002: Qualisys_avatar_face_M
+    4300004: Qualisys_avatar_mask
+    4300006: Qualisys_avatar_face_M2
+    4300008: Qualisys_avatar_face_M3
+    4300010: Qualisys_avatar_face_W
+    4300012: Qualisys_avatar_face_W3
+    4300014: Qualisys_avatar_face_W2
+    4300016: Qualisys_avatar_face_A3
+    4300018: Qualisys_avatar_face_A
+    4300020: Qualisys_avatar_face_A2
+    4300022: Qualisys_avatar_main_Torso
+    4300024: Qualisys_avatar_main_Hands_0
+    4300026: Qualisys_avatar_main_Legs
+    9500000: //RootNode
+    13700000: Qualisys_avatar_face_A
+    13700002: Qualisys_avatar_face_A2
+    13700004: Qualisys_avatar_face_A3
+    13700006: Qualisys_avatar_face_M
+    13700008: Qualisys_avatar_face_M2
+    13700010: Qualisys_avatar_face_M3
+    13700012: Qualisys_avatar_face_W
+    13700014: Qualisys_avatar_face_W2
+    13700016: Qualisys_avatar_face_W3
+    13700018: Qualisys_avatar_Glasses
+    13700020: Qualisys_avatar_main_Hands_0
+    13700022: Qualisys_avatar_main_Legs
+    13700024: Qualisys_avatar_main_Torso
+    13700026: Qualisys_avatar_mask
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: body_mat
+    second: {fileID: 2100000, guid: f3b3e0d7d56b80542817dc04be102fbe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_2_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_3_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_a2_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_a3_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_a_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_mat
+    second: {fileID: 2100000, guid: a847e065ebfebb84d8fd0f1d8ad8fe82, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_w2_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_w3_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: face_w_mat
+    second: {fileID: 2100000, guid: 9fe81bf2c6cad5e41a8d7d0c10f70c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mask_mat
+    second: {fileID: 2100000, guid: bbdc26fb3f372d74ca46914937204090, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: visor_mat
+    second: {fileID: 2100000, guid: 7fd47d02dcae79a43b8938dcb27364ed, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human:
+    - boneName: Hips
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftUpLeg
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightUpLeg
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftLeg
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightLeg
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftFoot
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightFoot
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Spine1
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftShoulder
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightShoulder
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftArm
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightArm
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftForeArm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightForeArm
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHand
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHand
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftToeBase
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightToeBase
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Spine2
+      humanName: UpperChest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: Qualisys_Avatar(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: MESH
+      parentName: Qualisys_Avatar(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Face
+      parentName: MESH
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_Glasses
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_M
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_mask
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_M2
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_M3
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_W
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_W3
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_W2
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_A3
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_A
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_face_A2
+      parentName: Face
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_main_Torso
+      parentName: MESH
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_main_Hands_0
+      parentName: MESH
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Qualisys_avatar_main_Legs
+      parentName: MESH
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Reference
+      parentName: Qualisys_Avatar(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hips
+      parentName: Reference
+      position: {x: 1.356853e-16, y: 1.0151645, z: 1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftUpLeg
+      parentName: Hips
+      position: {x: -0.0891, y: -0.0627, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftLeg
+      parentName: LeftUpLeg
+      position: {x: -0, y: -0.44879, z: 0}
+      rotation: {x: 0.052335955, y: -0, z: -0, w: 0.9986295}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafLeftLegRollBone1
+      parentName: LeftLeg
+      position: {x: -0, y: -0.25, z: 4.440892e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftFoot
+      parentName: LeftLeg
+      position: {x: 8.8817837e-17, y: -0.40700957, z: -2.6645352e-17}
+      rotation: {x: 0, y: -0.034899496, z: -0, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftToeBase
+      parentName: LeftFoot
+      position: {x: -0.00000008426999, y: -0.06262317, z: 0.12954721}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafLeftUpLegRollBoe1
+      parentName: LeftUpLeg
+      position: {x: -0, y: -0.29999998, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightUpLeg
+      parentName: Hips
+      position: {x: 0.0891, y: -0.0627, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightLeg
+      parentName: RightUpLeg
+      position: {x: 0.000000029876, y: -0.44879, z: 0.000004829264}
+      rotation: {x: 0.052335955, y: -0, z: -0, w: 0.9986295}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafRightLegRollBone1
+      parentName: RightLeg
+      position: {x: -0.000000008271, y: -0.25, z: -4.440892e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightFoot
+      parentName: RightLeg
+      position: {x: -0.00000000919, y: -0.40700957, z: 0}
+      rotation: {x: 0, y: 0.034899496, z: -0, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightToeBase
+      parentName: RightFoot
+      position: {x: 0.00001085381, y: -0.06262317, z: 0.12954749}
+      rotation: {x: 0, y: -0.00004189127, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafRightUpLegRollBone1
+      parentName: RightUpLeg
+      position: {x: 0.000000002716, y: -0.29999998, z: 0.000000439024}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spine
+      parentName: Hips
+      position: {x: -0, y: 0.07, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spine1
+      parentName: Spine
+      position: {x: -0, y: 0.12666667, z: -0.013549407}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spine2
+      parentName: Spine1
+      position: {x: -0, y: 0.12666667, z: -0.030970074}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Neck
+      parentName: Spine2
+      position: {x: -0, y: 0.21570562, z: -0.049035948}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Head
+      parentName: Neck
+      position: {x: -0, y: 0.13418859, z: 0.04258385}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightShoulder
+      parentName: Spine2
+      position: {x: 0.086270206, y: 0.19836538, z: -0.04645511}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightArm
+      parentName: RightShoulder
+      position: {x: 0.10851061, y: 0.0005873995, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightForeArm
+      parentName: RightArm
+      position: {x: 0.29450315, y: 0.00006663881, z: -5.3290704e-17}
+      rotation: {x: 0, y: 0, z: 0.0003641673, w: 0.99999994}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightHand
+      parentName: RightForeArm
+      position: {x: 0.26696986, y: -0.00008643229, z: 0}
+      rotation: {x: 0, y: -0, z: -0.00072833453, w: 0.99999976}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafRightForeArmRollBone1
+      parentName: RightForeArm
+      position: {x: 0.19999999, y: -0.000040336945, z: -3.5527136e-17}
+      rotation: {x: 0.017745867, y: 0.118623525, z: -0.010759722, w: 0.9927224}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafRightArmRollBone1
+      parentName: RightArm
+      position: {x: 0.14185318, y: 8.5265126e-16, z: -5.3290704e-17}
+      rotation: {x: 0, y: 0, z: 0.00018208365, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftShoulder
+      parentName: Spine2
+      position: {x: -0.08663748, y: 0.19836538, z: -0.04645511}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftArm
+      parentName: LeftShoulder
+      position: {x: -0.10834667, y: 0.00050814403, z: -1.9539925e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftForeArm
+      parentName: LeftArm
+      position: {x: -0.29430848, y: 0.000021134878, z: 7.105427e-17}
+      rotation: {x: 0, y: -0, z: -0.00011549782, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftHand
+      parentName: LeftForeArm
+      position: {x: -0.26697147, y: -0.000027408554, z: 1.0658141e-16}
+      rotation: {x: 0, y: 0, z: 0.00023099565, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafLeftForeArmRollBone1
+      parentName: LeftForeArm
+      position: {x: -0.19999999, y: 0.0000073669594, z: 7.105427e-17}
+      rotation: {x: 0, y: 0, z: 0.00023099565, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeafLeftArmRollBone1
+      parentName: LeftArm
+      position: {x: -0.1416585, y: 0, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0.00005774891, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: Reference
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 3
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
