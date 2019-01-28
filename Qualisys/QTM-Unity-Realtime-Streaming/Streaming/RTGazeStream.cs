@@ -91,7 +91,7 @@ namespace QualisysRealTime.Unity
             gazeRoot.SetActive(true);
             for (int i = 0; i < gazeVectorData.Count; i++)
             {
-                if (gazeVectorData[i].Position.magnitude > 0)
+                if (!float.IsNaN(gazeVectorData[i].Position.sqrMagnitude))
                 {
                     gazeVectors[i].SetPosition(0, gazeVectorData[i].Position);
                     gazeVectors[i].SetPosition(1, gazeVectorData[i].Position + gazeVectorData[i].Direction * gazeVectorLength);

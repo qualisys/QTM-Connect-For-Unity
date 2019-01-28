@@ -16,7 +16,7 @@ namespace QualisysRealTime.Unity
 
         protected virtual void applyBodyTransform(SixDOFBody body)
         {
-            if (body.Position.magnitude > 0) //just to avoid error when position is NaN
+            if (!float.IsNaN(body.Position.sqrMagnitude)) //just to avoid error when position is NaN
             {
                 transform.position = body.Position + PositionOffset;
                 if (transform.parent) transform.position += transform.parent.position;

@@ -73,8 +73,8 @@ namespace QualisysRealTime.Unity
             allBones.SetActive(true);
             for (int i = 0; i < boneData.Count; i++)
             {
-                if (boneData[i].FromMarker.Position.magnitude > 0
-                    && boneData[i].ToMarker.Position.magnitude > 0)
+                if (!float.IsNaN(boneData[i].FromMarker.Position.sqrMagnitude) &&
+                    !float.IsNaN(boneData[i].ToMarker.Position.sqrMagnitude))
                 {
                     bones[i].SetPosition(0, boneData[i].FromMarker.Position);
                     bones[i].SetPosition(1, boneData[i].ToMarker.Position);

@@ -1,3 +1,8 @@
+Package 7
+
+- Added support for mecanim skeleton animation for QTM streaming skeleton data (available in QTM 2019)
+- Added Qualisys Avatar to skeleton example scene
+
 Package 6
 
 - Added support for streaming Analog channel data.

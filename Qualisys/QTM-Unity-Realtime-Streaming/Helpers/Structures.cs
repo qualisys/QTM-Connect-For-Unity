@@ -2,7 +2,6 @@
 //
 using UnityEngine;
 using System.Collections.Generic;
-using QualisysRealTime.Unity.Skeleton;
 
 namespace QualisysRealTime.Unity
 {
@@ -13,6 +12,7 @@ namespace QualisysRealTime.Unity
         public string Name;
         public Vector3 Position;
         public Quaternion Rotation;
+        public Color Color;
     }
 
     // Class for labeled markers with unity data types
@@ -57,21 +57,20 @@ namespace QualisysRealTime.Unity
         public string Name;
         public float[] Values;
     }
-
-    public static class MarkerConverter
+    public class Segment
     {
-        public static List<Marker> Convert(this List<LabeledMarker> labeledMarkers)
-        {
-            var newList = new List<Marker>();
-            foreach (var labeledMarker in labeledMarkers)
-            {
-                var m = new Marker();
-                m.Label = labeledMarker.Name;
-                m.Position = labeledMarker.Position.Convert();
-                m.Residual = labeledMarker.Residual;
-                newList.Add(m);
-            }
-            return newList;
-        }
+        public string Name;
+        public uint Id;
+        public uint ParentId;
+        public Vector3 Position = Vector3.zero;
+        public Quaternion Rotation = Quaternion.identity;
+        public Vector3 TPosition = Vector3.zero;
+        public Quaternion TRotation = Quaternion.identity;
     }
+    public class Skeleton
+    {
+        public string Name;
+        public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
+    }
+    
 }

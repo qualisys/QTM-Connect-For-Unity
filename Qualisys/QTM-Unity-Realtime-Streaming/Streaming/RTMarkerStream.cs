@@ -76,7 +76,7 @@ namespace QualisysRealTime.Unity
 
             for (int i = 0; i < markerData.Count; i++)
             {
-                if (markerData[i].Position.magnitude > 0)
+                if (!float.IsNaN(markerData[i].Position.sqrMagnitude))
                 {
                     markers[i].name = markerData[i].Name;
                     markers[i].GetComponent<Renderer>().material.color = markerData[i].Color;

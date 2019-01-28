@@ -1,0 +1,850 @@
+fileFormatVersion: 2
+guid: 7c0edd6bb2414f849bef4821f178aad6
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: '#1 Miqus Video'
+    100002: '#10 Miqus M3'
+    100004: '#11 Miqus M3'
+    100006: '#12 Miqus M3'
+    100008: '#13 Miqus M3'
+    100010: '#14 Miqus M3'
+    100012: '#2 Miqus Video'
+    100014: '#3 Miqus M3'
+    100016: '#4 Miqus M3'
+    100018: '#5 Miqus M3'
+    100020: '#6 Miqus M3'
+    100022: '#7 Miqus M3'
+    100024: '#8 Miqus M3'
+    100026: '#9 Miqus M3'
+    100028: Cameras
+    100030: OpticalReference
+    100032: //RootNode
+    100034: Reference
+    100036: SR:Head
+    100038: SR:Hips
+    100040: SR:LeftArm
+    100042: SR:LeftFoot
+    100044: SR:LeftForeArm
+    100046: SR:LeftHand
+    100048: SR:LeftLeg
+    100050: SR:LeftShoulder
+    100052: SR:LeftToeBase
+    100054: SR:LeftUpLeg
+    100056: SR:Neck
+    100058: SR:RightArm
+    100060: SR:RightFoot
+    100062: SR:RightForeArm
+    100064: SR:RightHand
+    100066: SR:RightLeg
+    100068: SR:RightShoulder
+    100070: SR:RightToeBase
+    100072: SR:RightUpLeg
+    100074: SR:Spine
+    100076: SR:Spine1
+    100078: SR:Spine2
+    100080: SR_BackLeft
+    100082: SR_BackRight
+    100084: SR_BackTop
+    100086: SR_Chest
+    100088: SR_HeadFront
+    100090: SR_HeadSide
+    100092: SR_HeadTop
+    100094: SR_LAnkleOut
+    100096: SR_LElbowOut
+    100098: SR_LHandOut
+    100100: SR_LHeel
+    100102: SR_LKneeOut
+    100104: SR_LShin
+    100106: SR_LShoulderBack
+    100108: SR_LShoulderTop
+    100110: SR_LThigh
+    100112: SR_LToeIn
+    100114: SR_LToeOut
+    100116: SR_LToeTip
+    100118: SR_LUArmHigh
+    100120: SR_LWristIn
+    100122: SR_LWristOut
+    100124: SR_RAnkleOut
+    100126: SR_RElbowOut
+    100128: SR_RHandOut
+    100130: SR_RHeel
+    100132: SR_RKneeOut
+    100134: SR_RShin
+    100136: SR_RShoulderBack
+    100138: SR_RShoulderTop
+    100140: SR_RThigh
+    100142: SR_RToeIn
+    100144: SR_RToeOut
+    100146: SR_RToeTip
+    100148: SR_RUArmHigh
+    100150: SR_RWristIn
+    100152: SR_RWristOut
+    100154: SR_WaistLBack
+    100156: SR_WaistLFront
+    100158: SR_WaistRBack
+    100160: SR_WaistRFront
+    400000: '#1 Miqus Video'
+    400002: '#10 Miqus M3'
+    400004: '#11 Miqus M3'
+    400006: '#12 Miqus M3'
+    400008: '#13 Miqus M3'
+    400010: '#14 Miqus M3'
+    400012: '#2 Miqus Video'
+    400014: '#3 Miqus M3'
+    400016: '#4 Miqus M3'
+    400018: '#5 Miqus M3'
+    400020: '#6 Miqus M3'
+    400022: '#7 Miqus M3'
+    400024: '#8 Miqus M3'
+    400026: '#9 Miqus M3'
+    400028: Cameras
+    400030: OpticalReference
+    400032: //RootNode
+    400034: Reference
+    400036: SR:Head
+    400038: SR:Hips
+    400040: SR:LeftArm
+    400042: SR:LeftFoot
+    400044: SR:LeftForeArm
+    400046: SR:LeftHand
+    400048: SR:LeftLeg
+    400050: SR:LeftShoulder
+    400052: SR:LeftToeBase
+    400054: SR:LeftUpLeg
+    400056: SR:Neck
+    400058: SR:RightArm
+    400060: SR:RightFoot
+    400062: SR:RightForeArm
+    400064: SR:RightHand
+    400066: SR:RightLeg
+    400068: SR:RightShoulder
+    400070: SR:RightToeBase
+    400072: SR:RightUpLeg
+    400074: SR:Spine
+    400076: SR:Spine1
+    400078: SR:Spine2
+    400080: SR_BackLeft
+    400082: SR_BackRight
+    400084: SR_BackTop
+    400086: SR_Chest
+    400088: SR_HeadFront
+    400090: SR_HeadSide
+    400092: SR_HeadTop
+    400094: SR_LAnkleOut
+    400096: SR_LElbowOut
+    400098: SR_LHandOut
+    400100: SR_LHeel
+    400102: SR_LKneeOut
+    400104: SR_LShin
+    400106: SR_LShoulderBack
+    400108: SR_LShoulderTop
+    400110: SR_LThigh
+    400112: SR_LToeIn
+    400114: SR_LToeOut
+    400116: SR_LToeTip
+    400118: SR_LUArmHigh
+    400120: SR_LWristIn
+    400122: SR_LWristOut
+    400124: SR_RAnkleOut
+    400126: SR_RElbowOut
+    400128: SR_RHandOut
+    400130: SR_RHeel
+    400132: SR_RKneeOut
+    400134: SR_RShin
+    400136: SR_RShoulderBack
+    400138: SR_RShoulderTop
+    400140: SR_RThigh
+    400142: SR_RToeIn
+    400144: SR_RToeOut
+    400146: SR_RToeTip
+    400148: SR_RUArmHigh
+    400150: SR_RWristIn
+    400152: SR_RWristOut
+    400154: SR_WaistLBack
+    400156: SR_WaistLFront
+    400158: SR_WaistRBack
+    400160: SR_WaistRFront
+    2000000: '#1 Miqus Video'
+    2000002: '#10 Miqus M3'
+    2000004: '#11 Miqus M3'
+    2000006: '#12 Miqus M3'
+    2000008: '#13 Miqus M3'
+    2000010: '#14 Miqus M3'
+    2000012: '#2 Miqus Video'
+    2000014: '#3 Miqus M3'
+    2000016: '#4 Miqus M3'
+    2000018: '#5 Miqus M3'
+    2000020: '#6 Miqus M3'
+    2000022: '#7 Miqus M3'
+    2000024: '#8 Miqus M3'
+    2000026: '#9 Miqus M3'
+    7400000: QAvatar_Backflip_QTM
+    9500000: //RootNode
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: Reference
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human:
+    - boneName: SR:Hips
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftUpLeg
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightUpLeg
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftLeg
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightLeg
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftFoot
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightFoot
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:Spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:Spine1
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:Neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:Head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftShoulder
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightShoulder
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftArm
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightArm
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftForeArm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightForeArm
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftHand
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightHand
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:LeftToeBase
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:RightToeBase
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: SR:Spine2
+      humanName: UpperChest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: QAvatar_Backflip_QTM(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cameras
+      parentName: QAvatar_Backflip_QTM(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#1 Miqus Video'
+      parentName: Cameras
+      position: {x: 4.2804728, y: 2.8055487, z: -0.124159664}
+      rotation: {x: 0.69795775, y: 0.1409122, z: -0.6811006, w: 0.17058921}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#2 Miqus Video'
+      parentName: Cameras
+      position: {x: -0.21629561, y: 3.1799276, z: -4.627968}
+      rotation: {x: 0.2322482, y: -0.015610516, z: -0.008834445, w: 0.97249115}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#3 Miqus M3'
+      parentName: Cameras
+      position: {x: -0.14995638, y: 2.8092656, z: 4.207756}
+      rotation: {x: 0.9546508, y: 0.15322103, z: -0.08043919, w: 0.24226995}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#4 Miqus M3'
+      parentName: Cameras
+      position: {x: 4.4103804, y: 2.7880776, z: 4.303577}
+      rotation: {x: 0.95160306, y: 0.038595267, z: -0.23948796, w: 0.18869978}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#5 Miqus M3'
+      parentName: Cameras
+      position: {x: 4.0940313, y: 3.1622918, z: 2.0202227}
+      rotation: {x: 0.16461118, y: -0.8594028, z: 0.17685686, w: 0.45061257}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#6 Miqus M3'
+      parentName: Cameras
+      position: {x: 4.1146717, y: 3.1520278, z: -2.341458}
+      rotation: {x: 0.17548539, y: -0.50170326, z: 0.15648662, w: 0.8324727}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#7 Miqus M3'
+      parentName: Cameras
+      position: {x: 4.221928, y: 2.8075902, z: -4.7360735}
+      rotation: {x: 0.24436378, y: 0.19337878, z: -0.94774926, w: 0.068281256}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#8 Miqus M3'
+      parentName: Cameras
+      position: {x: -0.058396857, y: 3.1085207, z: -4.5826187}
+      rotation: {x: 0.36608315, y: -0.061077, z: -0.010633245, w: 0.9285148}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#9 Miqus M3'
+      parentName: Cameras
+      position: {x: -2.6774755, y: 2.8126788, z: -4.779334}
+      rotation: {x: 0.13482836, y: -0.16752677, z: 0.9625373, w: 0.16516097}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#10 Miqus M3'
+      parentName: Cameras
+      position: {x: -5.5309606, y: 3.1867492, z: -4.286683}
+      rotation: {x: 0.20374581, y: 0.43241066, z: -0.06181947, w: 0.8761775}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#11 Miqus M3'
+      parentName: Cameras
+      position: {x: -5.521807, y: 3.1912775, z: -1.5999832}
+      rotation: {x: 0.16189949, y: 0.6555385, z: -0.15095527, w: 0.7219905}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#12 Miqus M3'
+      parentName: Cameras
+      position: {x: -5.5420947, y: 3.1907558, z: 0.69661885}
+      rotation: {x: 0.12140529, y: 0.76787204, z: -0.18051748, w: 0.60253364}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#13 Miqus M3'
+      parentName: Cameras
+      position: {x: -5.5448637, y: 3.1669946, z: 3.2419636}
+      rotation: {x: 0.1629544, y: 0.8454678, z: -0.1447546, w: 0.48752046}
+      scale: {x: 1, y: 1, z: 1}
+    - name: '#14 Miqus M3'
+      parentName: Cameras
+      position: {x: -3.5118194, y: 3.1601279, z: 4.018309}
+      rotation: {x: 0.106756985, y: 0.8592155, z: -0.18891709, w: 0.4633164}
+      scale: {x: 1, y: 1, z: 1}
+    - name: OpticalReference
+      parentName: QAvatar_Backflip_QTM(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_BackLeft
+      parentName: OpticalReference
+      position: {x: 0.43906832, y: 1.297953, z: -1.1807224}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_BackRight
+      parentName: OpticalReference
+      position: {x: 0.43077314, y: 1.290696, z: -0.9614049}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_BackTop
+      parentName: OpticalReference
+      position: {x: 0.35450664, y: 1.5579311, z: -1.0515019}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_Chest
+      parentName: OpticalReference
+      position: {x: 0.16400461, y: 1.3682983, z: -1.083668}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_HeadFront
+      parentName: OpticalReference
+      position: {x: 0.08251051, y: 1.740653, z: -1.0749248}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_HeadSide
+      parentName: OpticalReference
+      position: {x: 0.21193102, y: 1.7194067, z: -0.96833974}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_HeadTop
+      parentName: OpticalReference
+      position: {x: 0.22785467, y: 1.8275242, z: -1.0603987}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LAnkleOut
+      parentName: OpticalReference
+      position: {x: 0.4404303, y: 0.14819193, z: -1.2156318}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LElbowOut
+      parentName: OpticalReference
+      position: {x: 0.20568481, y: 1.2483042, z: -1.356818}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LHandOut
+      parentName: OpticalReference
+      position: {x: 0.059049767, y: 0.91184676, z: -1.3780143}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LHeel
+      parentName: OpticalReference
+      position: {x: 0.5153691, y: 0.08292516, z: -1.1473513}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LKneeOut
+      parentName: OpticalReference
+      position: {x: 0.3164941, y: 0.5526561, z: -1.269397}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LShin
+      parentName: OpticalReference
+      position: {x: 0.29498944, y: 0.33852133, z: -1.2202137}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LShoulderBack
+      parentName: OpticalReference
+      position: {x: 0.4077132, y: 1.4855098, z: -1.2445314}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LShoulderTop
+      parentName: OpticalReference
+      position: {x: 0.29183277, y: 1.5398309, z: -1.2561616}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LThigh
+      parentName: OpticalReference
+      position: {x: 0.22977458, y: 0.7534308, z: -1.2546433}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LToeIn
+      parentName: OpticalReference
+      position: {x: 0.2873651, y: 0.04134998, z: -1.1294233}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LToeOut
+      parentName: OpticalReference
+      position: {x: 0.2979506, y: 0.04080151, z: -1.2447537}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LToeTip
+      parentName: OpticalReference
+      position: {x: 0.22306721, y: 0.05440084, z: -1.1914057}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LUArmHigh
+      parentName: OpticalReference
+      position: {x: 0.3422932, y: 1.3393067, z: -1.3324608}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LWristIn
+      parentName: OpticalReference
+      position: {x: 0.09381746, y: 1.0251532, z: -1.298814}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_LWristOut
+      parentName: OpticalReference
+      position: {x: 0.11844709, y: 1.0102196, z: -1.3869658}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RAnkleOut
+      parentName: OpticalReference
+      position: {x: 0.45672193, y: 0.1224704, z: -0.9185948}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RElbowOut
+      parentName: OpticalReference
+      position: {x: 0.15378422, y: 1.2412591, z: -0.7847093}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RHandOut
+      parentName: OpticalReference
+      position: {x: -0.02146338, y: 0.9301049, z: -0.7816319}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RHeel
+      parentName: OpticalReference
+      position: {x: 0.54319096, y: 0.06830028, z: -0.99490917}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RKneeOut
+      parentName: OpticalReference
+      position: {x: 0.38000754, y: 0.5410448, z: -0.88154936}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RShin
+      parentName: OpticalReference
+      position: {x: 0.35513338, y: 0.33976063, z: -0.9307388}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RShoulderBack
+      parentName: OpticalReference
+      position: {x: 0.3494928, y: 1.4848007, z: -0.86057407}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RShoulderTop
+      parentName: OpticalReference
+      position: {x: 0.24469511, y: 1.5249722, z: -0.90195227}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RThigh
+      parentName: OpticalReference
+      position: {x: 0.2600031, y: 0.74553907, z: -0.900558}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RToeIn
+      parentName: OpticalReference
+      position: {x: 0.31619787, y: 0.037019745, z: -1.0097275}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RToeOut
+      parentName: OpticalReference
+      position: {x: 0.33299685, y: 0.033989437, z: -0.8904294}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RToeTip
+      parentName: OpticalReference
+      position: {x: 0.25624064, y: 0.05831739, z: -0.943888}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RUArmHigh
+      parentName: OpticalReference
+      position: {x: 0.29175034, y: 1.3462033, z: -0.7959192}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RWristIn
+      parentName: OpticalReference
+      position: {x: 0.03616431, y: 1.0333723, z: -0.8529125}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_RWristOut
+      parentName: OpticalReference
+      position: {x: 0.052079566, y: 0.9983519, z: -0.76318526}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_WaistLBack
+      parentName: OpticalReference
+      position: {x: 0.47109392, y: 1.0847504, z: -1.1182395}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_WaistLFront
+      parentName: OpticalReference
+      position: {x: 0.25965735, y: 1.0377418, z: -1.2090001}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_WaistRBack
+      parentName: OpticalReference
+      position: {x: 0.4648894, y: 1.0842584, z: -1.0384147}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR_WaistRFront
+      parentName: OpticalReference
+      position: {x: 0.24985869, y: 1.0324533, z: -0.9584338}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Reference
+      parentName: QAvatar_Backflip_QTM(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Hips
+      parentName: Reference
+      position: {x: 0.45257804, y: 0.9878768, z: -1.0725397}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftUpLeg
+      parentName: SR:Hips
+      position: {x: -0.10047062, y: -0.025991555, z: 0.05359349}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftLeg
+      parentName: SR:LeftUpLeg
+      position: {x: 2.2737369e-16, y: -0.38762105, z: -0.003382717}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftFoot
+      parentName: SR:LeftLeg
+      position: {x: -2.2737369e-16, y: -0.44604242, z: -0.023376092}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftToeBase
+      parentName: SR:LeftFoot
+      position: {x: -0, y: -0.06377827, z: 0.118218124}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightUpLeg
+      parentName: SR:Hips
+      position: {x: 0.10047062, y: -0.025991555, z: 0.05359349}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightLeg
+      parentName: SR:RightUpLeg
+      position: {x: -0, y: -0.40565592, z: -0.0035401061}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightFoot
+      parentName: SR:RightLeg
+      position: {x: -1.1368684e-16, y: -0.44362876, z: -0.023249596}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightToeBase
+      parentName: SR:RightFoot
+      position: {x: -1.1368684e-16, y: -0.0633724, z: 0.118030146}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Spine
+      parentName: SR:Hips
+      position: {x: -0.00022921899, y: 0.13441215, z: 0.000665835}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Spine1
+      parentName: SR:Spine
+      position: {x: 2.2737369e-16, y: 0.11843569, z: 0.011213239}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Spine2
+      parentName: SR:Spine1
+      position: {x: -0, y: 0.1539664, z: 0.016819859}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftShoulder
+      parentName: SR:Spine2
+      position: {x: -0.03163761, y: 0.12409089, z: 0.01654551}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftArm
+      parentName: SR:LeftShoulder
+      position: {x: -0.16389263, y: -0.004388696, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftForeArm
+      parentName: SR:LeftArm
+      position: {x: -0.2553746, y: 2.2737369e-16, z: -2.2737369e-16}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:LeftHand
+      parentName: SR:LeftForeArm
+      position: {x: -0.24835359, y: 1.1368684e-16, z: -2.2737369e-16}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Neck
+      parentName: SR:Spine2
+      position: {x: -0, y: 0.1539664, z: 0.016819859}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:Head
+      parentName: SR:Neck
+      position: {x: 0.005832924, y: 0.10554318, z: 0.01740256}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightShoulder
+      parentName: SR:Spine2
+      position: {x: 0.030069645, y: 0.12378875, z: 0.018115588}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightArm
+      parentName: SR:RightShoulder
+      position: {x: 0.14474672, y: 0.004388696, z: -5.684342e-17}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightForeArm
+      parentName: SR:RightArm
+      position: {x: 0.26774195, y: 4.2632565e-17, z: 5.684342e-17}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SR:RightHand
+      parentName: SR:RightForeArm
+      position: {x: 0.25430617, y: 8.526513e-17, z: -1.1368684e-16}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 3
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

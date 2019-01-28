@@ -45,7 +45,7 @@ namespace QualisysRealTime.Unity
                 base.applyBodyTransform(body);
 
             // Avoid position is NaN
-            if (body.Position.magnitude > 0)
+            if (!float.IsNaN(body.Position.sqrMagnitude))
             {
                 bodyPosition = body.Position;
                 bodyRotation = body.Rotation;
@@ -66,7 +66,7 @@ namespace QualisysRealTime.Unity
                 LabeledMarker marker = rtClient.GetMarker(markerGO.name);
 
                 // Show and update existing markers
-                if (marker != null && marker.Position.magnitude > 0)
+                if (marker != null && !float.IsNaN(marker.Position.sqrMagnitude))
                 {
                     markerGO.transform.localPosition = Quaternion.Inverse(bodyRotation) * (marker.Position - bodyPosition);
                     markerGO.transform.localScale = Vector3.one * markerScale;

@@ -103,7 +103,7 @@ namespace QualisysRealTime.Unity
         void OnConnect()
         {
             if (selectedDiscoveryResponse.HasValue)
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false);
+                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true);
 
             if (connected)
                 connectionStatus = "Connected";
