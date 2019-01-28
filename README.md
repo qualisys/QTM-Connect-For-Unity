@@ -2,9 +2,12 @@
 
 This repository houses Unity components for streaming data from [Qualisys Track Manager (QTM)](http://www.qualisys.com/products/software/qtm) to Unity.
 
+## Download Link
+Download the Asset package at [releases](https://github.com/qualisys/Qualisys-Unity-SDK/releases)
+
 ## Example Usage
 Character animation using QTM Real-Time Output
-1. In your Unity project, select *Import Package > Custom Package* and import this package.
+1. In your Unity project, select *Import Package > Custom Package...* and import this package.
 2. Double click the file DemoSkeletonScene.qtm to launch QTM.
 3. In QTM. Start streaming by pressing ctrl+shift+space or selecting *Play > Play with Real-Time Output*
 4. In Unity, open the scene DemoSkeletonScene.
