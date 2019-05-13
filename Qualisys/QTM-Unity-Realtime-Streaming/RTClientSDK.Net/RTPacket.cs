@@ -595,9 +595,10 @@ namespace QTMRealTimeSDK.Data
                                 analogDeviceData.Channels = new AnalogChannelData[analogDeviceData.ChannelCount];
 
                                 uint sampleCount = BitConvert.GetUInt32(mData, ref position);
+                                analogDeviceData.SampleNumber = BitConvert.GetUInt32(mData, ref position);
                                 if (sampleCount > 0)
                                 {
-                                    analogDeviceData.SampleNumber = BitConvert.GetUInt32(mData, ref position);
+                                    
                                     for (uint j = 0; j < analogDeviceData.ChannelCount; j++)
                                     {
                                         AnalogChannelData sample = new AnalogChannelData();
