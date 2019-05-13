@@ -25,10 +25,9 @@ namespace QualisysRealTime.Unity
         /// This makes sure we only can connect when in playing mode
         void OnInspectorUpdate()
         {
-            if (!Application.isPlaying)
+            if (!Application.isPlaying && connected)
             {
-                OnDisconnect();
-                connected = false;
+                Disconnect();
             }
         }
 
@@ -73,14 +72,14 @@ namespace QualisysRealTime.Unity
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Disconnect"))
                 {
-                    OnDisconnect();
+                    Disconnect();
                 }
             }
             else
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Connect"))
                 {
-                    OnConnect();
+                    Connect();
                 }
             }
             GUI.Label(new Rect(20, 90, 200, 40), "Status: " + connectionStatus);
@@ -88,19 +87,23 @@ namespace QualisysRealTime.Unity
 
         void OnDestroy()
         {
-            RTClient.GetInstance().Disconnect();
+            var instance = RTClient.GetInstance();
+            if (instance.IsConnected())
+                instance.Disconnect();
             connected = false;
         }
 
-        void OnDisconnect()
+        void Disconnect()
         {
-            RTClient.GetInstance().Disconnect();
+            var instance = RTClient.GetInstance();
+            if(instance.IsConnected())
+                instance.Disconnect();
             connected = false;
 
             connectionStatus = "Disconnected";
         }
 
-        void OnConnect()
+        void Connect()
         {
             if (selectedDiscoveryResponse.HasValue)
                 connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true);

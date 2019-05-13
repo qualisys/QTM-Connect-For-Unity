@@ -42,10 +42,9 @@ namespace QualisysRealTime.Unity
         void OnInspectorUpdate()
         {
             Repaint();
-            if (!Application.isPlaying)
+            if (!Application.isPlaying && connected)
             {
-                OnDisconnect();
-                connected = false;
+                Disconnect();
             }
         }
 
@@ -104,7 +103,7 @@ namespace QualisysRealTime.Unity
                 {
                     if (GUILayout.Button("Disconnect"))
                     {
-                        OnDisconnect();
+                        Disconnect();
                     }
                     var bodies = RTClient.GetInstance().Bodies;
                     if (bodies != null)
@@ -138,7 +137,7 @@ namespace QualisysRealTime.Unity
                 {
                     if (GUILayout.Button("Connect"))
                     {
-                        OnConnect();
+                        Connect();
                     }
                 }
             }
@@ -150,18 +149,25 @@ namespace QualisysRealTime.Unity
 
         void OnDestroy()
         {
-            RTClient.GetInstance().Disconnect();
+            var instance = RTClient.GetInstance();
+            if (instance.IsConnected())
+            {
+                instance.Disconnect();
+            }
             connected = false;
         }
 
-        void OnDisconnect()
+        void Disconnect()
         {
-            RTClient.GetInstance().Disconnect();
+            var instance = RTClient.GetInstance();
+            if (instance.IsConnected()) {
+                instance.Disconnect();
+            }
             connected = false;
             connectionStatus = "Disconnected";
         }
 
-        void OnConnect()
+        void Connect()
         {
             if (selectedDiscoveryResponse.HasValue)
             {
