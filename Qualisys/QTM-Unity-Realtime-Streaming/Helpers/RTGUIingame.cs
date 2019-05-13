@@ -12,7 +12,7 @@ namespace QualisysRealTime.Unity
 
     public class RTGUIingame : MonoBehaviour
     {
-        short portUDP = 4545;
+        short portUDP = -1;
         int selectedServer = 0;
         DiscoveryResponse? selectedDiscoveryResponse = null;
 

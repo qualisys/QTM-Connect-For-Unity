@@ -11,7 +11,7 @@ namespace QualisysRealTime.Unity
 {
     public class RTGUI : EditorWindow
     {
-        short portUDP = 4545;
+        short portUDP = -1;
         DiscoveryResponse? selectedDiscoveryResponse = null;
 
         string connectionStatus = "Not Connected";
@@ -86,7 +86,7 @@ namespace QualisysRealTime.Unity
                 GUI.enabled = false;
             }
             GUILayout.Label("Stream Settings", EditorStyles.boldLabel);
-            portUDP = (short)EditorGUILayout.IntField("UDP Port:", portUDP);
+            
             stream3d = EditorGUILayout.Toggle("Labeled 3D Markers", stream3d);
             stream3dNoLabels = EditorGUILayout.Toggle("Unlabeled 3D Markers", stream3dNoLabels);
             stream6d = EditorGUILayout.Toggle("6DOF Objects", stream6d);
