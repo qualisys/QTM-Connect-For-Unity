@@ -167,7 +167,7 @@ namespace QualisysRealTime.Unity
             mMecanimToQtmSegmentNames.Add("UpperChest", skeletonName + "_Spine2");
             mMecanimToQtmSegmentNames.Add("Neck", skeletonName + "_Neck");
             mMecanimToQtmSegmentNames.Add("Head", skeletonName + "_Head");
-            /*
+ 
             mMecanimToQtmSegmentNames.Add("Left Thumb Proximal", skeletonName + "_LeftHandThumb1");
             mMecanimToQtmSegmentNames.Add("Left Thumb Intermediate", skeletonName + "_LeftHandThumb2");
             mMecanimToQtmSegmentNames.Add("Left Thumb Distal", skeletonName + "_LeftHandThumb3");
@@ -199,7 +199,6 @@ namespace QualisysRealTime.Unity
             mMecanimToQtmSegmentNames.Add("Right Little Proximal", skeletonName + "_RightHandPinky1");
             mMecanimToQtmSegmentNames.Add("Right Little Intermediate", skeletonName + "_RightHandPinky2");
             mMecanimToQtmSegmentNames.Add("Right Little Distal", skeletonName + "_RightHandPinky3");
-            */
         }
     }
 }

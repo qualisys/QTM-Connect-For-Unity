@@ -1,3 +1,7 @@
+Package 8
+
+- Added support for skeleton finger segments
+
 Package 7
 
 - Added support for mecanim skeleton animation for QTM streaming skeleton data (available in QTM 2019)
