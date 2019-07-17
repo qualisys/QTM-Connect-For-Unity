@@ -1,6 +1,6 @@
 # Qualisys Unity SDK
 
-This repository houses Unity components for streaming data from [Qualisys Track Manager (QTM)](http://www.qualisys.com/products/software/qtm) to Unity.
+This repository houses Unity components for streaming data from [Qualisys Track Manager (QTM)](https://www.qualisys.com/software/qualisys-track-manager) to Unity.
 
 ## Download Link
 Download the Asset package at [releases](https://github.com/qualisys/Qualisys-Unity-SDK/releases)
