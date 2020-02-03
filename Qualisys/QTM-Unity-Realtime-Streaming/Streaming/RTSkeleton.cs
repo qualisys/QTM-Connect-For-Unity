@@ -118,7 +118,7 @@ namespace QualisysRealTime.Unity
                 {
                     name = this.SkeletonName + "_" + segment.Value.Name,
                     position = segment.Value.TPosition,
-                    rotation = Quaternion.identity,
+                    rotation = segment.Value.TRotation,
                     scale = Vector3.one,
                 });
             }
