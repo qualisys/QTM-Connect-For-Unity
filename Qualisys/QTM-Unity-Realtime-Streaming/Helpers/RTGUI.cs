@@ -16,7 +16,6 @@ namespace QualisysRealTime.Unity
 
         string connectionStatus = "Not Connected";
 
-        bool connected = false;
         bool stream6d = true;
         bool stream3d = true;
         bool stream3dNoLabels = false;
@@ -42,10 +41,6 @@ namespace QualisysRealTime.Unity
         void OnInspectorUpdate()
         {
             Repaint();
-            if (!Application.isPlaying && connected)
-            {
-                Disconnect();
-            }
         }
 
         private int serverNumber = 0;
@@ -81,7 +76,7 @@ namespace QualisysRealTime.Unity
             {
                 GUILayout.Label("(Unity needs to be in play mode to set server)");
             }
-            if (connected)
+            if (RTClient.GetInstance().IsConnected())
             {
                 GUI.enabled = false;
             }
@@ -99,7 +94,7 @@ namespace QualisysRealTime.Unity
             {
                 GUILayout.Label("Status: " + connectionStatus);
 
-                if (connected)
+                if (RTClient.GetInstance().IsConnected())
                 {
                     if (GUILayout.Button("Disconnect"))
                     {
@@ -154,7 +149,6 @@ namespace QualisysRealTime.Unity
             {
                 instance.Disconnect();
             }
-            connected = false;
         }
 
         void Disconnect()
@@ -163,7 +157,6 @@ namespace QualisysRealTime.Unity
             if (instance.IsConnected()) {
                 instance.Disconnect();
             }
-            connected = false;
             connectionStatus = "Disconnected";
         }
 
@@ -171,10 +164,10 @@ namespace QualisysRealTime.Unity
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+                RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             }
 
-            if (connected)
+            if (RTClient.GetInstance().IsConnected())
             {
                 connectionStatus = "Connected";
             }

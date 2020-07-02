@@ -2,6 +2,8 @@
 //
 using UnityEngine;
 using System.Collections.Generic;
+using QTMRealTimeSDK.Data;
+using System;
 
 namespace QualisysRealTime.Unity
 {
@@ -56,6 +58,13 @@ namespace QualisysRealTime.Unity
     {
         public string Name;
         public float[] Values;
+        public AnalogChannel() { }
+        public AnalogChannel(AnalogChannel analogChannel)
+        {
+            Name = analogChannel.Name;
+            Values = new float[analogChannel.Values.Length];
+            Array.Copy(analogChannel.Values, Values, analogChannel.Values.Length);
+        }
     }
     public class Segment
     {
@@ -67,10 +76,63 @@ namespace QualisysRealTime.Unity
         public Vector3 TPosition = Vector3.zero;
         public Quaternion TRotation = Quaternion.identity;
     }
+
     public class Skeleton
     {
         public string Name;
         public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
+        public Skeleton() { }
+        public Skeleton(Skeleton skeleton) 
+        {
+            Name = skeleton.Name;
+            foreach (var kv in skeleton.Segments) {
+                var segment = kv.Value;
+                var key = kv.Key;
+                Segments.Add(key, new Segment() {  
+                    Id = segment.Id, 
+                    Name = segment.Name, 
+                    ParentId = segment.ParentId, 
+                    Position = segment.Position, 
+                    Rotation = segment.Rotation, 
+                    TPosition = segment.TPosition, 
+                    TRotation = segment.TRotation
+                });
+            }
+
+        }
+
+        public void CopyFrom(Skeleton skeleton) 
+        {
+            Name = skeleton.Name;
+            foreach (var kv in skeleton.Segments)
+            {
+                var segment = kv.Value;
+                var key = kv.Key;
+                Segment s = null;
+                if (Segments.TryGetValue(key, out s))
+                {
+                    s.Id = segment.Id;
+                    s.Name = segment.Name;
+                    s.ParentId = segment.ParentId;
+                    s.Position = segment.Position;
+                    s.Rotation = segment.Rotation;
+                    s.TPosition = segment.TPosition;
+                    s.TRotation = segment.TRotation;
+                }
+                else
+                {
+                    Segments.Add(key, new Segment()
+                    {
+                        Id = segment.Id,
+                        Name = segment.Name,
+                        ParentId = segment.ParentId,
+                        Position = segment.Position,
+                        Rotation = segment.Rotation,
+                        TPosition = segment.TPosition,
+                        TRotation = segment.TRotation
+                    });
+                }
+            }
+        } 
     }
-    
 }

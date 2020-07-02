@@ -111,13 +111,11 @@ namespace QTMRealTimeSDK
         public SkeletonSettingsCollection SkeletonSettingsCollection { get { return mSkeletonSettingsCollection; } }
 
         private bool mBroadcastSocketCreated = false;
-        private Thread mProcessStreamthread;
         private RTNetwork mNetwork;
         private ushort mUDPport;
         private RTPacket mPacket;
         private int mMajorVersion;
         private int mMinorVersion;
-        private volatile bool mThreadActive;
         private string mErrorString;
 
         private HashSet<DiscoveryResponse> mDiscoveryResponses;
@@ -283,14 +281,8 @@ namespace QTMRealTimeSDK
         public void Disconnect()
         {
             mBroadcastSocketCreated = false;
-            if (mProcessStreamthread != null)
-            {
-                mProcessStreamthread.Abort();
-                mProcessStreamthread = null;
-            }
             mNetwork.Disconnect();
             mDiscoveryResponses.Clear();
-
             ClearSettings();
         }
 
@@ -476,64 +468,6 @@ namespace QTMRealTimeSDK
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// tell protocol to start a new thread that listens to real time stream and send data to callback functions
-        ///</summary>
-        /// <returns>always returns true</returns>
-        public void ListenToStream()
-        {
-            mProcessStreamthread = new Thread(ThreadedStreamFunction);
-            mThreadActive = true;
-            mProcessStreamthread.Start();
-        }
-
-        /// <summary>
-        /// Function used in thread to listen to real time data stream.
-        ///</summary>
-        private void ThreadedStreamFunction()
-        {
-            PacketType packetType;
-
-            while (mThreadActive)
-            {
-                if (ReceiveRTPacket(out packetType, 0) <= 0)
-                {
-                    continue;
-                }
-
-                var packet = mPacket;
-                if (packet != null)
-                {
-                    if (packetType == PacketType.PacketData)
-                    {
-                        var realtimeDataCallback = RealTimeDataCallback;
-                        if (realtimeDataCallback != null)
-                            realtimeDataCallback(packet);
-                    }
-                    else if (packetType == PacketType.PacketEvent)
-                    {
-                        var eventDataCallback = EventDataCallback;
-                        if (eventDataCallback != null)
-                            eventDataCallback(packet);
-                    }
-
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Tell protocol to stop listening to stream and stop the thread.
-        ///</summary>
-        public void StopStreamListen()
-        {
-            mThreadActive = false;
-            if (mProcessStreamthread != null)
-            {
-                mProcessStreamthread.Join(new TimeSpan(0, 1, 0));
-            }
         }
 
         #region get set functions
