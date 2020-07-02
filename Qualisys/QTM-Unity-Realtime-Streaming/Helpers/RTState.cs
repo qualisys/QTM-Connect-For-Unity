@@ -24,6 +24,8 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         internal bool mStreamingStatus = false;
         internal int mFrameNumber = 0;
         internal int mFrequency = 0;
+        internal string mErrorString = "";
+        internal bool mThreadIsAlive = true;
         internal void CopyFrom(RTState rtState)
         {
             this.mUpAxis = rtState.mUpAxis;
@@ -38,7 +40,7 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             
             //References GetMarker which needs markers to be loaded first.
             this.mBones = rtState.mBones.Select(x => new Bone() { Color = x.Color, From = x.From, To = x.To, FromMarker = GetMarker(x.From), ToMarker = GetMarker(x.To) }).ToList();
-
+            this.mErrorString = rtState.mErrorString;
             this.mSkeletons = rtState.mSkeletons.Select(x => {
                 var index = this.mSkeletons.FindIndex(y => y.Name == x.Name);
                 if (index == -1)
@@ -54,6 +56,7 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 
             this.mFrameNumber = rtState.mFrameNumber;
             this.mFrequency = rtState.mFrequency;
+            this.mThreadIsAlive = rtState.mThreadIsAlive;
 
         }
 

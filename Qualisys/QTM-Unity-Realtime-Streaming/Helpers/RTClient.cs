@@ -15,7 +15,6 @@ namespace QualisysRealTime.Unity
     public class RTClient : IDisposable
     {
 
-        RTProtocol mProtocol;
         private static RTClient mInstance;
         private ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
 
@@ -90,22 +89,14 @@ namespace QualisysRealTime.Unity
 
         public int GetFrequency()
         {
-            if (mProtocol.GeneralSettings == null)
+            if (rtStreamThread == null)
             {
-                mProtocol.GetGeneralSettings();
+                return 0;
             }
-            return mProtocol.GeneralSettings.CaptureFrequency;
+
+            return rtStreamThread.readerThreadState.mFrequency;
+
         }
-
-        private RTClient()
-        {
-            // New instance of protocol, contains a RT packet
-            mProtocol = new RTProtocol();
-            // we register our function "process" as a callback for when protocol receives real time data packets
-            // (eventDataCallback is also available to listen to events)
-        }
-
-
 
         public static RTClient GetInstance()
         {
@@ -189,28 +180,31 @@ namespace QualisysRealTime.Unity
         public List<DiscoveryResponse> GetServers()
         {
             // Send discovery packet
-            List<DiscoveryResponse> list = new List<DiscoveryResponse>();
-            if (mProtocol.DiscoverRTServers(replyPort))
+            using (var protocol = new RTProtocol())
             {
-                if (mProtocol.DiscoveryResponses.Count > 0)
+                List<DiscoveryResponse> list = new List<DiscoveryResponse>();
+                if (protocol.DiscoverRTServers(replyPort))
                 {
-                    //Get list of all servers from protocol
-                    foreach (var discoveryResponse in mProtocol.DiscoveryResponses)
+                    if (protocol.DiscoveryResponses.Count > 0)
                     {
-                        //add them to our list for user to pick from
-                        list.Add(discoveryResponse);
+                        //Get list of all servers from protocol
+                        foreach (var discoveryResponse in protocol.DiscoveryResponses)
+                        {
+                            //add them to our list for user to pick from
+                            list.Add(discoveryResponse);
+                        }
                     }
                 }
+                list.Add(new DiscoveryResponse
+                {
+                    HostName = "Localhost",
+                    IpAddress = "127.0.0.1",
+                    Port = RTProtocol.Constants.STANDARD_BASE_PORT,
+                    InfoText = "",
+                    CameraCount = 0
+                });
+                return list;
             }
-            list.Add(new DiscoveryResponse
-            {
-                HostName = "Localhost",
-                IpAddress = "127.0.0.1",
-                Port = RTProtocol.Constants.STANDARD_BASE_PORT,
-                InfoText = "",
-                CameraCount = 0
-            });
-            return list;
         }
 
         public bool IsConnected()
@@ -263,7 +257,10 @@ namespace QualisysRealTime.Unity
         // Get protocol error string
         public string GetErrorString()
         {
-            return mProtocol.GetErrorString();
+            if (rtStreamThread == null)
+                return "";
+
+            return rtStreamThread.readerThreadState.mErrorString;
         }
 
         public void Update() 
