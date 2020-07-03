@@ -20,12 +20,12 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 
 
     /// <summary>
-    /// A class for handling a QTM RealTime stream.
+    /// A class for handling a QTM Real-time stream.
     /// Public methods are safe to use by the Main thread.
     /// Call Update from Unity to get the latest stream data.
     /// If update returns false, Dispose of the object instance and create a new one to retry.
     /// </summary>
-    class RTStreamThread : IDisposable
+    internal class RTStreamThread : IDisposable
     {
         class WriterThreadException : Exception
         {
@@ -46,7 +46,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         StreamRate streamRate;
         short udpPort;
         string IpAddress;
-        public bool IsAlive { get { return readerThreadState.mThreadIsAlive; } }
         volatile bool killThread = false;
         bool disposed = false;
         public RTStreamThread(string IpAddress, short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
@@ -90,6 +89,8 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                     writerThread = null;
                 }
             }
+
+            disposed = true;
         }
 
         ~RTStreamThread()
@@ -98,30 +99,23 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         }
 
 
+
         /// <summary>
         /// Returns true as long as the object is in a valid state
         /// </summary>
-        /// <param name="frameNumber"></param>
         /// <returns></returns>
-        public bool Update(int frameNumber)
+        public bool Update()
         {
-            if (previousFrameNumber != frameNumber)
+            lock (syncLock)
             {
-                previousFrameNumber = frameNumber;
-                lock (syncLock)
-                {
-                    readerThreadState.CopyFrom(writerThreadState);
-                }
+                readerThreadState.CopyFrom(writerThreadState);
             }
-
-            if (!IsAlive) 
+            if (readerThreadState.mConnectionState == ConnectionState.Disconnected)
             {
                 Debug.Log(readerThreadState.mErrorString);
             }
-
-            return IsAlive;
+            return readerThreadState.mConnectionState != ConnectionState.Disconnected;
         }
-
 
         void WriterThreadFunction() 
         {
@@ -136,14 +130,19 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                             throw new WriterThreadException($"Error Creating Connection to server {rtProtocol.GetErrorString()}");
                         }
                     }
-                    if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
+                    lock (syncLock) 
                     {
-                        throw new WriterThreadException($"Failed to update settings {rtProtocol.GetErrorString()}");
-                    }
+                        writerThreadState.mConnectionState = ConnectionState.Connected;
+                        
+                        if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
+                        {
+                            throw new WriterThreadException($"Failed to update settings {rtProtocol.GetErrorString()}");
+                        }
 
-                    if (!StartStreaming(writerThreadState, rtProtocol, streamRate, udpPort))
-                    {
-                        throw new WriterThreadException($"Failed to start stream {rtProtocol.GetErrorString()}");
+                        if (!StartStreaming(writerThreadState, rtProtocol, streamRate, udpPort))
+                        {
+                            throw new WriterThreadException($"Failed to start stream {rtProtocol.GetErrorString()}");
+                        }
                     }
 
 
@@ -156,7 +155,7 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 
                         if (killThread)
                         {
-                            throw new WriterThreadException($"Thread was killed gracefully");
+                            throw new WriterThreadException($"Thread was killed");
                         }
 
                         PacketType packetType;
@@ -177,35 +176,38 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                             }
                             else if (packetType == PacketType.PacketEvent)
                             {
-                                lock (syncLock)
+                                QTMEvent currentEvent = packet.GetEvent();
+                                switch (currentEvent)
                                 {
-                                    QTMEvent currentEvent = packet.GetEvent();
-                                    switch (currentEvent)
-                                    {
-                                        case QTMEvent.EventRTFromFileStarted:
-                                        case QTMEvent.EventConnected:
-                                        case QTMEvent.EventCaptureStarted:
-                                        case QTMEvent.EventCalibrationStarted:
-                                        case QTMEvent.EventCameraSettingsChanged:
+                                    case QTMEvent.EventQTMShuttingDown:
+                                    case QTMEvent.EventConnectionClosed:
+                                        throw new WriterThreadException($"Qtm closed connection");
+
+                                    case QTMEvent.EventRTFromFileStarted:
+                                    case QTMEvent.EventConnected:
+                                    case QTMEvent.EventCaptureStarted:
+                                    case QTMEvent.EventCalibrationStarted:
+                                    case QTMEvent.EventCameraSettingsChanged:
+                                        lock (syncLock)
+                                        {
                                             // reload settings when we start streaming to get proper settings
                                             if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
                                             {
                                                 throw new WriterThreadException($"Failed to update settings {rtProtocol.GetErrorString()}");
                                             }
-
+                                            
                                             if (!StartStreaming(writerThreadState, rtProtocol, streamRate, udpPort))
                                             {
                                                 throw new WriterThreadException($"Failed to start stream {rtProtocol.GetErrorString()}");
                                             }
 
-                                            break;
-                                        default: break;
-                                    }
+                                        }
+                                        break;
+                                    default: break;
                                 }
                             }
                         }
                     }
-                    //Debug.Log($"Thread exited killThread");
                 }
             }
             catch (WriterThreadException writerThreadException)
@@ -213,7 +215,7 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 lock (syncLock)
                 {
                     writerThreadState.mErrorString = writerThreadException.Message;
-                    writerThreadState.mThreadIsAlive = false;
+                    writerThreadState.mConnectionState = ConnectionState.Disconnected;
                 }
             }
             catch (System.Exception e)
@@ -221,11 +223,9 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 lock (syncLock)
                 {
                     writerThreadState.mErrorString = $"Exception {e.GetType().Name}: {e.Message}";
-                    writerThreadState.mThreadIsAlive = false;
+                    writerThreadState.mConnectionState = ConnectionState.Disconnected;
                 }
             }
-            finally { }
-
         }
 
         static bool UpdateSettings(RTState rtState, RTProtocol rtProtocol, List<ComponentType> componentSelection)
@@ -258,10 +258,15 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             //Start streaming and get the settings
             if (rtProtocol.StreamFrames(streamRate, -1, state.mActiveComponents, udpPort) == false)
             {
+                state.mStreaming = false;
                 Debug.LogError($"StreamFrames error: {rtProtocol.GetErrorString()}");
-                return false;
             }
-            return true;
+            else 
+            { 
+                state.mStreaming = true;
+            }
+
+            return state.mStreaming;
         }
 
         static bool GetGazeVectorSettings(RTState state, RTProtocol mProtocol)

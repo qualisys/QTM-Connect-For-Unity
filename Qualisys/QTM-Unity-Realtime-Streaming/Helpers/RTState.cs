@@ -9,7 +9,7 @@ using GazeVector = QualisysRealTime.Unity.GazeVector;
 namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 {
     internal class RTState 
-    {
+    {        
         internal List<SixDOFBody> mBodies = new List<SixDOFBody>();
         internal List<LabeledMarker> mMarkers = new List<LabeledMarker>();
         internal List<UnlabeledMarker> mUnlabeledMarkers = new List<UnlabeledMarker>();
@@ -21,16 +21,15 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         internal Axis mUpAxis = Axis.XAxisUpwards;
         internal Quaternion mCoordinateSystemChange = Quaternion.identity;
 
-        internal bool mStreamingStatus = false;
         internal int mFrameNumber = 0;
         internal int mFrequency = 0;
         internal string mErrorString = "";
-        internal bool mThreadIsAlive = true;
+        internal ConnectionState mConnectionState = ConnectionState.Connecting;
+        internal bool mStreaming = false;
         internal void CopyFrom(RTState rtState)
         {
             this.mUpAxis = rtState.mUpAxis;
             this.mCoordinateSystemChange = rtState.mCoordinateSystemChange;
-            this.mStreamingStatus = rtState.mStreamingStatus;
 
             this.mMarkers = rtState.mMarkers.Select(x => new LabeledMarker() { Color = x.Color, Name = x.Name, Position = x.Position, Residual = x.Residual }).ToList();
             this.mUnlabeledMarkers = rtState.mUnlabeledMarkers.Select(x => new UnlabeledMarker() { Position = x.Position, Residual = x.Residual, Id = x.Id }).ToList();
@@ -54,10 +53,10 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 }
             }).ToList();
 
+            this.mStreaming = rtState.mStreaming;
             this.mFrameNumber = rtState.mFrameNumber;
             this.mFrequency = rtState.mFrequency;
-            this.mThreadIsAlive = rtState.mThreadIsAlive;
-
+            this.mConnectionState = rtState.mConnectionState;
         }
 
         public SixDOFBody GetBody(string name)

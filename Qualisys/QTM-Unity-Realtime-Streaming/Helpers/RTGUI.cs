@@ -142,21 +142,9 @@ namespace QualisysRealTime.Unity
             }
         }
 
-        void OnDestroy()
-        {
-            var instance = RTClient.GetInstance();
-            if (instance.IsConnected())
-            {
-                instance.Disconnect();
-            }
-        }
-
         void Disconnect()
         {
-            var instance = RTClient.GetInstance();
-            if (instance.IsConnected()) {
-                instance.Disconnect();
-            }
+            RTClient.GetInstance().Disconnect();
             connectionStatus = "Disconnected";
         }
 
