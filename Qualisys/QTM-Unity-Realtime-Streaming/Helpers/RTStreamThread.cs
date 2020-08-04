@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using QTMRealTimeSDK.Settings;
@@ -11,16 +9,13 @@ using UnityEngine;
 using Rotation = QualisysRealTime.Unity.Rotation;
 using GazeVector = QualisysRealTime.Unity.GazeVector;
 using System.Threading;
-using TMPro;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 {
 
 
     /// <summary>
-    /// A class for handling a QTM Real-time stream.
+    /// A class for handling a Connection to QTM and Real-time stream.
     /// Public methods are safe to use by the Main thread.
     /// Call Update from Unity to get the latest stream data.
     /// If update returns false, Dispose of the object instance and create a new one to retry.
@@ -47,6 +42,15 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         string IpAddress;
         volatile bool killThread = false;
         bool disposed = false;
+
+        List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<Analog>();
+        List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<Q6DOF>();
+        List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
+        List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
+        List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
+        List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
+
+
         public RTStreamThread(string IpAddress, short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
 
@@ -66,7 +70,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             writerThread.Name = "RTStreamThread::WriterThreadFunction";
             writerThread.Start();
         }
-
 
         public void Dispose()
         {
@@ -96,8 +99,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         {
             Dispose(false);
         }
-
-
 
         /// <summary>
         /// Returns true as long as the object is in a valid state
@@ -250,13 +251,11 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             })
              .Where(x => x != ComponentType.ComponentNone)
              .ToList();
-
             return true;
         }
 
         static bool StartStreaming(RTState state, RTProtocol rtProtocol, StreamRate streamRate, short udpPort)
         {
-            //Start streaming and get the settings
             if (rtProtocol.StreamFrames(streamRate, -1, state.mActiveComponents, udpPort) == false)
             {
                 state.mStreaming = false;
@@ -318,7 +317,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         {
             // Get settings and information for streamed bodies
             bool getstatus = mProtocol.Get6dSettings();
-
             if (getstatus)
             {
                 state.mBodies.Clear();
@@ -419,7 +417,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 {
                     state.mBones.Clear();
 
-                    //Save bone settings
                     foreach (var settingsBone in mProtocol.Settings3D.Bones)
                     {
                         Bone bone = new Bone();
@@ -441,14 +438,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             return false;
         }
 
-
-        List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<Analog>();
-        List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<Q6DOF>();
-        List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
-        List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
-        List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
-        List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
-
         void Process(RTState state, RTPacket packet)
         {
             state.mFrameNumber = packet.Frame;
@@ -469,7 +458,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 
                 state.mBodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
                 state.mBodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
-
             }
             
 
@@ -519,7 +507,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
                 state.mGazeVectors[i].Direction = QuaternionHelper.Rotate(state.mCoordinateSystemChange, direction);
                 state.mGazeVectors[i].Direction.z *= -1;
-
             }
             
 

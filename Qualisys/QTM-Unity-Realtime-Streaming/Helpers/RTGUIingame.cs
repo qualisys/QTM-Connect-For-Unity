@@ -1,11 +1,9 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
-using System.Collections;
 using QTMRealTimeSDK;
 using System.Collections.Generic;
-using System.Linq;
-using QTMRealTimeSDK.Data;
+using Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers;
 
 namespace QualisysRealTime.Unity
 {
@@ -15,21 +13,7 @@ namespace QualisysRealTime.Unity
         short portUDP = -1;
         int selectedServer = 0;
         DiscoveryResponse? selectedDiscoveryResponse = null;
-
-        string connectionStatus = "Not Connected";
-
-        bool connected = false;
-
         List<DiscoveryResponse> discoveryResponses;
-
-        /// This makes sure we only can connect when in playing mode
-        void OnInspectorUpdate()
-        {
-            if (!Application.isPlaying && connected)
-            {
-                Disconnect();
-            }
-        }
 
         void OnGUI()
         {
@@ -41,7 +25,7 @@ namespace QualisysRealTime.Unity
             GUI.Label(new Rect(20, 40, 200, 40), "QTM Server:\n(switch with arrow keys)");
 
             if (discoveryResponses == null) discoveryResponses = RTClient.GetInstance().GetServers();
-
+            var connectionState = RTClient.GetInstance().ConnectionState;
             List<GUIContent> serverSelection = new List<GUIContent>();
             foreach (var discoveryResponse in discoveryResponses)
             {
@@ -50,7 +34,7 @@ namespace QualisysRealTime.Unity
 
             GUI.Label(new Rect(20, 75, 200, 40), serverSelection[selectedServer], style);
 
-            if (Input.GetKeyDown(KeyCode.LeftArrow) && !connected)
+            if (Input.GetKeyDown(KeyCode.LeftArrow) && connectionState == ConnectionState.Disconnected)
             {
                 selectedServer--;
                 if (selectedServer < 0)
@@ -58,7 +42,7 @@ namespace QualisysRealTime.Unity
                     selectedServer += serverSelection.Count;
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.RightArrow) && !connected)
+            else if (Input.GetKeyDown(KeyCode.RightArrow) && connectionState == ConnectionState.Disconnected)
             {
                 selectedServer++;
                 if (selectedServer > serverSelection.Count - 1)
@@ -67,51 +51,32 @@ namespace QualisysRealTime.Unity
                 }
             }
             selectedDiscoveryResponse = discoveryResponses[selectedServer];
-
-            if (connected)
+            if (connectionState == ConnectionState.Connected)
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Disconnect"))
                 {
                     Disconnect();
                 }
             }
-            else
+            else if (connectionState == ConnectionState.Disconnected)
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Connect"))
                 {
                     Connect();
                 }
             }
-            GUI.Label(new Rect(20, 90, 200, 40), "Status: " + connectionStatus);
-        }
-
-        void OnDestroy()
-        {
-            var instance = RTClient.GetInstance();
-            if (instance.IsConnected())
-                instance.Disconnect();
-            connected = false;
+            GUI.Label(new Rect(20, 90, 200, 40), $"Status: {RTClient.GetInstance().ConnectionState}");
         }
 
         void Disconnect()
         {
-            var instance = RTClient.GetInstance();
-            if(instance.IsConnected())
-                instance.Disconnect();
-            connected = false;
-
-            connectionStatus = "Disconnected";
+            RTClient.GetInstance().Disconnect();
         }
 
         void Connect()
         {
             if (selectedDiscoveryResponse.HasValue)
-                connected = RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true);
-
-            if (connected)
-                connectionStatus = "Connected";
-            else
-                connectionStatus = "Connection error - check console";
+                RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true);
         }
     }
 }
