@@ -486,25 +486,25 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
                 state.mMarkers[i].Position.z *= -1;
                 state.mMarkers[i].Residual = cachedLabeledMarkers[i].Residual;
             }
-            
+
 
             //// Get unlabeled marker data
-            //packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
-            //state.mUnlabeledMarkers.Clear();
-            //for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
-            //{
-            //    UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
-            //    Q3D marker = cachedUnabeledMarkers[i];
-            //    Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
+            packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
+            state.mUnlabeledMarkers.Clear();
+            for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
+            {
+                UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
+                Q3D marker = cachedUnabeledMarkers[i];
+                Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
 
-            //    position /= 1000;
+                position /= 1000;
 
-            //    unlabeledMarker.Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
-            //    unlabeledMarker.Position.z *= -1;
-            //    unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
-            //    unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
-            //    state.mUnlabeledMarkers.Add(unlabeledMarker);
-            //}
+                unlabeledMarker.Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
+                unlabeledMarker.Position.z *= -1;
+                unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
+                unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
+                state.mUnlabeledMarkers.Add(unlabeledMarker);
+            }
 
             packet.GetGazeVectorData(cachedGazeVectors);
             for (int i = 0; i < cachedGazeVectors.Count; i++)
