@@ -7,7 +7,7 @@ using System;
 
 namespace QualisysRealTime.Unity
 {
-    internal interface ICopyFrom<T> where T : ICopyFrom<T>
+    internal interface ICopyFrom<T>
     {
         void CopyFrom(T source);
     }
