@@ -40,7 +40,6 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         public RTState readerThreadState { get; } = new RTState();
 
         object syncLock = new object();
-        int previousFrameNumber = -1;
         Thread writerThread;
         List<ComponentType> componentSelection = new List<ComponentType>();
         StreamRate streamRate;
@@ -222,7 +221,9 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             {
                 lock (syncLock)
                 {
-                    writerThreadState.mErrorString = $"Exception {e.GetType().Name}: {e.Message}";
+                    
+                    writerThreadState.mErrorString = $"Exception {e.GetType().Name}: {e.Message}\n{e.StackTrace.Replace(" at ", "\n at ")}";
+                    
                     writerThreadState.mConnectionState = ConnectionState.Disconnected;
                 }
             }
@@ -441,14 +442,14 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         }
 
 
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<Analog>();
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<Q6DOF>();
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
-        [ThreadStatic] static List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
+        List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<Analog>();
+        List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<Q6DOF>();
+        List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
+        List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
+        List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
+        List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
 
-        static void Process(RTState state, RTPacket packet)
+        void Process(RTState state, RTPacket packet)
         {
             state.mFrameNumber = packet.Frame;
             packet.Get6DOFData(cachedSixDof);
@@ -487,23 +488,23 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
             }
             
 
-            // Get unlabeled marker data
-            packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
-            state.mUnlabeledMarkers.Clear();
-            for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
-            {
-                UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
-                Q3D marker = cachedUnabeledMarkers[i];
-                Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
+            //// Get unlabeled marker data
+            //packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
+            //state.mUnlabeledMarkers.Clear();
+            //for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
+            //{
+            //    UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
+            //    Q3D marker = cachedUnabeledMarkers[i];
+            //    Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
 
-                position /= 1000;
+            //    position /= 1000;
 
-                unlabeledMarker.Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
-                unlabeledMarker.Position.z *= -1;
-                unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
-                unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
-                state.mUnlabeledMarkers.Add(unlabeledMarker);
-            }
+            //    unlabeledMarker.Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
+            //    unlabeledMarker.Position.z *= -1;
+            //    unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
+            //    unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
+            //    state.mUnlabeledMarkers.Add(unlabeledMarker);
+            //}
 
             packet.GetGazeVectorData(cachedGazeVectors);
             for (int i = 0; i < cachedGazeVectors.Count; i++)

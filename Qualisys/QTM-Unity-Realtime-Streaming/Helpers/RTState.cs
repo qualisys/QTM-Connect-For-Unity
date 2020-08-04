@@ -8,7 +8,8 @@ using GazeVector = QualisysRealTime.Unity.GazeVector;
 
 namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
 {
-    internal class RTState 
+
+    internal class RTState : QualisysRealTime.Unity.ICopyFrom<RTState>
     {        
         internal List<SixDOFBody> mBodies = new List<SixDOFBody>();
         internal List<LabeledMarker> mMarkers = new List<LabeledMarker>();
@@ -26,33 +27,55 @@ namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
         internal string mErrorString = "";
         internal ConnectionState mConnectionState = ConnectionState.Connecting;
         internal bool mStreaming = false;
-        internal void CopyFrom(RTState rtState)
+
+        static void CopyFromList<T>(List<T> source, List<T> target)
+            where T : ICopyFrom<T>, new()
+        {
+            {
+                int c = source.Count;
+                while (c > target.Count) {target.Add(new T()); }
+                while (c < target.Count) {target.RemoveAt(target.Count - 1);}
+                for (int i = 0; i < c; ++i)
+                {
+                    target[i].CopyFrom(source[i]);
+                }
+            }
+        }
+
+        public void CopyFrom(RTState rtState)
         {
             this.mUpAxis = rtState.mUpAxis;
             this.mCoordinateSystemChange = rtState.mCoordinateSystemChange;
 
-            this.mMarkers = rtState.mMarkers.Select(x => new LabeledMarker() { Color = x.Color, Name = x.Name, Position = x.Position, Residual = x.Residual }).ToList();
-            this.mUnlabeledMarkers = rtState.mUnlabeledMarkers.Select(x => new UnlabeledMarker() { Position = x.Position, Residual = x.Residual, Id = x.Id }).ToList();
-            this.mBodies = rtState.mBodies.Select(x => new SixDOFBody() { Color = x.Color, Name = x.Name, Position = x.Position, Rotation = x.Rotation }).ToList();
-            this.mGazeVectors = rtState.mGazeVectors.Select(x => new GazeVector() { Name = x.Name, Direction = x.Direction, Position = x.Position }).ToList();
-            this.mAnalogChannels = rtState.mAnalogChannels.Select(x => new AnalogChannel(x)).ToList();
-            
-            //References GetMarker which needs markers to be loaded first.
-            this.mBones = rtState.mBones.Select(x => new Bone() { Color = x.Color, From = x.From, To = x.To, FromMarker = GetMarker(x.From), ToMarker = GetMarker(x.To) }).ToList();
-            this.mErrorString = rtState.mErrorString;
-            this.mSkeletons = rtState.mSkeletons.Select(x => {
-                var index = this.mSkeletons.FindIndex(y => y.Name == x.Name);
-                if (index == -1)
-                {
-                    return new Skeleton(x);
-                }
-                else 
-                {
-                    this.mSkeletons[index].CopyFrom(x);
-                    return this.mSkeletons[index];
-                }
-            }).ToList();
+            CopyFromList(rtState.mMarkers, mMarkers);
+            CopyFromList(rtState.mUnlabeledMarkers, mUnlabeledMarkers);
+            CopyFromList(rtState.mBodies, mBodies);
+            CopyFromList(rtState.mGazeVectors, mGazeVectors);
+            CopyFromList(rtState.mAnalogChannels, mAnalogChannels);
+            CopyFromList(rtState.mBones, mBones);
+            CopyFromList(rtState.mSkeletons, mSkeletons);
 
+            //this.mMarkers = rtState.mMarkers.Select(x => new LabeledMarker() { Color = x.Color, Name = x.Name, Position = x.Position, Residual = x.Residual }).ToList();
+            //this.mUnlabeledMarkers = rtState.mUnlabeledMarkers.Select(x => new UnlabeledMarker() { Position = x.Position, Residual = x.Residual, Id = x.Id }).ToList();
+            //this.mBodies = rtState.mBodies.Select(x => new SixDOFBody() { Color = x.Color, Name = x.Name, Position = x.Position, Rotation = x.Rotation }).ToList();
+            //this.mGazeVectors = rtState.mGazeVectors.Select(x => new GazeVector() { Name = x.Name, Direction = x.Direction, Position = x.Position }).ToList();
+            //this.mAnalogChannels = rtState.mAnalogChannels.Select(x => new AnalogChannel(x)).ToList();
+            //References GetMarker which needs markers to be loaded first.
+            ///this.mBones = rtState.mBones.Select(x => new Bone() { Color = x.Color, From = x.From, To = x.To, FromMarker = GetMarker(x.From), ToMarker = GetMarker(x.To) }).ToList();
+            //this.mSkeletons = rtState.mSkeletons.Select(x => {
+            //    var index = this.mSkeletons.FindIndex(y => y.Name == x.Name);
+            //    if (index == -1)
+            //    {
+            //        return new Skeleton(x);
+            //    }
+            //    else 
+            //    {
+            //        this.mSkeletons[index].CopyFrom(x);
+            //        return this.mSkeletons[index];
+            //    }
+            //}).ToList();
+
+            this.mErrorString = rtState.mErrorString;
             this.mStreaming = rtState.mStreaming;
             this.mFrameNumber = rtState.mFrameNumber;
             this.mFrequency = rtState.mFrequency;
