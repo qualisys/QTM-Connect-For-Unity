@@ -53,26 +53,6 @@ namespace QualisysRealTime.Unity
             CopyFromList(rtState.mBones, mBones);
             CopyFromList(rtState.mSkeletons, mSkeletons);
 
-            //this.mMarkers = rtState.mMarkers.Select(x => new LabeledMarker() { Color = x.Color, Name = x.Name, Position = x.Position, Residual = x.Residual }).ToList();
-            //this.mUnlabeledMarkers = rtState.mUnlabeledMarkers.Select(x => new UnlabeledMarker() { Position = x.Position, Residual = x.Residual, Id = x.Id }).ToList();
-            //this.mBodies = rtState.mBodies.Select(x => new SixDOFBody() { Color = x.Color, Name = x.Name, Position = x.Position, Rotation = x.Rotation }).ToList();
-            //this.mGazeVectors = rtState.mGazeVectors.Select(x => new GazeVector() { Name = x.Name, Direction = x.Direction, Position = x.Position }).ToList();
-            //this.mAnalogChannels = rtState.mAnalogChannels.Select(x => new AnalogChannel(x)).ToList();
-            //References GetMarker which needs markers to be loaded first.
-            ///this.mBones = rtState.mBones.Select(x => new Bone() { Color = x.Color, From = x.From, To = x.To, FromMarker = GetMarker(x.From), ToMarker = GetMarker(x.To) }).ToList();
-            //this.mSkeletons = rtState.mSkeletons.Select(x => {
-            //    var index = this.mSkeletons.FindIndex(y => y.Name == x.Name);
-            //    if (index == -1)
-            //    {
-            //        return new Skeleton(x);
-            //    }
-            //    else 
-            //    {
-            //        this.mSkeletons[index].CopyFrom(x);
-            //        return this.mSkeletons[index];
-            //    }
-            //}).ToList();
-
             this.mErrorString = rtState.mErrorString;
             this.mStreaming = rtState.mStreaming;
             this.mFrameNumber = rtState.mFrameNumber;

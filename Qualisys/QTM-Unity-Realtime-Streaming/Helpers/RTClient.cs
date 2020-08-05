@@ -113,7 +113,6 @@ namespace QualisysRealTime.Unity
             return mInstance;
         }
 
-        //Method for objects to call to get data from body
         public SixDOFBody GetBody(string name)
         {
             if (rtStreamThread == null)
