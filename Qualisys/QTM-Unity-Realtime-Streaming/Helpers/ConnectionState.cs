@@ -1,4 +1,4 @@
-﻿namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
+﻿namespace QualisysRealTime.Unity
 {
     public enum ConnectionState 
     { 

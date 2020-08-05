@@ -4,7 +4,6 @@ using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers;
 using System.Threading.Tasks;
 using System.Threading;
 

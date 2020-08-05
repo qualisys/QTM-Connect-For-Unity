@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using QTMRealTimeSDK.Data;
 using QualisysRealTime.Unity;
 using QTMRealTimeSDK;
 
@@ -22,7 +21,7 @@ public class ServerButton : MonoBehaviour
     }
     void Connect()
     {
-        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, false, true, false, true))
+        if (!RTClient.GetInstance().Connect(response, -1, true, true, false, true, false, true))
         {
             InfoText.color = Color.red;
             InfoText.text = "Could not connect to this server";

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace QualisysRealTime.Unity
+﻿namespace QualisysRealTime.Unity
 {
     public static class DEBUG
     {

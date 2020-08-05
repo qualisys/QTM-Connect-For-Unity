@@ -4,7 +4,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers;
 using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity

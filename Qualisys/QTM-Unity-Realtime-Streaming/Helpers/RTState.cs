@@ -2,14 +2,12 @@
 using System.Linq;
 using QTMRealTimeSDK.Data;
 using QTMRealTimeSDK.Settings;
-using QualisysRealTime.Unity;
 using UnityEngine;
-using GazeVector = QualisysRealTime.Unity.GazeVector;
 
-namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
+namespace QualisysRealTime.Unity
 {
 
-    internal class RTState : QualisysRealTime.Unity.ICopyFrom<RTState>
+    internal class RTState : ICopyFrom<RTState>
     {        
         internal List<SixDOFBody> mBodies = new List<SixDOFBody>();
         internal List<LabeledMarker> mMarkers = new List<LabeledMarker>();

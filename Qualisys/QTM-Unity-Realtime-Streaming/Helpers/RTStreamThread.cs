@@ -4,13 +4,10 @@ using System.Linq;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using QTMRealTimeSDK.Settings;
-using QualisysRealTime.Unity;
 using UnityEngine;
-using Rotation = QualisysRealTime.Unity.Rotation;
-using GazeVector = QualisysRealTime.Unity.GazeVector;
 using System.Threading;
 
-namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
+namespace QualisysRealTime.Unity
 {
 
 

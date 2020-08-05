@@ -1,8 +1,7 @@
-﻿using QualisysRealTime.Unity;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers
+namespace QualisysRealTime.Unity
 {
     public class RTClientUpdater : MonoBehaviour 
     {
