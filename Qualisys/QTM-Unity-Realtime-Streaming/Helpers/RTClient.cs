@@ -1,27 +1,21 @@
 // Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using QTMRealTimeSDK;
-using QTMRealTimeSDK.Data;
-using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using Assets.Qualisys.QTM_Unity_Realtime_Streaming.Helpers;
-using UnityEngine.Scripting;
 using System.Threading.Tasks;
 using System.Threading;
-using UnityEditor.Rendering;
 
 namespace QualisysRealTime.Unity
 {
     public class RTClient : IDisposable
     {
-
         private static RTClient mInstance;
         private int previousFrame = -1;
         private ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
-
+        private bool disposed = false;
         public List<SixDOFBody> Bodies { 
             get { 
                 return rtStreamThread == null 
@@ -96,7 +90,6 @@ namespace QualisysRealTime.Unity
             { 
                 return 0;
             }
-
             return rtStreamThread.readerThreadState.mFrameNumber;
         }
 
@@ -106,9 +99,7 @@ namespace QualisysRealTime.Unity
             {
                 return 0;
             }
-
             return rtStreamThread.readerThreadState.mFrequency;
-
         }
 
         public static RTClient GetInstance()
@@ -222,8 +213,18 @@ namespace QualisysRealTime.Unity
             return ConnectionState != ConnectionState.Disconnected;
         }
 
-
-        void ConnectInternal(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
+        /// <summary>
+        /// Connect to QTM and start streaming
+        /// This method is non blocking
+        /// </summary>
+        /// <param name="pickedServer">Picked server.</param>
+        /// <param name="udpPort">UDP port streaming should occur on.</param>
+        /// <param name="stream6d">if 6DOF data should be streamed.</param>
+        /// <param name="stream3d">if labeled markers should be streamed.</param>
+        /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
+        /// <param name="streamGaze">if gaze vectors should be streamed.</param>
+        /// <param name="streamAnalog">if analog data should be streamed.</param>
+        public void StartConnecting(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             if (rtStreamThread != null)
             {
@@ -235,7 +236,7 @@ namespace QualisysRealTime.Unity
 
         /// <summary>
         /// Connect to QTM and start streaming
-        /// This method blocks the main thread.
+        /// This method blocks the calling thread.
         /// </summary>
         /// <param name="pickedServer">Picked server.</param>
         /// <param name="udpPort">UDP port streaming should occur on.</param>
@@ -246,7 +247,7 @@ namespace QualisysRealTime.Unity
         /// <param name="streamAnalog">if analog data should be streamed.</param>
         public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
-            ConnectInternal(discoveryResponse.IpAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            StartConnecting(discoveryResponse.IpAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             while (ConnectionState == ConnectionState.Connecting)
             {
                 if (!rtStreamThread.Update())
@@ -263,7 +264,7 @@ namespace QualisysRealTime.Unity
 
         /// <summary>
         /// Connect to QTM and start streaming
-        /// This method blocks the main thread.
+        /// This method blocks the calling thread.
         /// </summary>
         /// <param name="ipAddress">IP address of the QTM host</param>
         /// <param name="udpPort">UDP port streaming should occur on.</param>
@@ -274,7 +275,7 @@ namespace QualisysRealTime.Unity
         /// <param name="streamAnalog">if analog data should be streamed.</param>
         public bool Connect(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
-            ConnectInternal(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             while (ConnectionState == ConnectionState.Connecting)
             {
                 if (!rtStreamThread.Update())
@@ -290,7 +291,7 @@ namespace QualisysRealTime.Unity
         }
 
         /// <summary>
-        /// Connect to QTM and start streaming
+        /// Async method for connecting to QTM and start streaming
         /// </summary>
         /// <param name="ipAddress">IP address of the QTM host</param>
         /// <param name="udpPort">UDP port streaming should occur on. -1 if TCP should be used</param>
@@ -301,18 +302,15 @@ namespace QualisysRealTime.Unity
         /// <param name="streamAnalog">if analog data should be streamed.</param>
         public async Task<bool> ConnectAsync(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton) 
         {
-            ConnectInternal(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             while (ConnectionState == ConnectionState.Connecting) 
             {
-                //Relies on RTClientUpdated for updates.
+                //Relies on RTClientUpdater for updates.
                 await Task.Delay(TimeSpan.FromMilliseconds(200));
             }
             return ConnectionState == ConnectionState.Connected;
         }
 
-
-
-        // Get protocol error string
         public string GetErrorString()
         {
             if (rtStreamThread == null)
@@ -351,32 +349,19 @@ namespace QualisysRealTime.Unity
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        public void Dispose()
         {
             if (!disposed)
             {
-                if (disposing)
+                Application.quitting -= Dispose;
+                if (rtStreamThread != null)
                 {
-                    if (rtStreamThread != null)
-                    {
-                        rtStreamThread.Dispose();
-                        rtStreamThread = null;
-                    }
+                    rtStreamThread.Dispose();
+                    rtStreamThread = null;
                 }
                 disposed = true;
             }
         }
-
-        public void Dispose()
-        {
-            Application.quitting -= Dispose;
-            GC.SuppressFinalize(this);
-            Dispose(true);
-        }
-        ~RTClient () 
-        {
-            Dispose(false);
-        }
-        private bool disposed = false;
+        
     }
 }
