@@ -13,7 +13,6 @@ namespace QualisysRealTime.Unity
         short portUDP = -1;
         DiscoveryResponse? selectedDiscoveryResponse = null;
 
-        string connectionStatus = "Not Connected";
 
         bool stream6d = true;
         bool stream3d = true;
@@ -91,13 +90,14 @@ namespace QualisysRealTime.Unity
 
             if (Application.isPlaying)
             {
-                GUILayout.Label("Status: " + connectionStatus);
+                GUILayout.Label("Status: " + RTClient.GetInstance().ConnectionState.ToString());
 
                 if (RTClient.GetInstance().ConnectionState != RTConnectionState.Disconnected)
                 {
                     if (GUILayout.Button("Disconnect"))
                     {
                         Disconnect();
+                        Repaint();
                     }
                     var bodies = RTClient.GetInstance().Bodies;
                     if (bodies != null)
@@ -132,6 +132,7 @@ namespace QualisysRealTime.Unity
                     if (GUILayout.Button("Connect"))
                     {
                         Connect();
+                        Repaint();
                     }
                 }
             }
@@ -144,24 +145,15 @@ namespace QualisysRealTime.Unity
         void Disconnect()
         {
             RTClient.GetInstance().Disconnect();
-            connectionStatus = "Disconnected";
         }
 
         void Connect()
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+                RTClient.GetInstance().StartConnecting(selectedDiscoveryResponse.Value.IpAddress, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             }
 
-            if (RTClient.GetInstance().ConnectionState != RTConnectionState.Disconnected)
-            {
-                connectionStatus = "Connected";
-            }
-            else
-            {
-                connectionStatus = "Connection error - " + RTClient.GetInstance().GetErrorString() + " (also check console)";
-            }
         }
     }
 }
