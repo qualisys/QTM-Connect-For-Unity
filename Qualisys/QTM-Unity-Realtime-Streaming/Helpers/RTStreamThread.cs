@@ -9,10 +9,8 @@ using System.Threading;
 
 namespace QualisysRealTime.Unity
 {
-
-
     /// <summary>
-    /// A class for handling a Connection to QTM and Real-time stream.
+    /// A class for handling a Connection to QTM and stream data.
     /// Public methods are safe to use by the Main thread.
     /// Call Update from Unity to get the latest stream data.
     /// If update returns false, Dispose of the object instance and create a new one to retry.
@@ -28,11 +26,11 @@ namespace QualisysRealTime.Unity
 
         const int LOWEST_SUPPORTED_UNITY_MAJOR_VERSION = 1;
         const int LOWEST_SUPPORTED_UNITY_MINOR_VERSION = 13;
-        RTState writerThreadState { get; } = new RTState();
-        public RTState readerThreadState { get; } = new RTState();
+        public RTState ReaderThreadState { get; private set; }
 
         object syncLock = new object();
         Thread writerThread;
+        RTState writerThreadState = new RTState();
         List<ComponentType> componentSelection = new List<ComponentType>();
         StreamRate streamRate;
         short udpPort;
@@ -40,8 +38,8 @@ namespace QualisysRealTime.Unity
         volatile bool killThread = false;
         bool disposed = false;
 
-        List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<Analog>();
-        List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<Q6DOF>();
+        List<QTMRealTimeSDK.Data.Analog> cachedAnalog = new List<QTMRealTimeSDK.Data.Analog>();
+        List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<QTMRealTimeSDK.Data.Q6DOF>();
         List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
         List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
         List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
@@ -50,7 +48,8 @@ namespace QualisysRealTime.Unity
 
         public RTStreamThread(string IpAddress, short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
-
+            this.writerThreadState = new RTState();
+            this.ReaderThreadState = new RTState();
             this.IpAddress = IpAddress;
             this.streamRate = streamRate;
             this.udpPort = udpPort;
@@ -105,13 +104,13 @@ namespace QualisysRealTime.Unity
         {
             lock (syncLock)
             {
-                readerThreadState.CopyFrom(writerThreadState);
+                ReaderThreadState.CopyFrom(writerThreadState);
             }
-            if (readerThreadState.mConnectionState == ConnectionState.Disconnected)
+            if (ReaderThreadState.connectionState == RTConnectionState.Disconnected)
             {
-                Debug.Log(readerThreadState.mErrorString);
+                Debug.Log(ReaderThreadState.errorString);
             }
-            return readerThreadState.mConnectionState != ConnectionState.Disconnected;
+            return ReaderThreadState.connectionState != RTConnectionState.Disconnected;
         }
 
         void WriterThreadFunction() 
@@ -124,21 +123,21 @@ namespace QualisysRealTime.Unity
                     {
                         if (!rtProtocol.Connect(IpAddress, udpPort, LOWEST_SUPPORTED_UNITY_MAJOR_VERSION, LOWEST_SUPPORTED_UNITY_MINOR_VERSION))
                         {
-                            throw new WriterThreadException($"Error Creating Connection to server {rtProtocol.GetErrorString()}");
+                            throw new WriterThreadException("Error Creating Connection to server" + rtProtocol.GetErrorString());
                         }
                     }
                     lock (syncLock) 
                     {
-                        writerThreadState.mConnectionState = ConnectionState.Connected;
+                        writerThreadState.connectionState = RTConnectionState.Connected;
                         
                         if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
                         {
-                            throw new WriterThreadException($"Failed to update settings {rtProtocol.GetErrorString()}");
+                            throw new WriterThreadException("Failed to update settings: " + rtProtocol.GetErrorString());
                         }
 
                         if (!StartStreaming(writerThreadState, rtProtocol, streamRate, udpPort))
                         {
-                            throw new WriterThreadException($"Failed to start stream {rtProtocol.GetErrorString()}");
+                            throw new WriterThreadException("Failed to start stream: " + rtProtocol.GetErrorString() );
                         }
                     }
 
@@ -147,12 +146,12 @@ namespace QualisysRealTime.Unity
                     {
                         if (!rtProtocol.IsConnected())
                         {
-                            throw new WriterThreadException($"Connection lost");
+                            throw new WriterThreadException("Connection lost");
                         }
 
                         if (killThread)
                         {
-                            throw new WriterThreadException($"Thread was killed");
+                            throw new WriterThreadException("Thread was killed");
                         }
 
                         PacketType packetType;
@@ -178,7 +177,7 @@ namespace QualisysRealTime.Unity
                                 {
                                     case QTMEvent.EventQTMShuttingDown:
                                     case QTMEvent.EventConnectionClosed:
-                                        throw new WriterThreadException($"Qtm closed connection");
+                                        throw new WriterThreadException("Qtm closed connection");
 
                                     case QTMEvent.EventRTFromFileStarted:
                                     case QTMEvent.EventConnected:
@@ -190,12 +189,12 @@ namespace QualisysRealTime.Unity
                                             // reload settings when we start streaming to get proper settings
                                             if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
                                             {
-                                                throw new WriterThreadException($"Failed to update settings {rtProtocol.GetErrorString()}");
+                                                throw new WriterThreadException("Failed to update settings: " + rtProtocol.GetErrorString());
                                             }
                                             
                                             if (!StartStreaming(writerThreadState, rtProtocol, streamRate, udpPort))
                                             {
-                                                throw new WriterThreadException($"Failed to start stream {rtProtocol.GetErrorString()}");
+                                                throw new WriterThreadException("Failed to start stream: " + rtProtocol.GetErrorString());
                                             }
 
                                         }
@@ -211,8 +210,8 @@ namespace QualisysRealTime.Unity
             {
                 lock (syncLock)
                 {
-                    writerThreadState.mErrorString = writerThreadException.Message;
-                    writerThreadState.mConnectionState = ConnectionState.Disconnected;
+                    writerThreadState.errorString = writerThreadException.Message;
+                    writerThreadState.connectionState = RTConnectionState.Disconnected;
                 }
             }
             catch (System.Exception e)
@@ -220,9 +219,11 @@ namespace QualisysRealTime.Unity
                 lock (syncLock)
                 {
                     
-                    writerThreadState.mErrorString = $"Exception {e.GetType().Name}: {e.Message}\n{e.StackTrace.Replace(" at ", "\n at ")}";
+                    writerThreadState.errorString = "Exception " 
+                        + e.GetType().Name + ": " +  e.Message + "\n" 
+                        + e.StackTrace.Replace(" at ", "\n at ");
                     
-                    writerThreadState.mConnectionState = ConnectionState.Disconnected;
+                    writerThreadState.connectionState = RTConnectionState.Disconnected;
                 }
             }
         }
@@ -233,7 +234,7 @@ namespace QualisysRealTime.Unity
                 return false;
             }
 
-            rtState.mActiveComponents = componentSelection.Select(x =>
+            rtState.componentsInStream = componentSelection.Select(x =>
             {
                 switch (x)
                 {
@@ -253,17 +254,17 @@ namespace QualisysRealTime.Unity
 
         static bool StartStreaming(RTState state, RTProtocol rtProtocol, StreamRate streamRate, short udpPort)
         {
-            if (rtProtocol.StreamFrames(streamRate, -1, state.mActiveComponents, udpPort) == false)
+            if (rtProtocol.StreamFrames(streamRate, -1, state.componentsInStream, udpPort) == false)
             {
-                state.mStreaming = false;
-                Debug.LogError($"StreamFrames error: {rtProtocol.GetErrorString()}");
+                state.isStreaming = false;
+                Debug.LogError("StreamFrames error: " + rtProtocol.GetErrorString());
             }
             else 
             { 
-                state.mStreaming = true;
+                state.isStreaming = true;
             }
 
-            return state.mStreaming;
+            return state.isStreaming;
         }
 
         static bool GetGazeVectorSettings(RTState state, RTProtocol mProtocol)
@@ -272,7 +273,7 @@ namespace QualisysRealTime.Unity
 
             if (getStatus)
             {
-                state.mGazeVectors.Clear();
+                state.gazeVectors.Clear();
                 SettingsGazeVectors settings = mProtocol.GazeVectorSettings;
                 foreach (var gazeVector in settings.GazeVectors)
                 {
@@ -280,7 +281,7 @@ namespace QualisysRealTime.Unity
                     newGazeVector.Name = gazeVector.Name;
                     newGazeVector.Position = Vector3.zero;
                     newGazeVector.Direction = Vector3.zero;
-                    state.mGazeVectors.Add(newGazeVector);
+                    state.gazeVectors.Add(newGazeVector);
                 }
 
                 return true;
@@ -293,7 +294,7 @@ namespace QualisysRealTime.Unity
             bool getStatus = mProtocol.GetAnalogSettings();
             if (getStatus)
             {
-                state.mAnalogChannels.Clear();
+                state.analogChannels.Clear();
                 var settings = mProtocol.AnalogSettings;
                 foreach (var device in settings.Devices)
                 {
@@ -302,7 +303,7 @@ namespace QualisysRealTime.Unity
                         var analogChannel = new AnalogChannel();
                         analogChannel.Name = channel.Name;
                         analogChannel.Values = new float[0];
-                        state.mAnalogChannels.Add(analogChannel);
+                        state.analogChannels.Add(analogChannel);
                     }
                 }
                 return true;
@@ -316,7 +317,7 @@ namespace QualisysRealTime.Unity
             bool getstatus = mProtocol.Get6dSettings();
             if (getstatus)
             {
-                state.mBodies.Clear();
+                state.bodies.Clear();
                 Settings6D settings = mProtocol.Settings6DOF;
                 foreach (Settings6DOF body in settings.Bodies)
                 {
@@ -329,7 +330,7 @@ namespace QualisysRealTime.Unity
                     newbody.Color.a = 1F;
                     newbody.Position = Vector3.zero;
                     newbody.Rotation = Quaternion.identity;
-                    state.mBodies.Add(newbody);
+                    state.bodies.Add(newbody);
 
                 }
 
@@ -345,7 +346,7 @@ namespace QualisysRealTime.Unity
             if (!getStatus)
                 return false;
 
-            state.mSkeletons.Clear();
+            state.skeletons.Clear();
             var skeletonSettings = mProtocol.SkeletonSettingsCollection;
             foreach (var settingSkeleton in skeletonSettings.SettingSkeletonList)
             {
@@ -364,7 +365,7 @@ namespace QualisysRealTime.Unity
 
                     skeleton.Segments.Add(segment.Id, segment);
                 }
-                state.mSkeletons.Add(skeleton);
+                state.skeletons.Add(skeleton);
             }
             return true;
         }
@@ -375,7 +376,7 @@ namespace QualisysRealTime.Unity
             if (!getStatus)
                 return false;
 
-            state.mFrequency = mProtocol.GeneralSettings.CaptureFrequency;
+            state.frequency = mProtocol.GeneralSettings.CaptureFrequency;
             return true;
         }
 
@@ -385,15 +386,15 @@ namespace QualisysRealTime.Unity
             bool getstatus = mProtocol.Get3dSettings();
             if (getstatus)
             {
-                state.mUpAxis = mProtocol.Settings3D.AxisUpwards;
+                state.upAxis = mProtocol.Settings3D.AxisUpwards;
 
                 Rotation.ECoordinateAxes xAxis, yAxis, zAxis;
-                Rotation.GetCalibrationAxesOrder(state.mUpAxis, out xAxis, out yAxis, out zAxis);
+                Rotation.GetCalibrationAxesOrder(state.upAxis, out xAxis, out yAxis, out zAxis);
 
-                state.mCoordinateSystemChange = Rotation.GetAxesOrderRotation(xAxis, yAxis, zAxis);
+                state.coordinateSystemChange = Rotation.GetAxesOrderRotation(xAxis, yAxis, zAxis);
 
                 // Save marker settings
-                state. mMarkers.Clear();
+                state. markers.Clear();
                 foreach (Settings3DLabel marker in mProtocol.Settings3D.Labels)
                 {
                     LabeledMarker newMarker = new LabeledMarker();
@@ -406,13 +407,13 @@ namespace QualisysRealTime.Unity
                     newMarker.Color /= 255;
                     newMarker.Color.a = 1F;
 
-                    state.mMarkers.Add(newMarker);
+                    state.markers.Add(newMarker);
                 }
 
                 // Save bone settings
                 if (mProtocol.Settings3D.Bones != null)
                 {
-                    state.mBones.Clear();
+                    state.bones.Clear();
 
                     foreach (var settingsBone in mProtocol.Settings3D.Bones)
                     {
@@ -426,7 +427,7 @@ namespace QualisysRealTime.Unity
                         bone.Color.b = (settingsBone.Color >> 16) & 0xFF;
                         bone.Color /= 255;
                         bone.Color.a = 1F;
-                        state.mBones.Add(bone);
+                        state.bones.Add(bone);
                     }
                 }
 
@@ -437,7 +438,7 @@ namespace QualisysRealTime.Unity
 
         void Process(RTState state, RTPacket packet)
         {
-            state.mFrameNumber = packet.Frame;
+            state.frameNumber = packet.Frame;
             packet.Get6DOFData(cachedSixDof);
             for (int i = 0; i < cachedSixDof.Count; i++)
             {
@@ -446,15 +447,15 @@ namespace QualisysRealTime.Unity
                 //Set rotation and position to work with unity
                 position /= 1000;
 
-                state.mBodies[i].Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
-                state.mBodies[i].Position.z *= -1;
+                state.bodies[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
+                state.bodies[i].Position.z *= -1;
 
-                state.mBodies[i].Rotation = state.mCoordinateSystemChange * QuaternionHelper.FromMatrix(cachedSixDof[i].Matrix);
-                state.mBodies[i].Rotation.z *= -1;
-                state.mBodies[i].Rotation.w *= -1;
+                state.bodies[i].Rotation = state.coordinateSystemChange * QuaternionHelper.FromMatrix(cachedSixDof[i].Matrix);
+                state.bodies[i].Rotation.z *= -1;
+                state.bodies[i].Rotation.w *= -1;
 
-                state.mBodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                state.mBodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
+                state.bodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
+                state.bodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
             }
             
 
@@ -467,15 +468,15 @@ namespace QualisysRealTime.Unity
 
                 position /= 1000;
 
-                state.mMarkers[i].Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
-                state.mMarkers[i].Position.z *= -1;
-                state.mMarkers[i].Residual = cachedLabeledMarkers[i].Residual;
+                state.markers[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
+                state.markers[i].Position.z *= -1;
+                state.markers[i].Residual = cachedLabeledMarkers[i].Residual;
             }
 
 
             //// Get unlabeled marker data
             packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
-            state.mUnlabeledMarkers.Clear();
+            state.unlabeledMarkers.Clear();
             for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
             {
                 UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
@@ -484,11 +485,11 @@ namespace QualisysRealTime.Unity
 
                 position /= 1000;
 
-                unlabeledMarker.Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
+                unlabeledMarker.Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
                 unlabeledMarker.Position.z *= -1;
                 unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
                 unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
-                state.mUnlabeledMarkers.Add(unlabeledMarker);
+                state.unlabeledMarkers.Add(unlabeledMarker);
             }
 
             packet.GetGazeVectorData(cachedGazeVectors);
@@ -498,12 +499,12 @@ namespace QualisysRealTime.Unity
 
                 Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
                 position /= 1000;
-                state.mGazeVectors[i].Position = QuaternionHelper.Rotate(state.mCoordinateSystemChange, position);
-                state.mGazeVectors[i].Position.z *= -1;
+                state.gazeVectors[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
+                state.gazeVectors[i].Position.z *= -1;
 
                 Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
-                state.mGazeVectors[i].Direction = QuaternionHelper.Rotate(state.mCoordinateSystemChange, direction);
-                state.mGazeVectors[i].Direction.z *= -1;
+                state.gazeVectors[i].Direction = QuaternionHelper.Rotate(state.coordinateSystemChange, direction);
+                state.gazeVectors[i].Direction.z *= -1;
             }
             
 
@@ -516,7 +517,7 @@ namespace QualisysRealTime.Unity
                     for (int i = 0; i < analogDevice.Channels.Length; i++)
                     {
                         var analogChannel = analogDevice.Channels[i];
-                        state.mAnalogChannels[channelIndex].Values = analogChannel.Samples;
+                        state.analogChannels[channelIndex].Values = analogChannel.Samples;
                         channelIndex++;
                     }
                 }
@@ -528,12 +529,12 @@ namespace QualisysRealTime.Unity
                 foreach (var segmentData in cachedSkeletons[skeletonIndex].SegmentDataList)
                 {
                     Segment targetSegment;
-                    if (!state.mSkeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
+                    if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
                         continue;
 
                     targetSegment.Position = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
                     targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
-                    state.mSkeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
+                    state.skeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
                 }
             }
         }

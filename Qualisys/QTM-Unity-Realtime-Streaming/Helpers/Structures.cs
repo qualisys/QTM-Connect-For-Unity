@@ -9,7 +9,6 @@ namespace QualisysRealTime.Unity
         void CopyFrom(T source);
     }
 
-    // Class for 6DOF with unity data types
     public class SixDOFBody : ICopyFrom<SixDOFBody>
     {
         public SixDOFBody() { }
@@ -26,7 +25,6 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    // Class for labeled markers with unity data types
     public class LabeledMarker : ICopyFrom<LabeledMarker>
     {
         public LabeledMarker() { }
@@ -57,7 +55,6 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    // Class for user bones
     public class Bone : ICopyFrom<Bone>
     {
         public Bone() { }
@@ -69,14 +66,13 @@ namespace QualisysRealTime.Unity
         public void CopyFrom(Bone source)
         {
             From = source.From;
-            FromMarker?.CopyFrom(source.FromMarker);
+            FromMarker.CopyFrom(source.FromMarker);
             To = source.To;
             ToMarker.CopyFrom(source.ToMarker);
             Color = source.Color;
         }
     }
 
-    // Class for gaze vectors
     public class GazeVector : ICopyFrom<GazeVector>
     {
         public GazeVector() { }
@@ -145,7 +141,6 @@ namespace QualisysRealTime.Unity
                     TRotation = segment.TRotation
                 });
             }
-
         }
 
         public void CopyFrom(Skeleton source) 

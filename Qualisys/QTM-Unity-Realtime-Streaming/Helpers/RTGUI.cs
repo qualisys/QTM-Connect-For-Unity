@@ -75,7 +75,7 @@ namespace QualisysRealTime.Unity
             {
                 GUILayout.Label("(Unity needs to be in play mode to set server)");
             }
-            if (RTClient.GetInstance().ConnectionState != ConnectionState.Disconnected)
+            if (RTClient.GetInstance().ConnectionState != RTConnectionState.Disconnected)
             {
                 GUI.enabled = false;
             }
@@ -93,7 +93,7 @@ namespace QualisysRealTime.Unity
             {
                 GUILayout.Label("Status: " + connectionStatus);
 
-                if (RTClient.GetInstance().ConnectionState != ConnectionState.Disconnected)
+                if (RTClient.GetInstance().ConnectionState != RTConnectionState.Disconnected)
                 {
                     if (GUILayout.Button("Disconnect"))
                     {
@@ -154,7 +154,7 @@ namespace QualisysRealTime.Unity
                 RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             }
 
-            if (RTClient.GetInstance().ConnectionState != ConnectionState.Disconnected)
+            if (RTClient.GetInstance().ConnectionState != RTConnectionState.Disconnected)
             {
                 connectionStatus = "Connected";
             }

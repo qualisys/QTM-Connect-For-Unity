@@ -33,7 +33,7 @@ namespace QualisysRealTime.Unity
 
             GUI.Label(new Rect(20, 75, 200, 40), serverSelection[selectedServer], style);
 
-            if (Input.GetKeyDown(KeyCode.LeftArrow) && connectionState == ConnectionState.Disconnected)
+            if (Input.GetKeyDown(KeyCode.LeftArrow) && connectionState == RTConnectionState.Disconnected)
             {
                 selectedServer--;
                 if (selectedServer < 0)
@@ -41,7 +41,7 @@ namespace QualisysRealTime.Unity
                     selectedServer += serverSelection.Count;
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.RightArrow) && connectionState == ConnectionState.Disconnected)
+            else if (Input.GetKeyDown(KeyCode.RightArrow) && connectionState == RTConnectionState.Disconnected)
             {
                 selectedServer++;
                 if (selectedServer > serverSelection.Count - 1)
@@ -50,21 +50,21 @@ namespace QualisysRealTime.Unity
                 }
             }
             selectedDiscoveryResponse = discoveryResponses[selectedServer];
-            if (connectionState == ConnectionState.Connected)
+            if (connectionState == RTConnectionState.Connected)
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Disconnect"))
                 {
                     Disconnect();
                 }
             }
-            else if (connectionState == ConnectionState.Disconnected)
+            else if (connectionState == RTConnectionState.Disconnected)
             {
                 if (GUI.Button(new Rect(20, 115, 200, 40), "Connect"))
                 {
                     Connect();
                 }
             }
-            GUI.Label(new Rect(20, 90, 200, 40), $"Status: {RTClient.GetInstance().ConnectionState}");
+            GUI.Label(new Rect(20, 90, 200, 40), "Status: " + RTClient.GetInstance().ConnectionState);
         }
 
         void Disconnect()

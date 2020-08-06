@@ -4,22 +4,24 @@ using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 using System.Threading;
 
 namespace QualisysRealTime.Unity
 {
     public class RTClient : IDisposable
     {
-        private static RTClient mInstance;
-        private int previousFrame = -1;
-        private ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
-        private bool disposed = false;
+        static RTClient instance;
+        int previousFrame = -1;
+        ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
+        bool disposed = false;
+        RTStreamThread rtStreamThread = null;
+        string errorString = string.Empty;
+
         public List<SixDOFBody> Bodies { 
             get { 
                 return rtStreamThread == null 
                     ? new List<SixDOFBody>() 
-                    : rtStreamThread.readerThreadState.mBodies; 
+                    : rtStreamThread.ReaderThreadState.bodies; 
             }
         }
 
@@ -27,7 +29,7 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null 
                     ? new List<LabeledMarker>() 
-                    : rtStreamThread.readerThreadState.mMarkers; 
+                    : rtStreamThread.ReaderThreadState.markers; 
             }
         }
 
@@ -35,7 +37,7 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null 
                     ? new List<UnlabeledMarker>() 
-                    : rtStreamThread.readerThreadState.mUnlabeledMarkers; 
+                    : rtStreamThread.ReaderThreadState.unlabeledMarkers; 
             } 
         }
 
@@ -43,7 +45,7 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null 
                     ? new List<Bone>() 
-                    : rtStreamThread.readerThreadState.mBones; 
+                    : rtStreamThread.ReaderThreadState.bones; 
             } 
         }
 
@@ -51,7 +53,7 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null
                     ? new List<GazeVector>()
-                    : rtStreamThread.readerThreadState.mGazeVectors;
+                    : rtStreamThread.ReaderThreadState.gazeVectors;
             }
         }
 
@@ -59,7 +61,7 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null 
                     ? new List<AnalogChannel>() 
-                    : rtStreamThread.readerThreadState.mAnalogChannels; 
+                    : rtStreamThread.ReaderThreadState.analogChannels; 
             } 
         }
 
@@ -67,21 +69,19 @@ namespace QualisysRealTime.Unity
             get { 
                 return rtStreamThread == null 
                     ? new List<Skeleton>() 
-                    : rtStreamThread.readerThreadState.mSkeletons; 
+                    : rtStreamThread.ReaderThreadState.skeletons; 
             } 
         }
 
-        public ConnectionState ConnectionState
+        public RTConnectionState ConnectionState
         {
             get {
                 return rtStreamThread == null
-                    ? ConnectionState.Disconnected
-                    : rtStreamThread.readerThreadState.mConnectionState;
+                    ? RTConnectionState.Disconnected
+                    : rtStreamThread.ReaderThreadState.connectionState;
             }
         }
 
-        RTStreamThread rtStreamThread = null;
-    
         // Get frame number from latest packet
         public int GetFrame()
         {
@@ -89,7 +89,7 @@ namespace QualisysRealTime.Unity
             { 
                 return 0;
             }
-            return rtStreamThread.readerThreadState.mFrameNumber;
+            return rtStreamThread.ReaderThreadState.frameNumber;
         }
 
         public int GetFrequency()
@@ -98,19 +98,17 @@ namespace QualisysRealTime.Unity
             {
                 return 0;
             }
-            return rtStreamThread.readerThreadState.mFrequency;
+            return rtStreamThread.ReaderThreadState.frequency;
         }
 
         public static RTClient GetInstance()
         {
-            // Singleton method since we only want one instance (one connection to server)
-            if (mInstance == null)
+            if (instance == null)
             {
-                mInstance = new RTClient();
-                Application.quitting += mInstance.Dispose;
+                instance = new RTClient();
             }
             RTClientUpdater.AssertExistence();
-            return mInstance;
+            return instance;
         }
 
         public SixDOFBody GetBody(string name)
@@ -119,7 +117,7 @@ namespace QualisysRealTime.Unity
             {
                 return null;
             }
-            return rtStreamThread.readerThreadState.GetBody(name);
+            return rtStreamThread.ReaderThreadState.GetBody(name);
         }
 
         public Skeleton GetSkeleton(string name)
@@ -128,7 +126,7 @@ namespace QualisysRealTime.Unity
             {
                 return null;
             }
-            return rtStreamThread.readerThreadState.GetSkeleton(name);
+            return rtStreamThread.ReaderThreadState.GetSkeleton(name);
         }
 
         public LabeledMarker GetMarker(string name)
@@ -137,7 +135,7 @@ namespace QualisysRealTime.Unity
             {
                 return null;
             }
-            return rtStreamThread.readerThreadState.GetMarker(name);
+            return rtStreamThread.ReaderThreadState.GetMarker(name);
         }
 
         public UnlabeledMarker GetUnlabeledMarker(uint id)
@@ -146,7 +144,7 @@ namespace QualisysRealTime.Unity
             {
                 return null;
             }
-            return rtStreamThread.readerThreadState.GetUnlabeledMarker(id);
+            return rtStreamThread.ReaderThreadState.GetUnlabeledMarker(id);
         }
 
         public AnalogChannel GetAnalogChannel(string name)
@@ -155,7 +153,7 @@ namespace QualisysRealTime.Unity
             {
                 return null;
             }
-            return rtStreamThread.readerThreadState.GetAnalogChannel(name);
+            return rtStreamThread.ReaderThreadState.GetAnalogChannel(name);
         }
         public List<AnalogChannel> GetAnalogChannels(List<string> names)
         {
@@ -163,12 +161,12 @@ namespace QualisysRealTime.Unity
             {
                 return new List<AnalogChannel>();
             }
-            return rtStreamThread.readerThreadState.GetAnalogChannels(names);
+            return rtStreamThread.ReaderThreadState.GetAnalogChannels(names);
         }
 
         public bool GetStreamingStatus() 
         {
-            return ConnectionState == ConnectionState.Connected && rtStreamThread.readerThreadState.mStreaming;
+            return ConnectionState == RTConnectionState.Connected && rtStreamThread.ReaderThreadState.isStreaming;
         }
         /// <summary>
         /// Get list of servers available on network (always add localhost)
@@ -208,7 +206,7 @@ namespace QualisysRealTime.Unity
         [Obsolete("IsConnected is deprecated, use ConnectionState property instead.")]
         public bool IsConnected()
         {
-            return ConnectionState != ConnectionState.Disconnected;
+            return ConnectionState != RTConnectionState.Disconnected;
         }
 
         /// <summary>
@@ -224,6 +222,7 @@ namespace QualisysRealTime.Unity
         /// <param name="streamAnalog">if analog data should be streamed.</param>
         public void StartConnecting(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
+            errorString = string.Empty;
             if (rtStreamThread != null)
             {
                 rtStreamThread.Dispose();
@@ -246,18 +245,12 @@ namespace QualisysRealTime.Unity
         public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             StartConnecting(discoveryResponse.IpAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
-            while (ConnectionState == ConnectionState.Connecting)
+            while (ConnectionState == RTConnectionState.Connecting)
             {
-                if (!rtStreamThread.Update())
-                {
-                    Disconnect();
-                }
-                else 
-                {
-                    Thread.Sleep(TimeSpan.FromMilliseconds(200));
-                }
+                Thread.Sleep(TimeSpan.FromMilliseconds(200));
+                UpdateThread();
             }
-            return ConnectionState == ConnectionState.Connected;
+            return ConnectionState == RTConnectionState.Connected;
         }
 
         /// <summary>
@@ -274,7 +267,7 @@ namespace QualisysRealTime.Unity
         public bool Connect(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
         {
             StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
-            while (ConnectionState == ConnectionState.Connecting)
+            while (ConnectionState == RTConnectionState.Connecting)
             {
                 if (!rtStreamThread.Update())
                 {
@@ -285,36 +278,12 @@ namespace QualisysRealTime.Unity
                     Thread.Sleep(TimeSpan.FromMilliseconds(200));
                 }
             }
-            return ConnectionState == ConnectionState.Connected;
-        }
-
-        /// <summary>
-        /// Async method for connecting to QTM and start streaming
-        /// </summary>
-        /// <param name="ipAddress">IP address of the QTM host</param>
-        /// <param name="udpPort">UDP port streaming should occur on. -1 if TCP should be used</param>
-        /// <param name="stream6d">if 6DOF data should be streamed.</param>
-        /// <param name="stream3d">if labeled markers should be streamed.</param>
-        /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
-        /// <param name="streamGaze">if gaze vectors should be streamed.</param>
-        /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public async Task<bool> ConnectAsync(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton) 
-        {
-            StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
-            while (ConnectionState == ConnectionState.Connecting) 
-            {
-                //Relies on RTClientUpdater for updates.
-                await Task.Delay(TimeSpan.FromMilliseconds(200));
-            }
-            return ConnectionState == ConnectionState.Connected;
+            return ConnectionState == RTConnectionState.Connected;
         }
 
         public string GetErrorString()
         {
-            if (rtStreamThread == null)
-                return "";
-
-            return rtStreamThread.readerThreadState.mErrorString;
+            return errorString;
         }
 
         public void Update() 
@@ -329,12 +298,22 @@ namespace QualisysRealTime.Unity
                 previousFrame = frameNumber;
             }
 
-            if (ConnectionState != ConnectionState.Disconnected)
+            if (ConnectionState != RTConnectionState.Disconnected)
             {
-                if (!rtStreamThread.Update()) 
-                {
-                    Disconnect();
-                }
+                UpdateThread();
+            }
+        }
+
+        void UpdateThread() 
+        {
+            bool result = rtStreamThread.Update();
+            if (!string.IsNullOrEmpty(rtStreamThread.ReaderThreadState.errorString) == false) 
+            {
+                errorString = rtStreamThread.ReaderThreadState.errorString;
+            }
+            if (!result)
+            {
+                Disconnect();
             }
         }
 
@@ -351,13 +330,9 @@ namespace QualisysRealTime.Unity
         {
             if (!disposed)
             {
-                Application.quitting -= Dispose;
-                if (rtStreamThread != null)
-                {
-                    rtStreamThread.Dispose();
-                    rtStreamThread = null;
-                }
+                Disconnect();
                 disposed = true;
+                instance = null;
             }
         }
         

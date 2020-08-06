@@ -1,6 +1,6 @@
 ﻿namespace QualisysRealTime.Unity
 {
-    public enum ConnectionState 
+    public enum RTConnectionState 
     { 
         Connecting,
         Connected,
