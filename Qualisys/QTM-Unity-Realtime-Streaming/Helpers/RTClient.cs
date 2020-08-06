@@ -307,7 +307,7 @@ namespace QualisysRealTime.Unity
         void UpdateThread() 
         {
             bool result = rtStreamThread.Update();
-            if (!string.IsNullOrEmpty(rtStreamThread.ReaderThreadState.errorString) == false) 
+            if (!string.IsNullOrEmpty(rtStreamThread.ReaderThreadState.errorString)) 
             {
                 errorString = rtStreamThread.ReaderThreadState.errorString;
             }
