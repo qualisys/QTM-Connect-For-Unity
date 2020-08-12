@@ -15,9 +15,13 @@ namespace QualisysRealTime.Unity
         private Avatar mSourceAvatar;
         public Avatar DestinationAvatar;
 
+        public bool useMecanim = true;
+
         private HumanPose mHumanPose = new HumanPose();
         private GameObject mStreamedRootObject;
+        private GameObject mStreamedRootObjectCustom;
         private Dictionary<uint, GameObject> mQTmSegmentIdToGameObject;
+        private Dictionary<uint, GameObject> mQTmSegmentIdToGameObjectCustom;
         private Dictionary<string, string> mMecanimToQtmSegmentNames = new Dictionary<string, string>();
 
         private HumanPoseHandler mSourcePoseHandler;
@@ -25,11 +29,74 @@ namespace QualisysRealTime.Unity
 
         protected RTClient rtClient;
         private Skeleton mQtmSkeletonCache;
+        private Skeleton mQtmSkeletonCacheCustom;
 
-        void Update()
+        private void UpdateCustom()
         {
+
             if (rtClient == null) rtClient = RTClient.GetInstance();
-            
+
+            var skeleton = rtClient.GetSkeletonCustom(SkeletonName);
+
+            if (mQtmSkeletonCacheCustom != skeleton)
+            {
+                mQtmSkeletonCacheCustom = skeleton;
+
+                if (mQtmSkeletonCacheCustom == null)
+                    return;
+
+                // User defined avatar/skeleton
+                mStreamedRootObjectCustom = null;
+
+                mQTmSegmentIdToGameObjectCustom = new Dictionary<uint, GameObject>(mQtmSkeletonCacheCustom.Segments.Count);
+
+                foreach (var segment in mQtmSkeletonCacheCustom.Segments.ToList())
+                {
+                    //print(segment.Value.Name);
+                    var gameObject = GameObject.Find(this.SkeletonName + ":" + segment.Value.Name);
+                    if (!gameObject)
+                        print("Didn't Find " + this.SkeletonName + ":" + segment.Value.Name);
+                    else
+                    {
+                        //print("Found " + this.SkeletonName + ":" + segment.Value.Name);
+                        // First one is assumed to be the root
+                        if (mStreamedRootObjectCustom == null)
+                            mStreamedRootObjectCustom = gameObject;
+
+                        mQTmSegmentIdToGameObjectCustom[segment.Value.Id] = gameObject;
+                    }
+                }
+
+                if (mStreamedRootObjectCustom)
+                {
+                    mStreamedRootObjectCustom.transform.SetParent(this.transform, false);
+                    //mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
+                }
+
+                return;
+            }
+
+            if (mQtmSkeletonCacheCustom == null)
+                return;
+
+            // Update all the game objects
+            foreach (var segment in mQtmSkeletonCacheCustom.Segments.ToList())
+            {
+                GameObject gameObject;
+                if (mQTmSegmentIdToGameObjectCustom.TryGetValue(segment.Key, out gameObject))
+                {
+                    gameObject.transform.localPosition = segment.Value.Position;
+                    gameObject.transform.localRotation = segment.Value.Rotation;
+                }
+            }
+        }
+
+   
+        private void UpdateMecanim()
+        {
+
+            if (rtClient == null) rtClient = RTClient.GetInstance();
+
             var skeleton = rtClient.GetSkeleton(SkeletonName);
 
             if (mQtmSkeletonCache != skeleton)
@@ -39,27 +106,29 @@ namespace QualisysRealTime.Unity
                 if (mQtmSkeletonCache == null)
                     return;
 
-                CreateMecanimToQtmSegmentNames(SkeletonName);
+                    // Using QAvatar with Mechanim, original approach
+                    CreateMecanimToQtmSegmentNames(SkeletonName);
 
-                if(mStreamedRootObject != null)
-                    GameObject.Destroy(mStreamedRootObject);
-                
-                mStreamedRootObject = new GameObject(this.SkeletonName);
+                    if (mStreamedRootObject != null)
+                        GameObject.Destroy(mStreamedRootObject);
 
-                mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
+                    mStreamedRootObject = new GameObject(this.SkeletonName);
 
-                foreach (var segment in mQtmSkeletonCache.Segments.ToList())
-                {
-                    var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
-                    gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
-                    gameObject.transform.localPosition = segment.Value.TPosition;
-                    mQTmSegmentIdToGameObject[segment.Value.Id] = gameObject;
-                }
+                    mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
 
-                BuildMecanimAvatarFromQtmTPose();
+                    foreach (var segment in mQtmSkeletonCache.Segments.ToList())
+                    {
+                        var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
+                        gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
+                        gameObject.transform.localPosition = segment.Value.TPosition;
+                        mQTmSegmentIdToGameObject[segment.Value.Id] = gameObject;
+                    }
 
-                mStreamedRootObject.transform.SetParent(this.transform, false);
-                mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
+                    BuildMecanimAvatarFromQtmTPose();
+
+                    mStreamedRootObject.transform.SetParent(this.transform, false);
+                    mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
+
                 return;
             }
 
@@ -83,12 +152,21 @@ namespace QualisysRealTime.Unity
             }
         }
 
+        void Update()
+        {
+            if (useMecanim)
+                UpdateMecanim();
+            else
+                UpdateCustom();
+        }
+
         private void BuildMecanimAvatarFromQtmTPose()
         {
             var humanBones = new List<HumanBone>(mQtmSkeletonCache.Segments.Count);
             for (int index = 0; index < HumanTrait.BoneName.Length; index++)
             {
                 var humanBoneName = HumanTrait.BoneName[index];
+                //print (humanBoneName);
                 if (mMecanimToQtmSegmentNames.ContainsKey(humanBoneName))
                 {
                     var bone = new HumanBone()

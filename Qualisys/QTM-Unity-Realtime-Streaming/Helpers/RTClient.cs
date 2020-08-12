@@ -40,6 +40,8 @@ namespace QualisysRealTime.Unity
         private List<Skeleton> mSkeletons;
         public List<Skeleton> Skeletons { get { return mSkeletons; } }
 
+        private List<Skeleton> mSkeletonsCustom;
+        public List<Skeleton> SkeletonsCustom { get { return mSkeletonsCustom; } }
 
         private Axis mUpAxis;
         private Quaternion mCoordinateSystemChange;
@@ -63,16 +65,26 @@ namespace QualisysRealTime.Unity
                     //Set rotation and position to work with unity
                     position /= 1000;
 
-                    mBodies[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    mBodies[i].Position.z *= -1;
+                    //mBodies[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    //mBodies[i].Position.z *= -1;
+                    mBodies[i].Position.x = -position.x;
+                    mBodies[i].Position.y = position.z;
+                    mBodies[i].Position.z = -position.y;
 
-                    mBodies[i].Rotation = mCoordinateSystemChange * QuaternionHelper.FromMatrix(bodyData[i].Matrix);
-                    mBodies[i].Rotation.z *= -1;
-                    mBodies[i].Rotation.w *= -1;
+                    //mBodies[i].Rotation = mCoordinateSystemChange * QuaternionHelper.FromMatrix(bodyData[i].Matrix);
+                    //mBodies[i].Rotation.z *= -1;
+                    //mBodies[i].Rotation.w *= -1;             
+                    //mBodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
+                    //mBodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
 
-                    mBodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                    mBodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
-
+                    // Global axis rotation in addition to RH to LH conversion (assume Z-up to Y-up)
+                    mBodies[i].Rotation = new Quaternion(0, 0, 0, 1);
+                    mBodies[i].Rotation *= Quaternion.Euler(-90, 0, 0);
+                    Quaternion qt = new Quaternion(0, 0, 0, 1);
+                    qt *= QuaternionHelper.FromMatrix(bodyData[i].Matrix);
+                    qt.x *= -1;
+                    qt.w *= -1;
+                    mBodies[i].Rotation *= qt;
                 }
             }
 
@@ -87,8 +99,11 @@ namespace QualisysRealTime.Unity
 
                     position /= 1000;
 
-                    mMarkers[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    mMarkers[i].Position.z *= -1;
+                    //mMarkers[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    //mMarkers[i].Position.z *= -1;
+                    mMarkers[i].Position.x = -position.x;
+                    mMarkers[i].Position.y = position.z;
+                    mMarkers[i].Position.z = -position.y;
                     mMarkers[i].Residual = labeledMarkerData[i].Residual;
                 }
             }
@@ -106,8 +121,11 @@ namespace QualisysRealTime.Unity
 
                     position /= 1000;
 
-                    unlabeledMarker.Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    unlabeledMarker.Position.z *= -1;
+                    //unlabeledMarker.Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    //unlabeledMarker.Position.z *= -1;
+                    unlabeledMarker.Position.x = -position.x;
+                    unlabeledMarker.Position.y = position.z;
+                    unlabeledMarker.Position.z = -position.y;
                     unlabeledMarker.Residual = unlabeledMarkerData[i].Residual;
                     unlabeledMarker.Id = unlabeledMarkerData[i].Id;
                     mUnlabeledMarkers.Add(unlabeledMarker);
@@ -123,13 +141,18 @@ namespace QualisysRealTime.Unity
 
                     Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
                     position /= 1000;
-                    mGazeVectors[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    mGazeVectors[i].Position.z *= -1;
+                    //mGazeVectors[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
+                    //mGazeVectors[i].Position.z *= -1;
+                    mGazeVectors[i].Position.x = -position.x;
+                    mGazeVectors[i].Position.y = position.z;
+                    mGazeVectors[i].Position.z = -position.y;
 
                     Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
-                    mGazeVectors[i].Direction = QuaternionHelper.Rotate(mCoordinateSystemChange, direction);
-                    mGazeVectors[i].Direction.z *= -1;
-
+                    //mGazeVectors[i].Direction = QuaternionHelper.Rotate(mCoordinateSystemChange, direction);
+                    //mGazeVectors[i].Direction.z *= -1;
+                    mGazeVectors[i].Direction.x = -direction.x;
+                    mGazeVectors[i].Direction.y = direction.z;
+                    mGazeVectors[i].Direction.z = -direction.y;
                 }
             }
 
@@ -151,19 +174,52 @@ namespace QualisysRealTime.Unity
             var skeletonData = packet.GetSkeletonData();
             if (skeletonData != null)
             {
+
+                
                 for (int skeletonIndex = 0; skeletonIndex < skeletonData.Count; skeletonIndex++)
                 {
                     foreach (var segmentData in skeletonData[skeletonIndex].SegmentDataList)
                     {
                         Segment targetSegment;
-                        if (!mSkeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
-                            continue;
+                        if (mSkeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
+                        {
+                            // Classic QAvatar with Z to Y local rotations
+                            targetSegment.Position = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
+                            targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
+                            mSkeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
+                        }
 
-                        targetSegment.Position = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
-                        targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
-                        mSkeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
+                        if (mSkeletonsCustom[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
+                        {
+                            //
+                            // For working with a User defined skeleton, only do RH to LH conversion
+                            //
+
+                            targetSegment.Position = new Vector3(-segmentData.Position.X / 1000, segmentData.Position.Y / 1000, segmentData.Position.Z / 1000);
+
+                            if (targetSegment.ParentId == 0)
+                            {
+                                //Root gets global Z to Y rotation.  Do translation and rotation separately
+                                targetSegment.Position = new Vector3(-segmentData.Position.X / 1000, segmentData.Position.Z / 1000, -segmentData.Position.Y / 1000);
+                                targetSegment.Rotation = new Quaternion(0, 0, 0, 1);
+                                targetSegment.Rotation *= Quaternion.Euler(-90, 0, 0);
+                                //targetSegment.Rotation *= Quaternion.Euler(0, 0, 0);
+                                targetSegment.Rotation *= new Quaternion(-segmentData.Rotation.X, segmentData.Rotation.Y, segmentData.Rotation.Z, -segmentData.Rotation.W);
+                                //Debug.Log("QTM Root Quaternion is  X:" + segmentData.Rotation.X.ToString() + " Y:" + segmentData.Rotation.Y.ToString() + " Z:" + segmentData.Rotation.Z.ToString() + " W:" + segmentData.Rotation.W.ToString());
+                                //Debug.Log("LH  Root Quaternion is  X:" + targetSegment.Rotation.x.ToString() + " Y:" + targetSegment.Rotation.y.ToString() + " Z:" + targetSegment.Rotation.z.ToString() + " W:" + targetSegment.Rotation.w.ToString());
+                            }
+                            else
+                            {
+                                targetSegment.Position = new Vector3(-segmentData.Position.X / 1000, segmentData.Position.Y / 1000, segmentData.Position.Z / 1000);
+                                targetSegment.Rotation = new Quaternion(-segmentData.Rotation.X, segmentData.Rotation.Y, segmentData.Rotation.Z, -segmentData.Rotation.W);
+                            }
+                            mSkeletonsCustom[skeletonIndex].Segments[segmentData.Id] = targetSegment;
+
+                        }
                     }
+
                 }
+                
             }
         }
 
@@ -220,7 +276,7 @@ namespace QualisysRealTime.Unity
             mGazeVectors = new List<GazeVector>();
             mAnalogChannels = new List<AnalogChannel>();
             mSkeletons = new List<Skeleton>();
-
+            mSkeletonsCustom = new List<Skeleton>();
             mStreamingStatus = false;
             mPacket = RTPacket.ErrorPacket;
         }
@@ -262,6 +318,21 @@ namespace QualisysRealTime.Unity
                 return null;
 
             foreach (var skeleton in Skeletons)
+            {
+                if (skeleton.Name == name)
+                {
+                    return skeleton;
+                }
+            }
+            return null;
+
+        }
+        public Skeleton GetSkeletonCustom(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            foreach (var skeleton in SkeletonsCustom)
             {
                 if (skeleton.Name == name)
                 {
@@ -514,6 +585,8 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
+        // Build two skeletons in parallel.  The traditional one for use with Mecanim
+        // The other with custom, user defined, Avatars.
         private bool GetSkeletonSettings()
         {
             bool getStatus = mProtocol.GetSkeletonSettings();
@@ -521,28 +594,50 @@ namespace QualisysRealTime.Unity
                 return false;
 
             mSkeletons.Clear();
+            mSkeletonsCustom.Clear();
             var skeletonSettings = mProtocol.SkeletonSettingsCollection;
             foreach (var settingSkeleton in skeletonSettings.SettingSkeletonList)
             {
                 Skeleton skeleton = new Skeleton();
+                Skeleton skeletonCustom = new Skeleton();
+
                 skeleton.Name = settingSkeleton.Name;
+                skeletonCustom.Name = settingSkeleton.Name;
+
                 foreach (var settingSegment in settingSkeleton.SettingSegmentList)
                 {
                     var segment = new Segment();
+                    var segmentCustom = new Segment();
                     segment.Name = settingSegment.Name;
                     segment.Id = settingSegment.Id;
                     segment.ParentId = settingSegment.ParentId;
+                    segmentCustom.Name = settingSegment.Name;
+                    segmentCustom.Id = settingSegment.Id;
+                    segmentCustom.ParentId = settingSegment.ParentId;
 
-                    // Set rotation and position to work with unity
+
+                    // Set rotation and position to work with unity - old QAvatar
+                    // For use with Mecanim
                     segment.TPosition = new Vector3(settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
                     segment.TRotation = new Quaternion(settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
+                    //Debug.Log(segment.Name+" TRotation"+segment.TRotation.eulerAngles.ToString());
+
+
+                    // Set rotation and position to work with unity - User defined avatar
+                    segmentCustom.TPosition = new Vector3(-settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
+                    segmentCustom.TRotation = new Quaternion(-settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
+
 
                     skeleton.Segments.Add(segment.Id, segment);
+                    skeletonCustom.Segments.Add(segmentCustom.Id, segmentCustom);
                 }
                 mSkeletons.Add(skeleton);
+                mSkeletonsCustom.Add(skeletonCustom);
             }
             return true;
         }
+
+
 
         private bool Get3DSettings()
         {
@@ -711,5 +806,6 @@ namespace QualisysRealTime.Unity
         }
 
         private bool disposed = false;
+
     }
 }
