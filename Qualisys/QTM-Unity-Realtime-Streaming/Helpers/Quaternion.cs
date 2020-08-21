@@ -1,9 +1,5 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace QualisysRealTime.Unity

@@ -48,7 +48,7 @@ namespace QualisysRealTime.Unity
 
                 mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
 
-                foreach (var segment in mQtmSkeletonCache.Segments.ToList())
+                foreach (var segment in mQtmSkeletonCache.Segments)
                 {
                     var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
                     gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
@@ -67,7 +67,7 @@ namespace QualisysRealTime.Unity
                 return;
 
             // Update all the game objects
-            foreach (var segment in mQtmSkeletonCache.Segments.ToList())
+            foreach (var segment in mQtmSkeletonCache.Segments)
             {
                 GameObject gameObject;
                 if (mQTmSegmentIdToGameObject.TryGetValue(segment.Key, out gameObject))

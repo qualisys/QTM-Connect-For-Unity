@@ -1265,6 +1265,23 @@ namespace QTMRealTimeSDK.Data
             }
         }
 
+
+        /// <summary>
+        /// Get 3D marker data
+        /// </summary>
+        public void Get3DMarkerResidualData(List<Q3D> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = m3DMarkerResidualData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(m3DMarkerResidualData[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// Get 3D marker data at index
         /// </summary>
@@ -1305,6 +1322,23 @@ namespace QTMRealTimeSDK.Data
 
 
         /// <summary>
+        /// Get unidentified 3D marker data
+        /// </summary>
+        public void Get3DMarkerNoLabelsResidualData(List<Q3D> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = m3DMarkerNoLabelResidualData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(m3DMarkerNoLabelResidualData[i]);
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Get unidentified 3D marker data at index
         /// </summary>
         /// <param name="index">index to get data from.</param>
@@ -1340,6 +1374,23 @@ namespace QTMRealTimeSDK.Data
                 return m6DOFData.ToList();
             }
         }
+
+        /// <summary>
+        /// Get all samples from all analog devices
+        /// </summary>
+        public void Get6DOFData(List<Q6DOF> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = m6DOFData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(m6DOFData[i]);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Get 6DOF data of body at index
@@ -1442,6 +1493,22 @@ namespace QTMRealTimeSDK.Data
         }
 
         /// <summary>
+        /// Get all samples from all analog devices
+        /// </summary>
+        public void GetAnalogData(List<Analog> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = mAnalogData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(mAnalogData[i]);
+                }
+            }
+        }
+
+        /// <summary>
         /// Get all samples from analog device at index
         /// </summary>
         /// <param name="index">index to get data from.</param>
@@ -1488,6 +1555,22 @@ namespace QTMRealTimeSDK.Data
             lock (packetLock)
             {
                 return mForcePlateData.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Get samples from all force plates
+        /// </summary>
+        public void GetForceData(List<ForcePlate> output)
+        {
+            mForcePlateData.Clear();
+            lock (packetLock)
+            {
+                int c = mForcePlateData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(mForcePlateData[i]);
+                }
             }
         }
 
@@ -1603,6 +1686,24 @@ namespace QTMRealTimeSDK.Data
                 return mGazeVectorData.ToList();
             }
         }
+
+        /// <summary>
+        /// Get gaze vectors from all cameras
+        /// </summary>
+        /// <returns>list of all images</returns>
+        public void GetGazeVectorData(List<GazeVector> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = mGazeVectorData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(mGazeVectorData[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// Get gaze vector data from cameras at index
         /// </summary>
@@ -1627,6 +1728,24 @@ namespace QTMRealTimeSDK.Data
                 return mSkeletonData.ToList();
             }
         }
+
+        /// <summary>
+        /// Get skeleton from all cameras
+        /// </summary>
+        /// <returns>list of all images</returns>
+        public void GetSkeletonData(List<SkeletonData> output)
+        {
+            output.Clear();
+            lock (packetLock)
+            {
+                int c = mSkeletonData.Count;
+                for (int i = 0; i < c; ++i)
+                {
+                    output.Add(mSkeletonData[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// Get skeleton data from cameras at index
         /// </summary>

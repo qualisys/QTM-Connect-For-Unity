@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using QualisysRealTime.Unity;
-using QTMRealTimeSDK.Data;
 using QTMRealTimeSDK;
-using QTMRealTimeSDK.Network;
 
 public class CreateScrollList : MonoBehaviour {
 

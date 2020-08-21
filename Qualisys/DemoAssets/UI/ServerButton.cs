@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using QTMRealTimeSDK.Data;
 using QualisysRealTime.Unity;
 using QTMRealTimeSDK;
+using System.Collections;
 
 [System.Serializable]
 public class ServerButton : MonoBehaviour
@@ -18,18 +18,32 @@ public class ServerButton : MonoBehaviour
         transform.localRotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(new UnityEngine.Events.UnityAction(Connect));
+        button.onClick.AddListener(new UnityEngine.Events.UnityAction(OnClick));
     }
-    void Connect()
+    void OnClick()
     {
-        if (!RTClient.GetInstance().Connect(response, response.Port, true, true, false, true, false, true))
+        StartCoroutine(Connect());
+    }
+
+    IEnumerator Connect()
+    {
+        RTClient.GetInstance().StartConnecting(response.IpAddress, -1, true, true, false, true, false, true);
+        InfoText.color = Color.yellow;
+        InfoText.text = "Connecting ...";
+        
+        while (RTClient.GetInstance().ConnectionState == RTConnectionState.Connecting) 
         {
-            InfoText.color = Color.red;
-            InfoText.text = "Could not connect to this server";
+            yield return null;
+        }
+        
+        if (RTClient.GetInstance().ConnectionState == RTConnectionState.Connected)
+        {
+            SendMessageUpwards("Disable");
         }
         else
         {
-            SendMessageUpwards("Disable");
+            InfoText.color = Color.red;
+            InfoText.text = "Could not connect to this server";
         }
     }
 }
