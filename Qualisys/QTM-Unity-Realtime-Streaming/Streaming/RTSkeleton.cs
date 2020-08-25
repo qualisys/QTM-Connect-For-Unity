@@ -36,7 +36,7 @@ namespace QualisysRealTime.Unity
 
             if (rtClient == null) rtClient = RTClient.GetInstance();
 
-            var skeleton = rtClient.GetSkeletonCustom(SkeletonName);
+            var skeleton = rtClient.GetSkeleton(SkeletonName);
 
             if (mQtmSkeletonCacheCustom != skeleton)
             {
@@ -85,8 +85,25 @@ namespace QualisysRealTime.Unity
                 GameObject gameObject;
                 if (mQTmSegmentIdToGameObjectCustom.TryGetValue(segment.Key, out gameObject))
                 {
-                    gameObject.transform.localPosition = segment.Value.Position;
-                    gameObject.transform.localRotation = segment.Value.Rotation;
+                    Vector3 Position;
+                    Quaternion Rotation;
+
+                    if (segment.Value.ParentId == 0)
+                    {
+                        Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, -segment.Value.Position.y / 1000);
+                        Rotation = new Quaternion(0, 0, 0, 1);
+                        //Rotation *= Quaternion.Euler(-90, 0, 0);
+                        Rotation *= rtClient.CoordinateSystemChange;
+                        Rotation *= new Quaternion(-segment.Value.Rotation.x, segment.Value.Rotation.y, segment.Value.Rotation.z, -segment.Value.Rotation.w);
+                    }
+                    else
+                    {
+                        Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.y / 1000, segment.Value.Position.z / 1000);
+                        Rotation = new Quaternion(-segment.Value.Rotation.x, segment.Value.Rotation.y, segment.Value.Rotation.z, -segment.Value.Rotation.w);
+                    }
+
+                    gameObject.transform.localPosition = Position;
+                    gameObject.transform.localRotation = Rotation;
                 }
             }
         }
@@ -141,8 +158,13 @@ namespace QualisysRealTime.Unity
                 GameObject gameObject;
                 if (mQTmSegmentIdToGameObject.TryGetValue(segment.Key, out gameObject))
                 {
-                    gameObject.transform.localPosition = segment.Value.Position;
-                    gameObject.transform.localRotation = segment.Value.Rotation;
+                    Vector3 Position;
+                    Quaternion Rotation;
+                    Position = new Vector3(segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, segment.Value.Position.y / 1000);
+                    Rotation = new Quaternion(segment.Value.Rotation.x, segment.Value.Rotation.z, segment.Value.Rotation.y, -segment.Value.Rotation.w);
+
+                    gameObject.transform.localPosition = Position;
+                    gameObject.transform.localRotation = Rotation;
                 }
             }
             if (mSourcePoseHandler != null && mDestiationPoseHandler != null)
