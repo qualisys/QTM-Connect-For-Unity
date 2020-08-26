@@ -52,13 +52,11 @@ namespace QualisysRealTime.Unity
 
                 foreach (var segment in mQtmSkeletonCacheCustom.Segments.ToList())
                 {
-                    //print(segment.Value.Name);
                     var gameObject = GameObject.Find(this.SkeletonName + ":" + segment.Value.Name);
                     if (!gameObject)
                         print("Didn't Find " + this.SkeletonName + ":" + segment.Value.Name);
                     else
                     {
-                        //print("Found " + this.SkeletonName + ":" + segment.Value.Name);
                         // First one is assumed to be the root
                         if (mStreamedRootObjectCustom == null)
                             mStreamedRootObjectCustom = gameObject;
@@ -70,7 +68,6 @@ namespace QualisysRealTime.Unity
                 if (mStreamedRootObjectCustom)
                 {
                     mStreamedRootObjectCustom.transform.SetParent(this.transform, false);
-                    //mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
                 }
 
                 return;
@@ -92,7 +89,6 @@ namespace QualisysRealTime.Unity
                     {
                         Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, -segment.Value.Position.y / 1000);
                         Rotation = new Quaternion(0, 0, 0, 1);
-                        //Rotation *= Quaternion.Euler(-90, 0, 0);
                         Rotation *= rtClient.CoordinateSystemChange;
                         Rotation *= new Quaternion(-segment.Value.Rotation.x, segment.Value.Rotation.y, segment.Value.Rotation.z, -segment.Value.Rotation.w);
                     }
@@ -188,7 +184,6 @@ namespace QualisysRealTime.Unity
             for (int index = 0; index < HumanTrait.BoneName.Length; index++)
             {
                 var humanBoneName = HumanTrait.BoneName[index];
-                //print (humanBoneName);
                 if (mMecanimToQtmSegmentNames.ContainsKey(humanBoneName))
                 {
                     var bone = new HumanBone()

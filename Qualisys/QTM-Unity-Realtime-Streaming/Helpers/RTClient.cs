@@ -64,21 +64,11 @@ namespace QualisysRealTime.Unity
                     //Set rotation and position to work with unity
                     position /= 1000;
 
-                    //mBodies[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    //mBodies[i].Position.z *= -1;
                     mBodies[i].Position.x = -position.x;
                     mBodies[i].Position.y = position.z;
                     mBodies[i].Position.z = -position.y;
 
-                    //mBodies[i].Rotation = mCoordinateSystemChange * QuaternionHelper.FromMatrix(bodyData[i].Matrix);
-                    //mBodies[i].Rotation.z *= -1;
-                    //mBodies[i].Rotation.w *= -1;             
-                    //mBodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                    //mBodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
-
-                    // Global axis rotation in addition to RH to LH conversion (assume Z-up to Y-up)
-                    //mBodies[i].Rotation = new Quaternion(0, 0, 0, 1);
-                    //mBodies[i].Rotation *= Quaternion.Euler(-90, 0, 0);
+  
                     mBodies[i].Rotation = CoordinateSystemChange;
                     Quaternion qt = new Quaternion(0, 0, 0, 1);
                     qt *= QuaternionHelper.FromMatrix(bodyData[i].Matrix);
@@ -99,8 +89,6 @@ namespace QualisysRealTime.Unity
 
                     position /= 1000;
 
-                    //mMarkers[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    //mMarkers[i].Position.z *= -1;
                     mMarkers[i].Position.x = -position.x;
                     mMarkers[i].Position.y = position.z;
                     mMarkers[i].Position.z = -position.y;
@@ -121,8 +109,6 @@ namespace QualisysRealTime.Unity
 
                     position /= 1000;
 
-                    //unlabeledMarker.Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    //unlabeledMarker.Position.z *= -1;
                     unlabeledMarker.Position.x = -position.x;
                     unlabeledMarker.Position.y = position.z;
                     unlabeledMarker.Position.z = -position.y;
@@ -141,15 +127,11 @@ namespace QualisysRealTime.Unity
 
                     Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
                     position /= 1000;
-                    //mGazeVectors[i].Position = QuaternionHelper.Rotate(mCoordinateSystemChange, position);
-                    //mGazeVectors[i].Position.z *= -1;
                     mGazeVectors[i].Position.x = -position.x;
                     mGazeVectors[i].Position.y = position.z;
                     mGazeVectors[i].Position.z = -position.y;
 
                     Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
-                    //mGazeVectors[i].Direction = QuaternionHelper.Rotate(mCoordinateSystemChange, direction);
-                    //mGazeVectors[i].Direction.z *= -1;
                     mGazeVectors[i].Direction.x = -direction.x;
                     mGazeVectors[i].Direction.y = direction.z;
                     mGazeVectors[i].Direction.z = -direction.y;
@@ -585,10 +567,6 @@ namespace QualisysRealTime.Unity
             {
                 mUpAxis = mProtocol.Settings3D.AxisUpwards;
 
-                //Rotation.ECoordinateAxes xAxis, yAxis, zAxis;
-                //Rotation.GetCalibrationAxesOrder(mUpAxis, out xAxis, out yAxis, out zAxis);
-
-                //mCoordinateSystemChange = Rotation.GetAxesOrderRotation(xAxis, yAxis, zAxis);
                 mCoordinateSystemChange = Rotation.GetCoordinateSystemRotation(mUpAxis);
 
                 // Save marker settings
