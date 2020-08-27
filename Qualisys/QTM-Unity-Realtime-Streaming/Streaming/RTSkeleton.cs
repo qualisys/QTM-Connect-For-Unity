@@ -87,7 +87,10 @@ namespace QualisysRealTime.Unity
 
                     if (segment.Value.ParentId == 0)
                     {
-                        Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, -segment.Value.Position.y / 1000);
+                        //Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, -segment.Value.Position.y / 1000);
+                        Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.y / 1000, segment.Value.Position.z / 1000);
+                        Position = rtClient.CoordinateSystemChange.Rotate(Position);
+
                         Rotation = new Quaternion(0, 0, 0, 1);
                         Rotation *= rtClient.CoordinateSystemChange;
                         Rotation *= new Quaternion(-segment.Value.Rotation.x, segment.Value.Rotation.y, segment.Value.Rotation.z, -segment.Value.Rotation.w);

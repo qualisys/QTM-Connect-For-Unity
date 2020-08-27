@@ -63,12 +63,13 @@ namespace QualisysRealTime.Unity
 
                     //Set rotation and position to work with unity
                     position /= 1000;
+                    position.x *= -1;
+                    position = CoordinateSystemChange.Rotate(position);
 
-                    mBodies[i].Position.x = -position.x;
-                    mBodies[i].Position.y = position.z;
-                    mBodies[i].Position.z = -position.y;
+                    mBodies[i].Position.x = position.x;
+                    mBodies[i].Position.y = position.y;
+                    mBodies[i].Position.z = position.z;
 
-  
                     mBodies[i].Rotation = CoordinateSystemChange;
                     Quaternion qt = new Quaternion(0, 0, 0, 1);
                     qt *= QuaternionHelper.FromMatrix(bodyData[i].Matrix);
@@ -88,10 +89,12 @@ namespace QualisysRealTime.Unity
                     Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
 
                     position /= 1000;
+                    position.x *= -1;
+                    position = CoordinateSystemChange.Rotate(position);
 
-                    mMarkers[i].Position.x = -position.x;
-                    mMarkers[i].Position.y = position.z;
-                    mMarkers[i].Position.z = -position.y;
+                    mMarkers[i].Position.x = position.x;
+                    mMarkers[i].Position.y = position.y;
+                    mMarkers[i].Position.z = position.z;
                     mMarkers[i].Residual = labeledMarkerData[i].Residual;
                 }
             }
@@ -108,10 +111,12 @@ namespace QualisysRealTime.Unity
                     Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
 
                     position /= 1000;
+                    position.x *= -1;
+                    position = CoordinateSystemChange.Rotate(position);
 
-                    unlabeledMarker.Position.x = -position.x;
-                    unlabeledMarker.Position.y = position.z;
-                    unlabeledMarker.Position.z = -position.y;
+                    unlabeledMarker.Position.x = position.x;
+                    unlabeledMarker.Position.y = position.y;
+                    unlabeledMarker.Position.z = position.z;
                     unlabeledMarker.Residual = unlabeledMarkerData[i].Residual;
                     unlabeledMarker.Id = unlabeledMarkerData[i].Id;
                     mUnlabeledMarkers.Add(unlabeledMarker);
@@ -127,14 +132,19 @@ namespace QualisysRealTime.Unity
 
                     Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
                     position /= 1000;
-                    mGazeVectors[i].Position.x = -position.x;
-                    mGazeVectors[i].Position.y = position.z;
-                    mGazeVectors[i].Position.z = -position.y;
+                    position.x *= -1;
+                    position = CoordinateSystemChange.Rotate(position);
+
+                    mGazeVectors[i].Position.x = position.x;
+                    mGazeVectors[i].Position.y = position.y;
+                    mGazeVectors[i].Position.z = position.z;
 
                     Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
-                    mGazeVectors[i].Direction.x = -direction.x;
-                    mGazeVectors[i].Direction.y = direction.z;
-                    mGazeVectors[i].Direction.z = -direction.y;
+                    direction.x *= -1;
+                    direction = CoordinateSystemChange.Rotate(direction);
+                    mGazeVectors[i].Direction.x = direction.x;
+                    mGazeVectors[i].Direction.y = direction.y;
+                    mGazeVectors[i].Direction.z = direction.z;
                 }
             }
 
