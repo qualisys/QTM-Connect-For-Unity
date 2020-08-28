@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity
             switch (axisUp)
             {
                 case Axis.XAxisUpwards:
-                    retval = Quaternion.Euler(0, 0, 90);
+                    retval = Quaternion.Euler(0, 0, -90);
                     break;
                 case Axis.YAxisUpwards:
                     retval = Quaternion.Euler(0, 0, 0);
@@ -34,7 +34,7 @@ namespace QualisysRealTime.Unity
                     retval = Quaternion.Euler(-90, 0, 0);
                     break;
                 case Axis.XAxisDownwards:
-                    retval = Quaternion.Euler(0, 0, -90);
+                    retval = Quaternion.Euler(0, 0, 90);
                     break;
                 case Axis.YAxisDownwards:
                     retval = Quaternion.Euler(0, 0, 180);

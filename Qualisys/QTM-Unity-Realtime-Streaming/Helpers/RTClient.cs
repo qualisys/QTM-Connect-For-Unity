@@ -99,6 +99,7 @@ namespace QualisysRealTime.Unity
                 }
             }
 
+
             // Get unlabeled marker data
             var unlabeledMarkerData = packet.Get3DMarkerNoLabelsResidualData();
             if (unlabeledMarkerData != null)
@@ -534,7 +535,6 @@ namespace QualisysRealTime.Unity
             return false;
         }
 
-        // Save raw QTM skeleton data for use in RTSkeleton
         private bool GetSkeletonSettings()
         {
             bool getStatus = mProtocol.GetSkeletonSettings();
@@ -556,8 +556,6 @@ namespace QualisysRealTime.Unity
                     segment.Id = settingSegment.Id;
                     segment.ParentId = settingSegment.ParentId;
 
-
-                    // Save raw QTM rotation and position; coordinate system adjustments have been moved to RTSkeleton 
                     segment.TPosition = new Vector3(settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
                     segment.TRotation = new Quaternion(settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
 

@@ -87,12 +87,10 @@ namespace QualisysRealTime.Unity
 
                     if (segment.Value.ParentId == 0)
                     {
-                        //Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.z / 1000, -segment.Value.Position.y / 1000);
                         Position = new Vector3(-segment.Value.Position.x / 1000, segment.Value.Position.y / 1000, segment.Value.Position.z / 1000);
                         Position = rtClient.CoordinateSystemChange.Rotate(Position);
 
-                        Rotation = new Quaternion(0, 0, 0, 1);
-                        Rotation *= rtClient.CoordinateSystemChange;
+                        Rotation = rtClient.CoordinateSystemChange;
                         Rotation *= new Quaternion(-segment.Value.Rotation.x, segment.Value.Rotation.y, segment.Value.Rotation.z, -segment.Value.Rotation.w);
                     }
                     else
@@ -143,7 +141,7 @@ namespace QualisysRealTime.Unity
                     BuildMecanimAvatarFromQtmTPose();
 
                     mStreamedRootObject.transform.SetParent(this.transform, false);
-                    mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
+                    mStreamedRootObject.transform.Rotate(new Vector3(0, 180, 0), Space.Self);
 
                 return;
             }
@@ -212,6 +210,7 @@ namespace QualisysRealTime.Unity
             // Create remaining T-Pose bone definitions from Qtm segments
             foreach (var segment in mQtmSkeletonCache.Segments.ToList())
             {
+
                 skeletonBones.Add(new SkeletonBone()
                 {
                     name = this.SkeletonName + "_" + segment.Value.Name,
