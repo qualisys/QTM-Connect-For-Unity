@@ -1,20 +1,17 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using QTMRealTimeSDK;
-using UnityEditorInternal;
 
 namespace QualisysRealTime.Unity
 {
     public class RTSkeleton : MonoBehaviour
     {
         public string SkeletonName = "Put QTM skeleton name here";
+        public Avatar DestinationAvatar;
 
         private Avatar mSourceAvatar;
-        public Avatar DestinationAvatar;
         private HumanPose mHumanPose = new HumanPose();
         private GameObject mStreamedRootObject;
         private Dictionary<uint, GameObject> mQTmSegmentIdToGameObject;
@@ -23,27 +20,14 @@ namespace QualisysRealTime.Unity
         private HumanPoseHandler mSourcePoseHandler;
         private HumanPoseHandler mDestiationPoseHandler;
 
-        protected RTClient rtClient;
         private Skeleton mQtmSkeletonCache;
-
-        public Vector3 angleSet = Vector3.zero;
-        Vector3 previousAngleSet = Vector3.zero;
-
-        private void OnDrawGizmos()
-        {
-            
-        }
-
 
         void Update()
         {
-            if (rtClient == null) rtClient = RTClient.GetInstance();
-            
-            var skeleton = rtClient.GetSkeleton(SkeletonName);
+            var skeleton = RTClient.GetInstance().GetSkeleton(SkeletonName);
 
-            if (mQtmSkeletonCache != skeleton || angleSet != previousAngleSet)
+            if (mQtmSkeletonCache != skeleton)
             {
-                previousAngleSet = angleSet;
                 mQtmSkeletonCache = skeleton;
 
                 if (mQtmSkeletonCache == null)
@@ -112,7 +96,7 @@ namespace QualisysRealTime.Unity
             }
 
             // Set up the T-pose and game object name mappings.
-            var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count);
+            var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count + 1);
             skeletonBones.Add(new SkeletonBone()
             {
                 name = this.SkeletonName,

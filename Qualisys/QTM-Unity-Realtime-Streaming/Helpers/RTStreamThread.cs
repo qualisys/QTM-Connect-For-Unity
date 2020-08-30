@@ -359,16 +359,6 @@ namespace QualisysRealTime.Unity
                     segment.Id = settingSegment.Id;
                     segment.ParentId = settingSegment.ParentId;
 
-
-
-                    //// Set rotation and position to work with unity
-                    //segment.TPosition = new Vector3(settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
-                    //segment.TRotation = new Quaternion(settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
-
-                    //Vector3 pos = new Vector3(settingSegment.Position.X / 1000, settingSegment.Position.Z / 1000, settingSegment.Position.Y / 1000);
-                    //Quaternion rot = new Quaternion(settingSegment.Rotation.X, settingSegment.Rotation.Z, settingSegment.Rotation.Y, -settingSegment.Rotation.W);
-
-
                     Vector3 pos = new Vector3(-settingSegment.Position.X / 1000, settingSegment.Position.Y / 1000, settingSegment.Position.Z / 1000);
                     Quaternion rot = new Quaternion(-settingSegment.Rotation.X, settingSegment.Rotation.Y, settingSegment.Rotation.Z, -settingSegment.Rotation.W);
                     if (settingSegment.ParentId == 0)
@@ -544,16 +534,6 @@ namespace QualisysRealTime.Unity
                     Segment targetSegment;
                     if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
                         continue;
-
-                    //targetSegment.Position = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
-                    //targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
-
-                    //targetSegment.Position = new Vector3( segmentData.Position.X, segmentData.Position.Y, segmentData.Position.Z );
-                    //targetSegment.Rotation = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Y, segmentData.Rotation.Z, segmentData.Rotation.W);
-                    //state.skeletons[skeletonIndex].Segments[segmentData.Id] = targetSegment;
-
-                    //Vector3 pos = new Vector3(segmentData.Position.X / 1000, segmentData.Position.Z / 1000, segmentData.Position.Y / 1000);
-                    //Quaternion rot = new Quaternion(segmentData.Rotation.X, segmentData.Rotation.Z, segmentData.Rotation.Y, -segmentData.Rotation.W);
 
                     Vector3 pos = new Vector3(-segmentData.Position.X / 1000, segmentData.Position.Y / 1000, segmentData.Position.Z / 1000);
                     Quaternion rot = new Quaternion(-segmentData.Rotation.X, segmentData.Rotation.Y, segmentData.Rotation.Z, -segmentData.Rotation.W);

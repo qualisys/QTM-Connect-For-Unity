@@ -1,10 +1,7 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using QTMRealTimeSDK;
 
 namespace QualisysRealTime.Unity
 {
@@ -16,10 +13,9 @@ namespace QualisysRealTime.Unity
         [Header("Unity Settings")]
         public string RigSegmentPrefix = "VF:";
 
-        private GameObject rootObject = null;
-        private Dictionary<uint, GameObject> mQTmSegmentIdToGameObjectCustom = new Dictionary<uint, GameObject>();
-        private Dictionary<string, GameObject> segmentNameToGameObject = new Dictionary<string, GameObject>();
-        private Skeleton qtmSkeletonCache = null;
+        private Dictionary<uint, GameObject> mQtmSegmentIdToGameObject = new Dictionary<uint, GameObject>();
+        private Dictionary<string, GameObject> mSegmentNameToGameObject = new Dictionary<string, GameObject>();
+        private Skeleton mQtmSkeletonCache = null;
         
         private void Awake()
         {
@@ -32,7 +28,7 @@ namespace QualisysRealTime.Unity
                 
                 if (name.StartsWith(RigSegmentPrefix)) 
                 {
-                    segmentNameToGameObject.Add(name.Replace(RigSegmentPrefix, ""), t.gameObject);
+                    mSegmentNameToGameObject.Add(name.Replace(RigSegmentPrefix, ""), t.gameObject);
                 }
                 
                 foreach (Transform child in t) 
@@ -46,32 +42,31 @@ namespace QualisysRealTime.Unity
         {
             var skeleton = RTClient.GetInstance().GetSkeleton(SkeletonName);
 
-            if (qtmSkeletonCache != skeleton)
+            if (mQtmSkeletonCache != skeleton)
             {
-                qtmSkeletonCache = skeleton;
+                mQtmSkeletonCache = skeleton;
 
-                if (qtmSkeletonCache == null)
+                if (mQtmSkeletonCache == null)
                     return;
 
-                // User defined avatar/skeleton
-                rootObject = null;
+                GameObject rootObject = null;
 
-                mQTmSegmentIdToGameObjectCustom = new Dictionary<uint, GameObject>(qtmSkeletonCache.Segments.Count);
+                mQtmSegmentIdToGameObject.Clear();
 
-                foreach (var segment in qtmSkeletonCache.Segments)
+                foreach (var segment in mQtmSkeletonCache.Segments)
                 {
-                    var gameObject = segmentNameToGameObject[segment.Value.Name];
-                    if (!gameObject)
+                    GameObject go;
+                    if (!mSegmentNameToGameObject.TryGetValue(segment.Value.Name, out go))
                     { 
-                        print("Didn't Find " + RigSegmentPrefix + ":" + segment.Value.Name);
+                        Debug.Log("Didn't Find " + RigSegmentPrefix + ":" + segment.Value.Name);
                     }
                     else
                     {
                         // First one is assumed to be the root
                         if (rootObject == null)
-                            rootObject = gameObject;
+                            rootObject = go;
 
-                        mQTmSegmentIdToGameObjectCustom[segment.Value.Id] = gameObject;
+                        mQtmSegmentIdToGameObject[segment.Value.Id] = go;
                     }
                 }
 
@@ -83,21 +78,19 @@ namespace QualisysRealTime.Unity
                 return;
             }
 
-            if (qtmSkeletonCache == null)
+            if (mQtmSkeletonCache == null)
                 return;
 
             // Update all the game objects
-            foreach (var segment in qtmSkeletonCache.Segments)
+            foreach (var segment in mQtmSkeletonCache.Segments)
             {
                 GameObject gameObject;
-                if (mQTmSegmentIdToGameObjectCustom.TryGetValue(segment.Key, out gameObject))
+                if (mQtmSegmentIdToGameObject.TryGetValue(segment.Key, out gameObject))
                 {
                     gameObject.transform.localPosition = segment.Value.Position;
                     gameObject.transform.localRotation = segment.Value.Rotation;
                 }
             }
         }
-      
-
     }
 }
