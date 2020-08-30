@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QTMRealTimeSDK;
+using UnityEditorInternal;
 
 namespace QualisysRealTime.Unity
 {
@@ -14,7 +15,6 @@ namespace QualisysRealTime.Unity
 
         private Avatar mSourceAvatar;
         public Avatar DestinationAvatar;
-
         private HumanPose mHumanPose = new HumanPose();
         private GameObject mStreamedRootObject;
         private Dictionary<uint, GameObject> mQTmSegmentIdToGameObject;
@@ -26,14 +26,24 @@ namespace QualisysRealTime.Unity
         protected RTClient rtClient;
         private Skeleton mQtmSkeletonCache;
 
+        public Vector3 angleSet = Vector3.zero;
+        Vector3 previousAngleSet = Vector3.zero;
+
+        private void OnDrawGizmos()
+        {
+            
+        }
+
+
         void Update()
         {
             if (rtClient == null) rtClient = RTClient.GetInstance();
             
             var skeleton = rtClient.GetSkeleton(SkeletonName);
 
-            if (mQtmSkeletonCache != skeleton)
+            if (mQtmSkeletonCache != skeleton || angleSet != previousAngleSet)
             {
+                previousAngleSet = angleSet;
                 mQtmSkeletonCache = skeleton;
 
                 if (mQtmSkeletonCache == null)
@@ -53,20 +63,20 @@ namespace QualisysRealTime.Unity
                     var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
                     gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
                     gameObject.transform.localPosition = segment.Value.TPosition;
+                    gameObject.transform.localRotation = segment.Value.TRotation;
                     mQTmSegmentIdToGameObject[segment.Value.Id] = gameObject;
                 }
 
+                mStreamedRootObject.transform.SetParent(this.transform, false);
                 BuildMecanimAvatarFromQtmTPose();
 
-                mStreamedRootObject.transform.SetParent(this.transform, false);
-                mStreamedRootObject.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
                 return;
             }
 
             if (mQtmSkeletonCache == null)
                 return;
 
-            // Update all the game objects
+            //Update all the game objects
             foreach (var segment in mQtmSkeletonCache.Segments)
             {
                 GameObject gameObject;
@@ -102,14 +112,14 @@ namespace QualisysRealTime.Unity
             }
 
             // Set up the T-pose and game object name mappings.
-            var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count + 1);
+            var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count);
             skeletonBones.Add(new SkeletonBone()
             {
                 name = this.SkeletonName,
                 position = Vector3.zero,
-                rotation = Quaternion.identity,
+                rotation = Quaternion.AngleAxis(180, Vector3.up), //TODO: Is it possible to calculate this?
                 scale = Vector3.one,
-            });
+            }); 
 
             // Create remaining T-Pose bone definitions from Qtm segments
             foreach (var segment in mQtmSkeletonCache.Segments.ToList())
@@ -128,6 +138,7 @@ namespace QualisysRealTime.Unity
                 {
                     human = humanBones.ToArray(),
                     skeleton = skeletonBones.ToArray(),
+                   
                 }
             );
             if (mSourceAvatar.isValid == false || mSourceAvatar.isHuman == false)
