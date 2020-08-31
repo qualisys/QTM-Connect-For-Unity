@@ -359,15 +359,16 @@ namespace QualisysRealTime.Unity
                     segment.Id = settingSegment.Id;
                     segment.ParentId = settingSegment.ParentId;
 
-                    Vector3 pos = new Vector3(-settingSegment.Position.X / 1000, settingSegment.Position.Y / 1000, settingSegment.Position.Z / 1000);
-                    Quaternion rot = new Quaternion(-settingSegment.Rotation.X, settingSegment.Rotation.Y, settingSegment.Rotation.Z, -settingSegment.Rotation.W);
                     if (settingSegment.ParentId == 0)
                     {
-                        rot = state.coordinateSystemChange * rot;
-                        pos = state.coordinateSystemChange.Rotate(pos);
+                        segment.TPosition = settingSegment.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                        segment.TRotation = settingSegment.Rotation.QtmRhsToUnityLhs(state.coordinateSystemChange);
                     }
-                    segment.TPosition = pos;
-                    segment.TRotation = rot;
+                    else
+                    {
+                        segment.TPosition = settingSegment.Position.QtmRhsToUnityLhs();
+                        segment.TRotation = settingSegment.Rotation.QtmRhsToUnityLhs();
+                    }
 
 
                     skeleton.Segments.Add(segment.Id, segment);
@@ -445,53 +446,29 @@ namespace QualisysRealTime.Unity
             packet.Get6DOFData(cachedSixDof);
             for (int i = 0; i < cachedSixDof.Count; i++)
             {
-                Vector3 position = new Vector3(cachedSixDof[i].Position.X, cachedSixDof[i].Position.Y, cachedSixDof[i].Position.Z);
-
-                //Set rotation and position to work with unity
-                position /= 1000;
-
-                state.bodies[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
-                state.bodies[i].Position.z *= -1;
-
-                state.bodies[i].Rotation = state.coordinateSystemChange * QuaternionHelper.FromMatrix(cachedSixDof[i].Matrix);
-                state.bodies[i].Rotation.z *= -1;
-                state.bodies[i].Rotation.w *= -1;
-
-                state.bodies[i].Rotation *= QuaternionHelper.RotationZ(Mathf.PI * .5f);
-                state.bodies[i].Rotation *= QuaternionHelper.RotationX(-Mathf.PI * .5f);
+                var rot = QuaternionHelper.FromMatrix(cachedSixDof[i].Matrix);
+                state.bodies[i].Rotation = rot.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                state.bodies[i].Position = cachedSixDof[i].Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
             }
             
-
-            // Get marker data that is labeled and update values
             packet.Get3DMarkerResidualData(cachedLabeledMarkers);
             for (int i = 0; i < cachedLabeledMarkers.Count; i++)
             {
                 Q3D marker = cachedLabeledMarkers[i];
-                Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
-
-                position /= 1000;
-
-                state.markers[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
-                state.markers[i].Position.z *= -1;
+                state.markers[i].Position = marker.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
                 state.markers[i].Residual = cachedLabeledMarkers[i].Residual;
             }
 
-
-            //// Get unlabeled marker data
             packet.Get3DMarkerNoLabelsResidualData(cachedUnabeledMarkers);
             state.unlabeledMarkers.Clear();
             for (int i = 0; i < cachedUnabeledMarkers.Count; i++)
             {
-                UnlabeledMarker unlabeledMarker = new UnlabeledMarker();
                 Q3D marker = cachedUnabeledMarkers[i];
-                Vector3 position = new Vector3(marker.Position.X, marker.Position.Y, marker.Position.Z);
-
-                position /= 1000;
-
-                unlabeledMarker.Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
-                unlabeledMarker.Position.z *= -1;
-                unlabeledMarker.Residual = cachedUnabeledMarkers[i].Residual;
-                unlabeledMarker.Id = cachedUnabeledMarkers[i].Id;
+                UnlabeledMarker unlabeledMarker = new UnlabeledMarker() {
+                    Position = marker.Position.QtmRhsToUnityLhs(state.coordinateSystemChange),
+                    Residual = marker.Residual,
+                    Id = marker.Id,
+                };
                 state.unlabeledMarkers.Add(unlabeledMarker);
             }
 
@@ -499,18 +476,10 @@ namespace QualisysRealTime.Unity
             for (int i = 0; i < cachedGazeVectors.Count; i++)
             {
                 QTMRealTimeSDK.Data.GazeVector gazeVector = cachedGazeVectors[i];
-
-                Vector3 position = new Vector3(gazeVector.Position.X, gazeVector.Position.Y, gazeVector.Position.Z);
-                position /= 1000;
-                state.gazeVectors[i].Position = QuaternionHelper.Rotate(state.coordinateSystemChange, position);
-                state.gazeVectors[i].Position.z *= -1;
-
-                Vector3 direction = new Vector3(gazeVector.Gaze.X, gazeVector.Gaze.Y, gazeVector.Gaze.Z);
-                state.gazeVectors[i].Direction = QuaternionHelper.Rotate(state.coordinateSystemChange, direction);
-                state.gazeVectors[i].Direction.z *= -1;
+                state.gazeVectors[i].Position = gazeVector.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                state.gazeVectors[i].Direction = gazeVector.Gaze.QtmRhsToUnityLhsNormalizedDirection(state.coordinateSystemChange);
             }
             
-
             packet.GetAnalogData(cachedAnalog);
             if (cachedAnalog != null)
             {
@@ -535,17 +504,16 @@ namespace QualisysRealTime.Unity
                     if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
                         continue;
 
-                    Vector3 pos = new Vector3(-segmentData.Position.X / 1000, segmentData.Position.Y / 1000, segmentData.Position.Z / 1000);
-                    Quaternion rot = new Quaternion(-segmentData.Rotation.X, segmentData.Rotation.Y, segmentData.Rotation.Z, -segmentData.Rotation.W);
                     if (targetSegment.ParentId == 0)
                     {
-                        rot = state.coordinateSystemChange * rot;
-                        pos = state.coordinateSystemChange.Rotate(pos);
+                        targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                        targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs(state.coordinateSystemChange);
                     }
-
-                    targetSegment.Position = pos;
-                    targetSegment.Rotation = rot;
-
+                    else
+                    {
+                        targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs();
+                        targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs();
+                    }
                 }
             }
         }
