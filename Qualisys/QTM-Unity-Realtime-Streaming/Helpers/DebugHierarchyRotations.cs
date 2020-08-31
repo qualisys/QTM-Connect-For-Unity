@@ -1,34 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class DebugHierarchyRotations : MonoBehaviour
+namespace QualisysRealTime.Unity
 {
-    void Start()
+    public class DebugHierarchyRotations : MonoBehaviour
     {
-        
-    }
-
-    private void OnDrawGizmos()
-    {
-        var transforms = new Stack<Transform>();
-        transforms.Push(transform);
-        while (transforms.Count > 0) 
+        private void OnDrawGizmos()
         {
-            var x = transforms.Pop();
-
-            UnityEditor.Handles.color = Color.red;
-            UnityEditor.Handles.ArrowHandleCap(-1, x.transform.position, x.rotation, 0.2f, EventType.Repaint);
-            
-            foreach (Transform child in x) 
+            var transforms = new Stack<Transform>();
+            transforms.Push(transform);
+            while (transforms.Count > 0)
             {
-                if (child.gameObject.activeInHierarchy) 
-                { 
-                    UnityEditor.Handles.DrawLine(x.position, child.position);
-                    transforms.Push(child);
-                }
-            }
+                var x = transforms.Pop();
+                UnityEditor.Handles.color = Color.red;
+                UnityEditor.Handles.ArrowHandleCap(-1, x.transform.position, x.rotation, 0.2f, EventType.Repaint);
 
+                foreach (Transform child in x)
+                {
+                    if (child.gameObject.activeInHierarchy)
+                    {
+                        UnityEditor.Handles.DrawLine(x.position, child.position);
+                        transforms.Push(child);
+                    }
+                }
+
+            }
         }
     }
 }
