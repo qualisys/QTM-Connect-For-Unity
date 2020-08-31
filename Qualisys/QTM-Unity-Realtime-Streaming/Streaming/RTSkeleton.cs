@@ -106,7 +106,7 @@ namespace QualisysRealTime.Unity
             }); 
 
             // Create remaining T-Pose bone definitions from Qtm segments
-            foreach (var segment in mQtmSkeletonCache.Segments.ToList())
+            foreach (var segment in mQtmSkeletonCache.Segments)
             {
                 skeletonBones.Add(new SkeletonBone()
                 {
