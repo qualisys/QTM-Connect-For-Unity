@@ -95,17 +95,17 @@ namespace QualisysRealTime.Unity
                 }
             }
 
-            // Set up the T-pose and game object name mappings.
             var skeletonBones = new List<SkeletonBone>(mQtmSkeletonCache.Segments.Count + 1);
             skeletonBones.Add(new SkeletonBone()
             {
                 name = this.SkeletonName,
                 position = Vector3.zero,
-                rotation = Quaternion.AngleAxis(180, Vector3.up), //TODO: Is it possible to calculate this?
+                // In QTM default poses are facing +Y which becomes -Z in Unity. 
+                // We rotate 180 degrees to match unity forward.
+                rotation = Quaternion.AngleAxis(180, Vector3.up), 
                 scale = Vector3.one,
             }); 
 
-            // Create remaining T-Pose bone definitions from Qtm segments
             foreach (var segment in mQtmSkeletonCache.Segments)
             {
                 skeletonBones.Add(new SkeletonBone()
