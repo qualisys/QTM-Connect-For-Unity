@@ -1,6 +1,7 @@
 ﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using QTMRealTimeSDK.Settings;
+using System;
 using UnityEngine;
 
 namespace QualisysRealTime.Unity
@@ -10,32 +11,23 @@ namespace QualisysRealTime.Unity
     {
         public static Quaternion GetCoordinateSystemRotation(Axis axisUp)
         {
-            Quaternion retval = Quaternion.identity;
             switch (axisUp)
             {
                 case Axis.XAxisUpwards:
-                    retval = Quaternion.Euler(0, 0, -90);
-                    break;
+                    return Quaternion.Euler(0, 0, -90);
                 case Axis.YAxisUpwards:
-                    retval = Quaternion.Euler(0, 0, 0);
-                    break;
+                    return Quaternion.Euler(0, 0, 0);
                 case Axis.ZAxisUpwards:
-                    retval = Quaternion.Euler(-90, 0, 0);
-                    break;
+                    return Quaternion.Euler(-90, 0, 0);
                 case Axis.XAxisDownwards:
-                    retval = Quaternion.Euler(0, 0, 90);
-                    break;
+                    return Quaternion.Euler(0, 0, 90);
                 case Axis.YAxisDownwards:
-                    retval = Quaternion.Euler(0, 0, 180);
-                    break;
+                    return Quaternion.Euler(0, 0, 180);
                 case Axis.ZAxisDownwards:
-                    retval = Quaternion.Euler(90, 0, 0);
-                    break;
+                    return Quaternion.Euler(90, 0, 0);
                 default:
-                    retval = Quaternion.Euler(0, 0, 0);
-                    break;
+                    throw new NotImplementedException(axisUp.ToString());
             }
-            return retval;
         }
     }
 }
