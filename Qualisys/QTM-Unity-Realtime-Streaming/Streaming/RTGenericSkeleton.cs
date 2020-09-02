@@ -16,7 +16,7 @@ namespace QualisysRealTime.Unity
         private Dictionary<uint, GameObject> mQtmSegmentIdToGameObject = new Dictionary<uint, GameObject>();
         private Dictionary<string, GameObject> mSegmentNameToGameObject = new Dictionary<string, GameObject>();
         private Skeleton mQtmSkeletonCache = null;
-        
+
         private void Awake()
         {
             Stack<Transform> s = new Stack<Transform>();
@@ -25,11 +25,22 @@ namespace QualisysRealTime.Unity
             {
                 var t = s.Pop();
                 string name = t.gameObject.name;
-                
-                if (name.StartsWith(RigSegmentPrefix)) 
+
+                try
                 {
-                    mSegmentNameToGameObject.Add(name.Replace(RigSegmentPrefix, ""), t.gameObject);
+                    if (string.IsNullOrEmpty(RigSegmentPrefix))
+                    {
+                        mSegmentNameToGameObject.Add(name, t.gameObject);
+                    }
+                    else if (name.StartsWith(RigSegmentPrefix))
+                    {
+                        mSegmentNameToGameObject.Add(name.Replace(RigSegmentPrefix, ""), t.gameObject);
+                    }
                 }
+                catch (System.ArgumentException e) 
+                {
+                    Debug.LogWarning("Failed to add " + name + " exception " + e.ToString());
+                } 
                 
                 foreach (Transform child in t) 
                 {
@@ -58,7 +69,7 @@ namespace QualisysRealTime.Unity
                     GameObject go;
                     if (!mSegmentNameToGameObject.TryGetValue(segment.Value.Name, out go))
                     { 
-                        Debug.Log("Didn't Find " + RigSegmentPrefix + ":" + segment.Value.Name);
+                        Debug.Log("Didn't Find " + RigSegmentPrefix + segment.Value.Name);
                     }
                     else
                     {
@@ -88,7 +99,7 @@ namespace QualisysRealTime.Unity
                 if (mQtmSegmentIdToGameObject.TryGetValue(segment.Key, out gameObject))
                 {
                     gameObject.transform.localPosition = segment.Value.Position;
-                    gameObject.transform.localRotation = segment.Value.Rotation;
+                    gameObject.transform.localRotation = segment.Value.Rotation;                   
                 }
             }
         }
