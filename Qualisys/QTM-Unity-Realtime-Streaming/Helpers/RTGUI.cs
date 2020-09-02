@@ -58,10 +58,19 @@ namespace QualisysRealTime.Unity
                     {
                         serverSelection.Add(new GUIContent(discoveryResponse.HostName + " (" + discoveryResponse.IpAddress + ":" + discoveryResponse.Port + ") " + discoveryResponse.InfoText));
                     }
-                    serverNumber = EditorGUILayout.Popup(serverNumber, serverSelection.ToArray());
+                    
+                    var selectedServer = EditorPrefs.GetString("rt_server_ip");
+                    int index = discoveryResponses.FindIndex(x => x.IpAddress == selectedServer);
+
+                    serverNumber = EditorGUILayout.Popup(index, serverSelection.ToArray());
+                    
+                   
                     if (serverNumber >= 0 && serverNumber < discoveryResponses.Count)
                     {
                         selectedDiscoveryResponse = discoveryResponses[serverNumber];
+                        EditorPrefs.SetString("rt_server_ip", discoveryResponses[serverNumber].IpAddress);
+
+
                     }
                 }
                 else
