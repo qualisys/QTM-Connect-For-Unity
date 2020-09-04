@@ -2,6 +2,7 @@
 {
     public enum RTConnectionState 
     { 
+        InitialState,
         Connecting,
         Connected,
         Disconnected,

@@ -7,8 +7,8 @@ using UnityEngine;
 namespace QualisysRealTime.Unity
 {
 
-    internal class RTState : ICopyFrom<RTState>
-    {
+    internal class RTState : ITakeFrom<RTState>
+    {        
         internal List<SixDOFBody> bodies = new List<SixDOFBody>();
         internal List<LabeledMarker> markers = new List<LabeledMarker>();
         internal List<UnlabeledMarker> unlabeledMarkers = new List<UnlabeledMarker>();
@@ -17,28 +17,30 @@ namespace QualisysRealTime.Unity
         internal List<AnalogChannel> analogChannels = new List<AnalogChannel>();
         internal List<Skeleton> skeletons = new List<Skeleton>();
         internal List<ComponentType> componentsInStream = new List<ComponentType>();
+        internal Queue<QTMEvent> events = new Queue<QTMEvent>();
+        internal Queue<string> commandStrings = new Queue<string>();
         internal Axis upAxis = Axis.XAxisUpwards;
         internal Quaternion coordinateSystemChange = Quaternion.identity;
         internal RtProtocolVersion rtProtocolVersion = new RtProtocolVersion(0, 0);
         internal int frameNumber = 0;
         internal int frequency = 0;
         internal string errorString = "";
-        internal RTConnectionState connectionState = RTConnectionState.Connecting;
+        internal RTConnectionState connectionState = RTConnectionState.InitialState;
         internal bool isStreaming = false;
 
         static void CopyFromList<T>(List<T> source, List<T> target)
-            where T : ICopyFrom<T>, new()
+            where T : ITakeFrom<T>, new()
         {
             int c = source.Count;
             while (c > target.Count) { target.Add(new T()); }
             while (c < target.Count) { target.RemoveAt(target.Count - 1); }
             for (int i = 0; i < c; ++i)
             {
-                target[i].CopyFrom(source[i]);
+                target[i].TakeFrom(source[i]);
             }
         }
 
-        public void CopyFrom(RTState rtState)
+        public void TakeFrom(RTState rtState)
         {
 
             CopyFromList(rtState.markers, this.markers);
@@ -48,8 +50,21 @@ namespace QualisysRealTime.Unity
             CopyFromList(rtState.analogChannels, this.analogChannels);
             CopyFromList(rtState.bones, this.bones);
             CopyFromList(rtState.skeletons, this.skeletons);
+            
+            events.Clear();
+            while (rtState.events.Count > 0)
+            {
+                events.Enqueue(rtState.events.Dequeue());
+            }
 
-            this.rtProtocolVersion.CopyFrom(rtState.rtProtocolVersion);
+            commandStrings.Clear();
+            while (rtState.commandStrings.Count > 0)
+            {
+                commandStrings.Enqueue(rtState.commandStrings.Dequeue());
+            }
+
+
+            this.rtProtocolVersion.TakeFrom(rtState.rtProtocolVersion);
 
             this.upAxis = rtState.upAxis;
             this.coordinateSystemChange = rtState.coordinateSystemChange;

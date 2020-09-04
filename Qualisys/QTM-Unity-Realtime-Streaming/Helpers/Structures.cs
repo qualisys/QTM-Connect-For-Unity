@@ -4,11 +4,11 @@ using System;
 
 namespace QualisysRealTime.Unity
 {
-    internal interface ICopyFrom<T>
+    internal interface ITakeFrom<T>
     {
-        void CopyFrom(T source);
+        void TakeFrom(T source);
     }
-    public class RtProtocolVersion : ICopyFrom<RtProtocolVersion>
+    public class RtProtocolVersion : ITakeFrom<RtProtocolVersion>
     {
         public int major;
         public int minor;
@@ -19,7 +19,7 @@ namespace QualisysRealTime.Unity
             this.minor = minor;
         }
 
-        public void CopyFrom(RtProtocolVersion source)
+        public void TakeFrom(RtProtocolVersion source)
         {
             this.major = source.major;
             this.minor = source.minor;
@@ -53,14 +53,14 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    public class SixDOFBody : ICopyFrom<SixDOFBody>
+    public class SixDOFBody : ITakeFrom<SixDOFBody>
     {
         public SixDOFBody() { }
         public string Name = "";
         public Vector3 Position = Vector3.zero;
         public Quaternion Rotation = Quaternion.identity;
         public Color Color = Color.yellow;
-        public void CopyFrom(SixDOFBody source)
+        public void TakeFrom(SixDOFBody source)
         {
             this.Name = source.Name;
             this.Position = source.Position;
@@ -69,7 +69,7 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    public class LabeledMarker : ICopyFrom<LabeledMarker>
+    public class LabeledMarker : ITakeFrom<LabeledMarker>
     {
         public LabeledMarker() { }
         public string Name = "";
@@ -77,7 +77,7 @@ namespace QualisysRealTime.Unity
         public Color Color = Color.yellow;
         public float Residual = 0f;
 
-        public void CopyFrom(LabeledMarker source)
+        public void TakeFrom(LabeledMarker source)
         {
             this.Name = source.Name;
             this.Position = source.Position;
@@ -86,12 +86,12 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    public class UnlabeledMarker : ICopyFrom<UnlabeledMarker>
+    public class UnlabeledMarker : ITakeFrom<UnlabeledMarker>
     {
         public uint Id = 0;
         public Vector3 Position = Vector3.zero;
         public float Residual = 0f;
-        public void CopyFrom(UnlabeledMarker source)
+        public void TakeFrom(UnlabeledMarker source)
         {
             this.Id = source.Id;
             this.Position = source.Position;
@@ -99,7 +99,7 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    public class Bone : ICopyFrom<Bone>
+    public class Bone : ITakeFrom<Bone>
     {
         public Bone() { }
         public string From = "";
@@ -107,23 +107,23 @@ namespace QualisysRealTime.Unity
         public string To = "";
         public LabeledMarker ToMarker = new LabeledMarker();
         public Color Color = Color.yellow;
-        public void CopyFrom(Bone source)
+        public void TakeFrom(Bone source)
         {
             From = source.From;
-            FromMarker.CopyFrom(source.FromMarker);
+            FromMarker.TakeFrom(source.FromMarker);
             To = source.To;
-            ToMarker.CopyFrom(source.ToMarker);
+            ToMarker.TakeFrom(source.ToMarker);
             Color = source.Color;
         }
     }
 
-    public class GazeVector : ICopyFrom<GazeVector>
+    public class GazeVector : ITakeFrom<GazeVector>
     {
         public GazeVector() { }
         public string Name = "" ;
         public Vector3 Position = Vector3.zero;
         public Vector3 Direction = Vector3.forward;
-        public void CopyFrom(GazeVector source)
+        public void TakeFrom(GazeVector source)
         {
             Name = source.Name;
             Position = source.Position;
@@ -131,7 +131,7 @@ namespace QualisysRealTime.Unity
         }
     }
 
-    public class AnalogChannel : ICopyFrom<AnalogChannel>
+    public class AnalogChannel : ITakeFrom<AnalogChannel>
     {
         public string Name = "";
         public float[] Values = new float[0];
@@ -142,7 +142,7 @@ namespace QualisysRealTime.Unity
             Values = new float[analogChannel.Values.Length];
             Array.Copy(analogChannel.Values, Values, analogChannel.Values.Length);
         }
-        public void CopyFrom(AnalogChannel source)
+        public void TakeFrom(AnalogChannel source)
         {
             Name = source.Name;
             if (Values.Length != source.Values.Length)
@@ -164,7 +164,7 @@ namespace QualisysRealTime.Unity
         public Quaternion TRotation = Quaternion.identity;
     }
 
-    public class Skeleton : ICopyFrom<Skeleton>
+    public class Skeleton : ITakeFrom<Skeleton>
     {
         public string Name = "";
         public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
@@ -187,7 +187,7 @@ namespace QualisysRealTime.Unity
             }
         }
 
-        public void CopyFrom(Skeleton source) 
+        public void TakeFrom(Skeleton source) 
         {
             Name = source.Name;
             foreach (var kv in source.Segments)

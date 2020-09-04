@@ -263,6 +263,7 @@ namespace QTMRealTimeSDK.Network
         }
 
         /// <summary>
+
         /// Try and get all the local IP addresses
         /// </summary>
         /// <returns></returns>
