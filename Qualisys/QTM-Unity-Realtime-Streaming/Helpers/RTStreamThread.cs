@@ -25,7 +25,7 @@ namespace QualisysRealTime.Unity
         }
 
         const int LOWEST_SUPPORTED_UNITY_MAJOR_VERSION = 1;
-        const int LOWEST_SUPPORTED_UNITY_MINOR_VERSION = 13;
+        const int LOWEST_SUPPORTED_UNITY_MINOR_VERSION = 20;
         public RTState ReaderThreadState { get; private set; }
 
         object syncLock = new object();
@@ -42,7 +42,7 @@ namespace QualisysRealTime.Unity
         List<QTMRealTimeSDK.Data.Q6DOF> cachedSixDof = new List<QTMRealTimeSDK.Data.Q6DOF>();
         List<QTMRealTimeSDK.Data.Q3D> cachedLabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
         List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
-        List<QTMRealTimeSDK.Data.SkeletonData> cachedSkeletons = new List<QTMRealTimeSDK.Data.SkeletonData>();
+        List<QTMRealTimeSDK.Data.Skeleton> cachedSkeletons = new List<QTMRealTimeSDK.Data.Skeleton>();
         List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
 
 
@@ -155,7 +155,7 @@ namespace QualisysRealTime.Unity
                         }
 
                         PacketType packetType;
-                        if (rtProtocol.ReceiveRTPacket(out packetType, 0) <= 0)
+                        if (rtProtocol.ReceiveRTPacket(out packetType, false) <= 0)
                         {
                             continue;
                         }
@@ -175,15 +175,14 @@ namespace QualisysRealTime.Unity
                                 QTMEvent currentEvent = packet.GetEvent();
                                 switch (currentEvent)
                                 {
-                                    case QTMEvent.EventQTMShuttingDown:
-                                    case QTMEvent.EventConnectionClosed:
+                                    case QTMEvent.QTMShuttingDown:
                                         throw new WriterThreadException("Qtm closed connection");
 
-                                    case QTMEvent.EventRTFromFileStarted:
-                                    case QTMEvent.EventConnected:
-                                    case QTMEvent.EventCaptureStarted:
-                                    case QTMEvent.EventCalibrationStarted:
-                                    case QTMEvent.EventCameraSettingsChanged:
+                                    case QTMEvent.RTFromFileStarted:
+                                    case QTMEvent.Connected:
+                                    case QTMEvent.CaptureStarted:
+                                    case QTMEvent.CalibrationStarted:
+                                    case QTMEvent.CameraSettingsChanged:
                                         lock (syncLock)
                                         {
                                             // reload settings when we start streaming to get proper settings
@@ -199,6 +198,7 @@ namespace QualisysRealTime.Unity
 
                                         }
                                         break;
+                                    case QTMEvent.ConnectionClosed:
                                     default: break;
                                 }
                             }
@@ -347,12 +347,12 @@ namespace QualisysRealTime.Unity
                 return false;
 
             state.skeletons.Clear();
-            var skeletonSettings = mProtocol.SkeletonSettingsCollection;
-            foreach (var settingSkeleton in skeletonSettings.SettingSkeletonList)
+            var skeletonSettings = mProtocol.SkeletonSettings;
+            foreach (var settingSkeleton in skeletonSettings.Skeletons)
             {
                 Skeleton skeleton = new Skeleton();
                 skeleton.Name = settingSkeleton.Name;
-                foreach (var settingSegment in settingSkeleton.SettingSegmentList)
+                foreach (var settingSegment in settingSkeleton.Segments)
                 {
                     var segment = new Segment();
                     segment.Name = settingSegment.Name;
@@ -476,8 +476,11 @@ namespace QualisysRealTime.Unity
             for (int i = 0; i < cachedGazeVectors.Count; i++)
             {
                 QTMRealTimeSDK.Data.GazeVector gazeVector = cachedGazeVectors[i];
-                state.gazeVectors[i].Position = gazeVector.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
-                state.gazeVectors[i].Direction = gazeVector.Gaze.QtmRhsToUnityLhsNormalizedDirection(state.coordinateSystemChange);
+                if (gazeVector.GazeVectorData != null && gazeVector.GazeVectorData.Length > 0) 
+                { 
+                    state.gazeVectors[i].Position = gazeVector.GazeVectorData[0].Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                    state.gazeVectors[i].Direction = gazeVector.GazeVectorData[0].Gaze.QtmRhsToUnityLhsNormalizedDirection(state.coordinateSystemChange);
+                }
             }
             
             packet.GetAnalogData(cachedAnalog);
@@ -498,10 +501,10 @@ namespace QualisysRealTime.Unity
             packet.GetSkeletonData(cachedSkeletons);
             for (int skeletonIndex = 0; skeletonIndex < cachedSkeletons.Count; skeletonIndex++)
             {
-                foreach (var segmentData in cachedSkeletons[skeletonIndex].SegmentDataList)
+                foreach (var segmentData in cachedSkeletons[skeletonIndex].Segments)
                 {
                     Segment targetSegment;
-                    if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.Id, out targetSegment))
+                    if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.ID, out targetSegment))
                         continue;
 
                     if (targetSegment.ParentId == 0)

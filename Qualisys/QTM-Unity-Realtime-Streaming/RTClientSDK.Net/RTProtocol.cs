@@ -47,7 +47,7 @@ namespace QTMRealTimeSDK
             /// <summary>Latest major version of protocol</summary>
             public const int MAJOR_VERSION = 1;
             /// <summary>Latest minor version of protocol</summary>
-            public const int MINOR_VERSION = 19;
+            public const int MINOR_VERSION = 21;
             /// <summary>Maximum camera count</summary>
             public const int MAX_CAMERA_COUNT = 256;
             /// <summary>Maximum Analog device count</summary>
@@ -69,46 +69,111 @@ namespace QTMRealTimeSDK
 
         }
 
-        public delegate void ProcessStream(RTPacket packet);
-        /// <summary>Callback for processing real time data packets</summary>
-        public ProcessStream RealTimeDataCallback;
-        /// <summary>Callback for receiving events</summary>
-        public ProcessStream EventDataCallback;
-
         /// <summary>Packet received from QTM</summary>
-        public RTPacket Packet { get { return mPacket; } }
+        internal RTPacket Packet
+        {
+            get { return mPacket; }
+        }
 
-        SettingsGeneral mGeneralSettings;
+        private SettingsGeneral mGeneralSettings;
         /// <summary>General settings from QTM</summary>
-        public SettingsGeneral GeneralSettings { get { return mGeneralSettings; } }
+        public SettingsGeneral GeneralSettings
+        {
+            get { return mGeneralSettings; }
+            set
+            {
+                if (mGeneralSettings != value)
+                {
+                    mGeneralSettings = value;
+                }
+            }
+        }
 
-        Settings3D m3DSettings;
+        private Settings3D m3DSettings;
         /// <summary>3D settings from QTM</summary>
-        public Settings3D Settings3D { get { return m3DSettings; } }
+        public Settings3D Settings3D
+        {
+            get { return m3DSettings; }
+            set
+            {
+                if (m3DSettings != value)
+                {
+                    m3DSettings = value;
+                }
+            }
+        }
 
-        Settings6D m6DOFSettings;
+        private Settings6D m6DOFSettings;
         /// <summary>6DOF settings from QTM</summary>
-        public Settings6D Settings6DOF { get { return m6DOFSettings; } }
+        public Settings6D Settings6DOF
+        {
+            get { return m6DOFSettings; }
+            set
+            {
+                if (m6DOFSettings != value)
+                {
+                    m6DOFSettings = value;
+                }
+            }
+        }
 
-        SettingsAnalog mAnalogSettings;
+        private SettingsAnalog mAnalogSettings;
         /// <summary>Analog settings from QTM</summary>
-        public SettingsAnalog AnalogSettings { get { return mAnalogSettings; } }
+        public SettingsAnalog AnalogSettings
+        {
+            get { return mAnalogSettings; }
+            set
+            {
+                if (mAnalogSettings != value)
+                {
+                    mAnalogSettings = value;
+                }
+            }
+        }
 
-        SettingsForce mForceSettings;
+        private SettingsForce mForceSettings;
         /// <summary>Force settings from QTM</summary>
-        public SettingsForce ForceSettings { get { return mForceSettings; } }
+        public SettingsForce ForceSettings
+        {
+            get { return mForceSettings; }
+            set
+            {
+                if (mForceSettings != value)
+                {
+                    mForceSettings = value;
+                }
+            }
+        }
 
-        SettingsImage mImageSettings;
+        private SettingsImage mImageSettings;
         /// <summary>Image settings from QTM</summary>
-        public SettingsImage ImageSettings { get { return mImageSettings; } }
+        public SettingsImage ImageSettings
+        {
+            get { return mImageSettings; }
+            set
+            {
+                if (mImageSettings != value)
+                {
+                    mImageSettings = value;
+                }
+            }
+        }
 
-        SettingsGazeVectors mGazeVectorSettings;
+        private SettingsGazeVectors mGazeVectorSettings;
         /// <summary>Gaze vector settings from QTM</summary>
         public SettingsGazeVectors GazeVectorSettings { get { return mGazeVectorSettings; } }
 
-        private SkeletonSettingsCollection mSkeletonSettingsCollection;
+        private SettingsEyeTrackers mEyeTrackerSettings;
+        /// <summary>Eye tracker settings from QTM</summary>
+        public SettingsEyeTrackers EyeTrackerSettings { get { return mEyeTrackerSettings; } }
+
+        private SettingsSkeletons mSkeletonSettings;
         /// <summary>Skeleton settings from QTM</summary>
-        public SkeletonSettingsCollection SkeletonSettingsCollection { get { return mSkeletonSettingsCollection; } }
+        public SettingsSkeletons SkeletonSettings { get { return mSkeletonSettings; } }
+
+        private SettingsSkeletonsHierarchical mSkeletonSettingsHierarchical;
+        /// <summary>Skeleton settings from QTM</summary>
+        public SettingsSkeletonsHierarchical SkeletonSettingsHierarchical { get { return mSkeletonSettingsHierarchical; } }
 
         private bool mBroadcastSocketCreated = false;
         private RTNetwork mNetwork;
@@ -120,7 +185,13 @@ namespace QTMRealTimeSDK
 
         private HashSet<DiscoveryResponse> mDiscoveryResponses;
         /// <summary>list of discovered QTM server possible to connect to</summary>
-        public HashSet<DiscoveryResponse> DiscoveryResponses { get { return mDiscoveryResponses; } }
+        public HashSet<DiscoveryResponse> DiscoveryResponses
+        {
+            get
+            {
+                return mDiscoveryResponses;
+            }
+        }
 
         /// <summary>
         /// Default constructor
@@ -145,7 +216,9 @@ namespace QTMRealTimeSDK
         /// <param name="minorVersion">Minor protocol version to use, default is latest</param>
         /// <param name="port">base port for QTM server, default is 22222</param>
         /// <returns>true if connection was successful, otherwise false</returns>
-        public bool Connect(string serverAddr, short serverPortUDP = -1, int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION, int port = Constants.STANDARD_BASE_PORT)
+        public bool Connect(string serverAddr, int serverPortUDP = -1,
+                            int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION,
+                            int port = Constants.STANDARD_BASE_PORT)
         {
             Disconnect();
             mMajorVersion = majorVersion;
@@ -260,7 +333,7 @@ namespace QTMRealTimeSDK
         /// <param name="majorVersion">Major protocol version to use, default is latest</param>
         /// <param name="minorVersion">Minor protocol version to use, default is latest</param>
         /// <returns>true if connection was successful, otherwise false</returns>
-        public bool Connect(DiscoveryResponse host, short serverPortUDP = -1, int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION)
+        public bool Connect(DiscoveryResponse host, int serverPortUDP = -1, int majorVersion = Constants.MAJOR_VERSION, int minorVersion = Constants.MINOR_VERSION)
         {
             return Connect(host.IpAddress, serverPortUDP, majorVersion, minorVersion, host.Port);
         }
@@ -272,7 +345,7 @@ namespace QTMRealTimeSDK
             mAnalogSettings = null;
             mForceSettings = null;
             mGazeVectorSettings = null;
-            mSkeletonSettingsCollection = null;
+            mSkeletonSettings = null;
             mGeneralSettings = null;
             mImageSettings = null;
         }
@@ -283,6 +356,7 @@ namespace QTMRealTimeSDK
             mBroadcastSocketCreated = false;
             mNetwork.Disconnect();
             mDiscoveryResponses.Clear();
+
             ClearSettings();
         }
 
@@ -293,10 +367,15 @@ namespace QTMRealTimeSDK
             return mNetwork.IsConnected();
         }
 
+        public RTPacket GetRTPacket()
+        {
+            return mPacket;
+        }
+
         private byte[] data = new byte[65535];
         private Object receiveLock = new Object();
 
-        public int ReceiveRTPacket(out PacketType packetType, int timeout = 500000)
+        public int ReceiveRTPacket(out PacketType packetType, bool skipEvents = true, int timeout = 500000)
         {
             lock (receiveLock)
             {
@@ -305,48 +384,21 @@ namespace QTMRealTimeSDK
 
                 packetType = PacketType.PacketNone;
 
-                receivedTotal = 0;
+                do
+                {
+                    receivedTotal = 0;
 
-                int received = mNetwork.Receive(ref data, 0, data.Length, true, timeout);
-                if (received == 0)
-                {
-                    return 0; // Receive timeout
-                }
-                if (received < sizeof(int) * 2)
-                {
-                    // QTM header not received.
-                    return -1;
-                }
-                if (received == -1)
-                {
-                    if (!mNetwork.IsConnected())
+                    int received = mNetwork.Receive(ref data, 0, data.Length, true, timeout);
+                    if (received == 0)
                     {
-                        mErrorString = "Disconnected from server.";
+                        return 0; // Receive timeout
                     }
-                    else
+                    if (received < sizeof(int) * 2)
                     {
-                        mErrorString = "Socket Error.";
+                        // QTM header not received.
+                        return -1;
                     }
-                    return -1;
-                }
-                receivedTotal += received;
-
-                frameSize = RTPacket.GetPacketSize(data);
-                packetType = RTPacket.GetPacketType(data);
-
-                if (data == null || frameSize > data.Length)
-                {
-                    // Do some preventive additional allocation to reduce number of times allocation is needed
-                    var newSize = (int)(frameSize * 1.47);
-                    Array.Resize(ref data, newSize);
-                }
-
-                // Receive more data until we have read the whole packet
-                while (receivedTotal < frameSize)
-                {
-                    // As long as we haven't received enough data, wait for more
-                    received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
-                    if (received <= 0)
+                    if (received == -1)
                     {
                         if (!mNetwork.IsConnected())
                         {
@@ -359,8 +411,39 @@ namespace QTMRealTimeSDK
                         return -1;
                     }
                     receivedTotal += received;
+
+                    frameSize = RTPacket.GetPacketSize(data);
+                    packetType = RTPacket.GetPacketType(data);
+
+                    if (data == null || frameSize > data.Length)
+                    {
+                        // Do some preventive additional allocation to reduce number of times allocation is needed
+                        var newSize = (int)(frameSize * 1.47);
+                        Array.Resize(ref data, newSize);
+                    }
+
+                    // Receive more data until we have read the whole packet
+                    while (receivedTotal < frameSize)
+                    {
+                        // As long as we haven't received enough data, wait for more
+                        received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
+                        if (received <= 0)
+                        {
+                            if (!mNetwork.IsConnected())
+                            {
+                                mErrorString = "Disconnected from server.";
+                            }
+                            else
+                            {
+                                mErrorString = "Socket Error.";
+                            }
+                            return -1;
+                        }
+                        receivedTotal += received;
+                    }
+                    mPacket.SetData(data);
                 }
-                mPacket.SetData(data);
+                while (skipEvents && packetType == PacketType.PacketEvent);
 
                 if (receivedTotal == frameSize)
                 {
@@ -371,51 +454,11 @@ namespace QTMRealTimeSDK
             }
         }
 
-        /// <summary>
-        /// get all data from discovery packet
-        /// </summary>
-        /// <param name="discoveryResponse">data from packet</param>
-        /// <returns>true if </returns>
-        public static bool GetDiscoverData(byte[] data, out DiscoveryResponse discoveryResponse)
-        {
-            var packetSize = BitConverter.ToInt32(data, 0);
-            byte[] portData = new byte[2];
-            Array.Copy(data, packetSize - 2, portData, 0, 2);
-            Array.Reverse(portData);
-            discoveryResponse.Port = BitConverter.ToInt16(portData, 0);
-
-            byte[] stringData = new byte[packetSize - 10];
-            Array.Copy(data, 8, stringData, 0, packetSize - 10);
-            string stringFromByteData = System.Text.Encoding.Default.GetString(stringData);
-            string[] splittedData = stringFromByteData.Split(',');
-
-            discoveryResponse.HostName = splittedData[0].Trim();
-            discoveryResponse.InfoText = splittedData[1].Trim();
-
-            string camcount = splittedData[2].Trim();
-            Regex pattern = new Regex("\\d*");
-            Match camMatch = pattern.Match(camcount);
-
-            if (camMatch.Success)
-            {
-                camcount = camMatch.Groups[0].Value;
-                discoveryResponse.CameraCount = int.Parse(camcount);
-            }
-            else
-            {
-                discoveryResponse.CameraCount = -1;
-            }
-            discoveryResponse.IpAddress = null;
-            return true;
-        }
-
-        /// <summary>
-        /// Send discovery packet to network to find available QTM Servers.
-        ///</summary>
+        /// <summary>Send discovery packet to network to find available QTM Servers.</summary>
         /// <param name="replyPort">port for servers to reply.</param>
         /// <param name="discoverPort">port to send discovery packet.</param>
         /// <returns>true if discovery packet was sent successfully</returns>
-        public bool DiscoverRTServers(ushort replyPort, ushort discoverPort = Constants.STANDARD_BROADCAST_PORT)
+        public bool DiscoverRTServers(ushort replyPort, int discoverPort = Constants.STANDARD_BROADCAST_PORT)
         {
             byte[] port = BitConverter.GetBytes(replyPort);
             byte[] size = BitConverter.GetBytes(10);
@@ -544,41 +587,57 @@ namespace QTMRealTimeSDK
             return false;
         }
 
-        /// <summary>
-        /// Stream frames from QTM server
-        ///</summary>
+        /// <summary>Stream all frames from QTM server</summary>
+        /// <returns>true if streaming started ok</returns>
+        public bool StreamAllFrames(ComponentType component, int port = -1, string ipAddress = "")
+        {
+            return StreamFrames(StreamRate.RateAllFrames, 1, component, port, ipAddress);
+        }
+
+        public bool StreamAllFrames(List<ComponentType> component, int port = -1, string ipAddress = "")
+        {
+            return StreamFrames(StreamRate.RateAllFrames, 1, component, port, ipAddress);
+        }
+
+        /// <summary>Stream frames from QTM server</summary>
         /// <param name="streamRate">what rate server should stream at</param>
         /// <param name="streamValue">related to streamrate, not used if all frames are streamed</param>
         /// <param name="components">List of all component types deisred to stream</param>
-        /// <param name="port">if set, streaming will be done by UDP on this port. Has to be set if ipAddress is specified</param>
-        /// <param name="ipAddress">if UDP streaming should occur to other ip adress,
-        /// if not set streaming occurs on same ip as command came from</param>
-        /// <returns></returns>
-        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, short udpPort = -1, string ipAddress = "")
+        /// <param name="udpPort">if set, streaming will be done by UDP on this port. Has to be set if ip address is specified</param>
+        /// <param name="ipAddress">if UDP streaming should occur to other ip address, if not set streaming occurs on same ip as command came from</param>
+        /// <returns>true if streaming started</returns>
+        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, int udpPort = -1, string ipAddress = "")
         {
             string command = "streamframes";
 
             switch (streamRate)
             {
                 case StreamRate.RateAllFrames:
-                    command += " allFrames";
+                    command += " allframes";
                     break;
                 case StreamRate.RateFrequency:
-                    command += " Frequency:" + streamValue;
+                    command += " frequency:" + streamValue;
                     break;
                 case StreamRate.RateFrequencyDivisor:
-                    command += " FrequencyDivisor:" + streamValue;
+                    command += " frequencydivisor:" + streamValue;
                     break;
             }
 
-            if (udpPort > 0)
+            if (ipAddress != "")
             {
-                command += " udp:";
-                if (!String.IsNullOrEmpty(ipAddress))
+                if (udpPort > 0)
                 {
-                    command += ipAddress + ":";
+                    command += " udp:" + ipAddress + ":" + udpPort;
                 }
-                command += udpPort;
+                else
+                {
+                    mErrorString = "If an IP-address was specified for UDP streaming, a port must be specified as well";
+                    return false;
+                }
+            }
+            else if (udpPort > 0)
+            {
+                command += " udp:" + udpPort;
             }
 
             command += BuildStreamString(components);
@@ -587,16 +646,14 @@ namespace QTMRealTimeSDK
         }
 
 
-        public bool StreamFrames(StreamRate streamRate, int streamValue, ComponentType component, short port = -1, string ipAddress = "")
+        public bool StreamFrames(StreamRate streamRate, int streamValue, ComponentType component, int port = -1, string ipaddress = "")
         {
             List<ComponentType> list = new List<ComponentType>();
             list.Add(component);
-            return StreamFrames(streamRate, streamValue, list, port, ipAddress);
+            return StreamFrames(streamRate, streamValue, list, port, ipaddress);
         }
 
-        /// <summary>
-        /// Tell QTM Server to stop streaming frames
-        ///</summary>
+        /// <summary>Tell QTM Server to stop streaming frames</summary>
         /// <returns>true if command was sent successfully</returns>
         public bool StreamFramesStop()
         {
@@ -614,7 +671,7 @@ namespace QTMRealTimeSDK
                 PacketType packetType;
                 do
                 {
-                    nReceived = ReceiveRTPacket(out packetType, 0);
+                    nReceived = ReceiveRTPacket(out packetType, false, 2000000);
                     if (nReceived > 0)
                     {
                         respondedEvent = mPacket.GetEvent();
@@ -623,7 +680,7 @@ namespace QTMRealTimeSDK
                 }
                 while (nReceived > 0);
             }
-            respondedEvent = QTMEvent.EventNone;
+            respondedEvent = QTMEvent.None;
             return false;
         }
 
@@ -841,7 +898,25 @@ namespace QTMRealTimeSDK
         /// <returns>Returns true if settings was retrieved</returns>
         public bool Get6dSettings()
         {
-            return GetSettings("6D", "The_6D", out m6DOFSettings);
+            if (mMajorVersion > 1 || mMinorVersion > 20)
+            {
+                Settings6D_V2 settings6D_v2;
+                if (GetSettings("6D", "The_6D", out settings6D_v2))
+                {
+                    m6DOFSettings = Settings6D_V2.ConvertToSettings6DOF(settings6D_v2);
+                    return true;
+                }
+            }
+            else
+            {
+                Settings6D_V1 settings6D_v1;
+                if (GetSettings("6D", "The_6D", out settings6D_v1))
+                {
+                    m6DOFSettings = Settings6D_V1.ConvertToSettings6DOF(settings6D_v1);
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>Get Analog settings from QTM Server</summary>
@@ -872,11 +947,66 @@ namespace QTMRealTimeSDK
             return GetSettings("GazeVector", "Gaze_Vector", out mGazeVectorSettings);
         }
 
+        /// <summary>Get eye tracker settings from QTM Server</summary>
+        /// <returns>Returns true if settings was retrieved</returns>
+        public bool GetEyeTrackerSettings()
+        {
+            return GetSettings("EyeTracker", "Eye_Tracker", out mEyeTrackerSettings);
+        }
+
         /// <summary>Get Skeleton settings from QTM Server</summary>
         /// <returns>Returns true if settings was retrieved</returns>
         public bool GetSkeletonSettings()
         {
-            return GetSettings("Skeleton", "Skeletons", out mSkeletonSettingsCollection);
+            if (mMajorVersion == 1 && mMinorVersion < 21)
+            {
+                return GetSettings("Skeleton", "Skeletons", out mSkeletonSettings);
+            }
+            else
+            {
+                if (GetSettings("Skeleton", "Skeletons", out mSkeletonSettingsHierarchical))
+                {
+                    mSkeletonSettings = new SettingsSkeletons();
+                    mSkeletonSettings.Xml = mSkeletonSettingsHierarchical.Xml;
+                    mSkeletonSettings.Skeletons = new List<SettingSkeleton>();
+
+                    foreach (var skeleton in mSkeletonSettingsHierarchical.Skeletons)
+                    {
+                        Action<List<SettingSkeletonSegment>, SettingSkeletonSegmentHierarchical, uint> RecurseSegments = null;
+                        RecurseSegments = (segmentList, segment, parentId) =>
+                        {
+                            SettingSkeletonSegment newSegment = new SettingSkeletonSegment
+                            {
+                                Name = segment.Name,
+                                Id = segment.Id,
+                                ParentId = parentId,
+                                Position = segment.Transform.Position,
+                                Rotation = segment.Transform.Rotation
+                            };
+                            segmentList.Add(newSegment);
+                            foreach (var childSegment in segment.Segments)
+                            {
+                                RecurseSegments(segmentList, childSegment, segment.Id);
+                            }
+                        };
+
+                        SettingSkeleton settingSkeleton = new SettingSkeleton
+                        {
+                            Name = skeleton.Name
+                        };
+                        settingSkeleton.Segments = new List<SettingSkeletonSegment>();
+                        foreach (var segment in skeleton.Segments.Segments)
+                        {
+                            RecurseSegments(settingSkeleton.Segments, segment, 0);
+                        }
+                        mSkeletonSettings.Skeletons.Add(settingSkeleton);
+                    }
+                    return true;
+                }
+            }
+            mSkeletonSettings = default(SettingsSkeletons);
+            mSkeletonSettingsHierarchical = default(SettingsSkeletonsHierarchical);
+            return false;
         }
 
         internal bool GetSettings<TSettings>(string settingsName, string settingXmlName, out TSettings settingObject)
@@ -897,6 +1027,55 @@ namespace QTMRealTimeSDK
 
             }
             settingObject = default(TSettings);
+            return false;
+        }
+
+        public bool SetGeneralSettings(SettingsGeneral settings)
+        {
+            return SetSettings("General", "General", settings);
+        }
+
+        public bool Set6DSettings(Settings6D settings)
+        {
+            if (mMajorVersion > 1 || mMinorVersion > 20)
+            {
+                Settings6D_V2 settings6D_v2 = new Settings6D_V2(settings);
+                return SetSettings("6D", "The_6D", settings6D_v2);
+            }
+            mErrorString = "Can not set 6D settings in protocol versions prior to 1.21";
+            return false;
+        }
+
+        public bool SetForceSettings(SettingsForce settings)
+        {
+            return SetSettings("Force", "Force", settings);
+        }
+
+        public bool SetImageSettings(SettingsImage settings)
+        {
+            return SetSettings("Image", "Image", settings);
+        }
+
+        public bool SetSkeletonSettings(SettingsSkeletonsHierarchical settings)
+        {
+            return SetSettings("Skeleton", "Skeletons", settings);
+        }
+
+        public bool SetSettings<TSettings>(string settingsName, string settingXmlName, TSettings settingObject)
+        {
+            var xmlSettings = RTProtocol.CreateSettingsXml(settingObject, out mErrorString);
+            if (xmlSettings != string.Empty)
+            {
+                string response;
+                if (SendXML(xmlSettings, out response))
+                {
+                    return true;
+                }
+                else
+                {
+                    mErrorString = response;
+                }
+            }
             return false;
         }
 
@@ -971,6 +1150,7 @@ namespace QTMRealTimeSDK
             }
             return settings;
         }
+        
         #endregion
 
         #region Generic communication methods
@@ -1010,7 +1190,7 @@ namespace QTMRealTimeSDK
             {
                 Thread.Sleep(50);
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType) > 0)
+                while (ReceiveRTPacket(out packetType, true) > 0)
                 {
                     if (packetType != PacketType.PacketXML)
                     {
@@ -1040,7 +1220,7 @@ namespace QTMRealTimeSDK
             if (SendString(command, PacketType.PacketCommand))
             {
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType) > 0)
+                while (ReceiveRTPacket(out packetType, true) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
@@ -1067,7 +1247,7 @@ namespace QTMRealTimeSDK
             if (SendString(xmlString, PacketType.PacketXML))
             {
                 PacketType packetType;
-                while (ReceiveRTPacket(out packetType) > 0)
+                while (ReceiveRTPacket(out packetType, true) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
@@ -1088,18 +1268,14 @@ namespace QTMRealTimeSDK
 
         #endregion
 
-        /// <summary>
-        /// Error reported by protocol or from server packet
-        ///</summary>
+        /// <summary>Get last error reported by protocol or from data packet</summary>
         /// <returns>Error message</returns>
         public string GetErrorString()
         {
             return mErrorString;
         }
 
-        /// <summary>
-        /// Builds string for components when using streamframes function
-        ///</summary>
+        /// <summary>Builds string for components when using streamframes function</summary>
         /// <param name="componentTypes">component types to stream</param>
         /// <returns>string with protocol names of components</returns>
         private string BuildStreamString(List<ComponentType> componentTypes)
@@ -1166,12 +1342,54 @@ namespace QTMRealTimeSDK
                     case ComponentType.ComponentGazeVector:
                         command += " GazeVector";
                         break;
+                    case ComponentType.ComponentEyeTracker:
+                        command += " EyeTracker";
+                        break;
                     case ComponentType.ComponentSkeleton:
                         command += " Skeleton";
                         break;
                 }
             }
             return command;
+        }
+
+
+        /// <summary>
+        /// get all data from discovery packet
+        /// </summary>
+        /// <param name="discoveryResponse">data from packet</param>
+        /// <returns>true if </returns>
+        public static bool GetDiscoverData(byte[] data, out DiscoveryResponse discoveryResponse)
+        {
+            var packetSize = BitConverter.ToInt32(data, 0);
+            byte[] portData = new byte[2];
+            Array.Copy(data, packetSize - 2, portData, 0, 2);
+            Array.Reverse(portData);
+            discoveryResponse.Port = BitConverter.ToInt16(portData, 0);
+
+            byte[] stringData = new byte[packetSize - 10];
+            Array.Copy(data, 8, stringData, 0, packetSize - 10);
+            string stringFromByteData = System.Text.Encoding.Default.GetString(stringData);
+            string[] splittedData = stringFromByteData.Split(',');
+
+            discoveryResponse.HostName = splittedData[0].Trim();
+            discoveryResponse.InfoText = splittedData[1].Trim();
+
+            string camcount = splittedData[2].Trim();
+            Regex pattern = new Regex("\\d*");
+            Match camMatch = pattern.Match(camcount);
+
+            if (camMatch.Success)
+            {
+                camcount = camMatch.Groups[0].Value;
+                discoveryResponse.CameraCount = int.Parse(camcount);
+            }
+            else
+            {
+                discoveryResponse.CameraCount = -1;
+            }
+            discoveryResponse.IpAddress = null;
+            return true;
         }
 
         #region disposing
@@ -1184,7 +1402,7 @@ namespace QTMRealTimeSDK
                 {
                     ReleaseControl();
                     Disconnect();
-                    mNetwork.Dispose();                    
+                    mNetwork.Dispose();
                 }
                 disposed = true;
             }
@@ -1205,4 +1423,5 @@ namespace QTMRealTimeSDK
 
         #endregion
     }
+
 }

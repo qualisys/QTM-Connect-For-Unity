@@ -68,7 +68,7 @@ namespace QTMRealTimeSDK
         /// <param name="data">Data packet</param>
         /// <param name="position">position to convert, will be increased with the size of three floats in bytes</param>
         /// <returns>struct of Point with 3 float values for x,y,z</returns>
-		public static Point GetPoint(byte[] data, ref int position)
+        public static Point GetPoint(byte[] data, ref int position)
         {
             Point point;
             point.X = BitConverter.ToSingle(data, position + 0);
@@ -84,7 +84,7 @@ namespace QTMRealTimeSDK
         /// <param name="data">Data packet</param>
         /// <param name="rotation">rotation to convert, will be increased with the size of three floats in bytes</param>
         /// <returns>struct of Rotation with 3 float values for x,y,z</returns>
-		public static EulerRotation GetEulerRotation(byte[] data, ref int position)
+        public static EulerRotation GetEulerRotation(byte[] data, ref int position)
         {
             EulerRotation rotation;
             rotation.First = BitConverter.ToSingle(data, position + 0);
