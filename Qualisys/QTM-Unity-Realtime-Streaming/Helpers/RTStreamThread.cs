@@ -24,8 +24,8 @@ namespace QualisysRealTime.Unity
             { }
         }
 
-        const int LOWEST_SUPPORTED_UNITY_MAJOR_VERSION = 1;
-        const int LOWEST_SUPPORTED_UNITY_MINOR_VERSION = 20;
+        const int RT_LOWEST_SUPPORTED_VERSION_MAJOR = 1;
+        const int RT_LOWEST_SUPPORTED_VERSION_MINOR = 13;
         public RTState ReaderThreadState { get; private set; }
 
         object syncLock = new object();
@@ -106,10 +106,6 @@ namespace QualisysRealTime.Unity
             {
                 ReaderThreadState.CopyFrom(writerThreadState);
             }
-            if (ReaderThreadState.connectionState == RTConnectionState.Disconnected)
-            {
-                Debug.Log(ReaderThreadState.errorString);
-            }
             return ReaderThreadState.connectionState != RTConnectionState.Disconnected;
         }
 
@@ -117,19 +113,37 @@ namespace QualisysRealTime.Unity
         {
             try
             {
-                using (var rtProtocol = new RTProtocol(LOWEST_SUPPORTED_UNITY_MAJOR_VERSION, LOWEST_SUPPORTED_UNITY_MINOR_VERSION))
+                using (var rtProtocol = new RTProtocol(RT_LOWEST_SUPPORTED_VERSION_MAJOR, RT_LOWEST_SUPPORTED_VERSION_MINOR))
                 {
-                    if (!rtProtocol.Connect(IpAddress, udpPort, RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION))
+                    if (!rtProtocol.Connect(IpAddress, udpPort, RT_LOWEST_SUPPORTED_VERSION_MAJOR, RT_LOWEST_SUPPORTED_VERSION_MINOR)) 
                     {
-                        if (!rtProtocol.Connect(IpAddress, udpPort, LOWEST_SUPPORTED_UNITY_MAJOR_VERSION, LOWEST_SUPPORTED_UNITY_MINOR_VERSION))
+                        throw new WriterThreadException("Error Creating Connection to server" + rtProtocol.GetErrorString());
+                    }
+
+                    RtProtocolVersion version = new RtProtocolVersion(RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION);
+                    
+                    //Upgrade protocol version
+                    for (; version.minor >= RT_LOWEST_SUPPORTED_VERSION_MINOR; --version.minor)
+                    {
+                        lock (syncLock)
                         {
-                            throw new WriterThreadException("Error Creating Connection to server" + rtProtocol.GetErrorString());
+                            writerThreadState.rtProtocolVersion.CopyFrom(version);
+                        }
+                        string response;
+                        if (rtProtocol.SetVersion(version.major, version.minor, out response))
+                        {
+                            break;
                         }
                     }
+
+                    if (version.minor < RT_LOWEST_SUPPORTED_VERSION_MINOR)
+                    {
+                        throw new WriterThreadException("Failed to negotiate RT Protocol version with QTM");
+                    }
+
                     lock (syncLock) 
                     {
                         writerThreadState.connectionState = RTConnectionState.Connected;
-                        
                         if (!UpdateSettings(writerThreadState, rtProtocol, componentSelection))
                         {
                             throw new WriterThreadException("Failed to update settings: " + rtProtocol.GetErrorString());
@@ -257,7 +271,6 @@ namespace QualisysRealTime.Unity
             if (rtProtocol.StreamFrames(streamRate, -1, state.componentsInStream, udpPort) == false)
             {
                 state.isStreaming = false;
-                Debug.LogError("StreamFrames error: " + rtProtocol.GetErrorString());
             }
             else 
             { 

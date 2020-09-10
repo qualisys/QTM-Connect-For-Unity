@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
+using UnityEditor.MemoryProfiler;
 
 namespace QualisysRealTime.Unity
 {
     public class RTClient : IDisposable
     {
+        static RtProtocolVersion rtProtocolVersionMax = new RtProtocolVersion(RTProtocol.Constants.MAJOR_VERSION, RTProtocol.Constants.MINOR_VERSION);
         static RTClient instance;
         int previousFrame = -1;
         ushort replyPort = (ushort)new System.Random().Next(1333, 1388);
@@ -80,6 +82,15 @@ namespace QualisysRealTime.Unity
                     ? RTConnectionState.Disconnected
                     : rtStreamThread.ReaderThreadState.connectionState;
             }
+        }
+
+        public RtProtocolVersion RtProtocolVersion 
+        {
+            get{ return rtStreamThread == null ? RtProtocolVersionMax : rtStreamThread.ReaderThreadState.rtProtocolVersion; }
+        }
+        public RtProtocolVersion RtProtocolVersionMax
+        {
+            get{ return rtProtocolVersionMax; }
         }
 
         // Get frame number from latest packet
@@ -269,14 +280,8 @@ namespace QualisysRealTime.Unity
             StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
             while (ConnectionState == RTConnectionState.Connecting)
             {
-                if (!rtStreamThread.Update())
-                {
-                    Disconnect();
-                }
-                else
-                {
-                    Thread.Sleep(TimeSpan.FromMilliseconds(200));
-                }
+                Thread.Sleep(TimeSpan.FromMilliseconds(200));
+                UpdateThread();
             }
             return ConnectionState == RTConnectionState.Connected;
         }
@@ -306,14 +311,25 @@ namespace QualisysRealTime.Unity
 
         void UpdateThread() 
         {
+            var oldConnectionState = this.ConnectionState;
             bool result = rtStreamThread.Update();
             if (!string.IsNullOrEmpty(rtStreamThread.ReaderThreadState.errorString)) 
             {
                 errorString = rtStreamThread.ReaderThreadState.errorString;
+                Debug.Log(errorString);
             }
+
             if (!result)
             {
                 Disconnect();
+            }
+
+            if (ConnectionState == RTConnectionState.Connected && oldConnectionState != RTConnectionState.Connected)
+            {
+                if (RtProtocolVersion < RtProtocolVersionMax)
+                {
+                    Debug.Log("Using RT protocol " + RtProtocolVersionMax + " failed. QTM is using an older version (" + RtProtocolVersion + "). Some features might not be available.");
+                }
             }
         }
 
