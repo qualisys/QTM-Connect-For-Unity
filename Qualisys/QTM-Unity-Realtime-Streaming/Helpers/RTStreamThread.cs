@@ -176,7 +176,6 @@ namespace QualisysRealTime.Unity
                                 switch (currentEvent)
                                 {
                                     case QTMEvent.EventQTMShuttingDown:
-                                    case QTMEvent.EventConnectionClosed:
                                         throw new WriterThreadException("Qtm closed connection");
 
                                     case QTMEvent.EventRTFromFileStarted:
@@ -199,6 +198,7 @@ namespace QualisysRealTime.Unity
 
                                         }
                                         break;
+                                    case QTMEvent.EventConnectionClosed:
                                     default: break;
                                 }
                             }
