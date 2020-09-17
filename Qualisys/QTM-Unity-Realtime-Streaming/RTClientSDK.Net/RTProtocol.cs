@@ -982,8 +982,8 @@ namespace QTMRealTimeSDK
                                 Name = segment.Name,
                                 Id = segment.Id,
                                 ParentId = parentId,
-                                Position = segment.Transform.Position,
-                                Rotation = segment.Transform.Rotation
+                                Position = segment.DefaultTransform.Position,
+                                Rotation = segment.DefaultTransform.Rotation
                             };
                             segmentList.Add(newSegment);
                             foreach (var childSegment in segment.Segments)
