@@ -551,6 +551,8 @@ namespace QTMRealTimeSDK
 
             if (SendCommandExpectCommandResponse("Version " + majorVersion + "." + minorVersion, out response))
             {
+                this.mMajorVersion = majorVersion;
+                this.mMinorVersion = minorVersion;
                 return true;
             }
             return false;
