@@ -108,6 +108,10 @@ namespace QualisysRealTime.Unity
                         Disconnect();
                         Repaint();
                     }
+                    var version = RTClient.GetInstance().RtProtocolVersion;
+                    GUILayout.Label("RT protocol: " + version);
+                    
+
                     var bodies = RTClient.GetInstance().Bodies;
                     if (bodies != null)
                     {

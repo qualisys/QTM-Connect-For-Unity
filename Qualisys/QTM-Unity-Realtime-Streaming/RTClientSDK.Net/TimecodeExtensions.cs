@@ -1,10 +1,6 @@
 ﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
-using QTMRealTimeSDK.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace QTMRealTimeSDK.Data
 {
@@ -75,8 +71,6 @@ namespace QTMRealTimeSDK.Data
                     UInt64 cNanoseconds = ((cameraTime % cTicksPerSecond) * (1000000000 / cTicksPerSecond));
                     output = string.Format("{0}.{1:D9}", cSeconds, cNanoseconds);
                     break;
-                default:
-                    throw new ArgumentException("Timecode Type invalid");
             }
             return output;
         }

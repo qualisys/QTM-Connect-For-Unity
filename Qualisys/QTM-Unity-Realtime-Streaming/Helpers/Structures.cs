@@ -8,6 +8,50 @@ namespace QualisysRealTime.Unity
     {
         void CopyFrom(T source);
     }
+    public class RtProtocolVersion : ICopyFrom<RtProtocolVersion>
+    {
+        public int major;
+        public int minor;
+
+        public RtProtocolVersion(int major, int minor)
+        {
+            this.major = major;
+            this.minor = minor;
+        }
+
+        public void CopyFrom(RtProtocolVersion source)
+        {
+            this.major = source.major;
+            this.minor = source.minor;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Version {0}.{1}", major, minor);
+        }
+        public static bool operator <(RtProtocolVersion a, RtProtocolVersion b) 
+        {
+            if (a.major < b.major || (a.major == b.major && a.minor < b.minor))
+            {
+                return true;
+            }
+            else
+            { 
+                return false;
+            }    
+        }
+        public static bool operator >(RtProtocolVersion a, RtProtocolVersion b)
+        {
+            if (a.major > b.major || (a.major == b.major && a.minor > b.minor))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 
     public class SixDOFBody : ICopyFrom<SixDOFBody>
     {
@@ -175,6 +219,6 @@ namespace QualisysRealTime.Unity
                     });
                 }
             }
-        } 
+        }
     }
 }

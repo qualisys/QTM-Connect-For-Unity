@@ -8,7 +8,7 @@ namespace QualisysRealTime.Unity
 {
 
     internal class RTState : ICopyFrom<RTState>
-    {        
+    {
         internal List<SixDOFBody> bodies = new List<SixDOFBody>();
         internal List<LabeledMarker> markers = new List<LabeledMarker>();
         internal List<UnlabeledMarker> unlabeledMarkers = new List<UnlabeledMarker>();
@@ -19,7 +19,7 @@ namespace QualisysRealTime.Unity
         internal List<ComponentType> componentsInStream = new List<ComponentType>();
         internal Axis upAxis = Axis.XAxisUpwards;
         internal Quaternion coordinateSystemChange = Quaternion.identity;
-
+        internal RtProtocolVersion rtProtocolVersion = new RtProtocolVersion(0, 0);
         internal int frameNumber = 0;
         internal int frequency = 0;
         internal string errorString = "";
@@ -48,6 +48,8 @@ namespace QualisysRealTime.Unity
             CopyFromList(rtState.analogChannels, this.analogChannels);
             CopyFromList(rtState.bones, this.bones);
             CopyFromList(rtState.skeletons, this.skeletons);
+
+            this.rtProtocolVersion.CopyFrom(rtState.rtProtocolVersion);
 
             this.upAxis = rtState.upAxis;
             this.coordinateSystemChange = rtState.coordinateSystemChange;

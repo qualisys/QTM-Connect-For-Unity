@@ -1,5 +1,7 @@
 ﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
+using System;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
@@ -44,6 +46,9 @@ namespace QTMRealTimeSDK.Settings
         [XmlElement("External_Time_Base")]
         public SettingsExternalTimeBase ExternalTimebase;
 
+        [XmlElement("External_Timestamp")]
+        public SettingsExternalTimestamp ExternalTimestamp;
+
         [XmlElement("Processing_Actions")]
         public SettingProcessingActions ProcessingActions;
 
@@ -52,6 +57,9 @@ namespace QTMRealTimeSDK.Settings
 
         [XmlElement("Reprocessing_Actions")]
         public SettingProcessingActions ReprocessingActions;
+
+        [XmlElement("EulerAngles")]
+        public SettingsEulerAngles EulerAngles;
 
         /// <summary>Camera Settings </summary>
         [XmlElement("Camera")]
@@ -107,17 +115,17 @@ namespace QTMRealTimeSDK.Settings
 
     /// <summary>6D Settings from QTM</summary>
     [XmlRoot("The_6D")]
-    public class Settings6D : SettingsBase
+    public class Settings6D_V1 : SettingsBase
     {
-        public Settings6D()
+        internal static Settings6D ConvertToSettings6DOF(Settings6D_V1 settings)
         {
-            EulerNames = new EulerNames();
+            return new Settings6D(settings.Xml, settings.BodyCount, settings.Bodies.ConvertAll<Settings6DOF>(Settings6DOF_V1.ConvertToSettings6DOF), settings.EulerNames);
         }
 
         [XmlElement("Bodies")]
         public int BodyCount;
         [XmlElement("Body")]
-        public List<Settings6DOF> Bodies;
+        public List<Settings6DOF_V1> Bodies;
         [XmlElement("Euler")]
         public EulerNames EulerNames;
     }
@@ -138,7 +146,48 @@ namespace QTMRealTimeSDK.Settings
         public string Second;
         [XmlElement("Third")]
         public string Third;
+    }
 
+    /// <summary>6D Settings from QTM</summary>
+    [XmlRoot("The_6D")]
+    public class Settings6D_V2 : SettingsBase
+    {
+        public Settings6D_V2() { }
+        internal Settings6D_V2(Settings6D settings)
+        {
+            Bodies = settings.Bodies.ConvertAll<Settings6DOF_V2>(Settings6DOF.ConvertToSettings6DOF_V2);
+        }
+
+        internal static Settings6D ConvertToSettings6DOF(Settings6D_V2 settings)
+        {
+            return new Settings6D(settings.Xml, settings.Bodies.Count, settings.Bodies.ConvertAll<Settings6DOF>(Settings6DOF_V2.ConvertToSettings6DOF), new EulerNames());
+        }
+        [XmlElement("Body")]
+        public List<Settings6DOF_V2> Bodies;
+    }
+
+    public class Settings6D : SettingsBase
+    {
+        public Settings6D()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            EulerNames = new EulerNames();
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+        public Settings6D(string xml, int bodyCount, List<Settings6DOF> bodies, EulerNames eulerNames)
+        {
+            Xml = xml;
+            BodyCount = bodyCount;
+            Bodies = bodies;
+#pragma warning disable CS0618 // Type or member is obsolete
+            EulerNames = eulerNames;
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        public int BodyCount;
+        public List<Settings6DOF> Bodies;
+        [Obsolete("EulerNames is moved to general settings from protocol version 1.21.", false)]
+        public EulerNames EulerNames;
     }
 
     /// <summary>Analog Settings from QTM</summary>
@@ -193,6 +242,24 @@ namespace QTMRealTimeSDK.Settings
         public List<SettingGazeVector> GazeVectors;
     }
 
+    /// <summary>Eye tracker</summary>
+    public class SettingEyeTracker
+    {
+        [XmlElement("Name")]
+        public string Name;
+        [XmlElement("Frequency")]
+        public float Frequency;
+    }
+
+    /// <summary>Eye tracker Settings from QTM</summary>
+    [XmlRoot("Eye_Tracker")]
+    public class SettingsEyeTrackers : SettingsBase
+    {
+        [XmlElement("Device")]
+        public List<SettingEyeTracker> EyeTrackers;
+    }
+
+    /// <summary>Position</summary>
     public class Position
     {
         [XmlAttribute("X")]
@@ -203,8 +270,9 @@ namespace QTMRealTimeSDK.Settings
         public float Z;
     }
 
+    /// <summary>Rotation</summary>
     public class Rotation
-    { 
+    {
         [XmlAttribute("X")]
         public float X;
         [XmlAttribute("Y")]
@@ -215,7 +283,142 @@ namespace QTMRealTimeSDK.Settings
         public float W;
     }
 
-    /// <summary>SettingsSegment</summary>
+    /// <summary>Transform</summary>
+    public class Transform
+    {
+        [XmlElement("Position")]
+        public Position Position;
+        [XmlElement("Rotation")]
+        public Rotation Rotation;
+    }
+
+    /// <summary>DefaultTransform</summary>
+    public class DefaultTransform
+    {
+        [XmlElement("Position")]
+        public Position Position;
+        [XmlElement("Rotation")]
+        public Rotation Rotation;
+    }
+
+    /// <summary>Boundary</summary>
+    public class Boundary
+    {
+        [XmlAttribute("LowerBound")]
+        public float LowerBound;
+        [XmlAttribute("UpperBound")]
+        public float UpperBound;
+    }
+
+    /// <summary>DegreesOfFreedom</summary>
+    public class DegreesOfFreedom
+    {
+        [XmlElement("RotationX")]
+        public Boundary RotationX;
+        [XmlElement("RotationY")]
+        public Boundary RotationY;
+        [XmlElement("RotationZ")]
+        public Boundary RotationZ;
+        [XmlElement("TranslationX")]
+        public Boundary TranslationX;
+        [XmlElement("TranslationY")]
+        public Boundary TranslationY;
+        [XmlElement("TranslationZ")]
+        public Boundary TranslationZ;
+    }
+
+    /// <summary>Marker</summary>
+    public class Marker
+    {
+        [XmlAttribute("Name")]
+        public string Name;
+        [XmlElement("Position")]
+        public Position Position;
+        [XmlElement("Weight")]
+        public float Weight;
+    }
+
+    /// <summary>Markers</summary>
+    public class Markers
+    {
+        [XmlElement("Marker")]
+        public List<Marker> MarkerList;
+    }
+
+    /// <summary>RigidBody</summary>
+    public class RigidBody
+    {
+        [XmlAttribute("Name")]
+        public string Name;
+        [XmlElement("Transform")]
+        public Transform Transform;
+        [XmlElement("Weight")]
+        public float Weight;
+    }
+
+    /// <summary>RigidBodies</summary>
+    public class RigidBodies
+    {
+        [XmlElement("RigidBody")]
+        public List<RigidBody> RigidBodyList;
+    }
+
+    /// <summary>Skeleton segment</summary>
+    public class SettingSkeletonSegmentHierarchical
+    {
+        [XmlAttribute("Name")]
+        public string Name;
+        [XmlAttribute("ID")]
+        public uint Id;
+        [XmlElement("Transform")]
+        public Transform Transform;
+        [XmlElement("DefaultTransform")]
+        public DefaultTransform DefaultTransform;
+        [XmlElement("DegreesOfFreedom")]
+        public DegreesOfFreedom DegreesOfFreedom;
+        [XmlElement("Endpoint")]
+        public Position Endpoint;
+        [XmlElement("Markers")]
+        public Markers Markers;
+        [XmlElement("RigidBodies")]
+        public RigidBodies RigidBodies;
+        [XmlElement("Segment")]
+        public List<SettingSkeletonSegmentHierarchical> Segments;
+    }
+
+    /// <summary>Skeleton segments</summary>
+    public class SegmentsHierarchical
+    {
+        [XmlElement("Segment")]
+        public List<SettingSkeletonSegmentHierarchical> Segments;
+    }
+
+
+    /// <summary>Skeleton</summary>
+    public class SettingSkeletonHierarchical
+    {
+        [XmlAttribute("Name")]
+        public string Name;
+        [XmlElement("Solver")]
+        public string Solver;
+        [XmlElement("Scale")]
+        public string Scale;
+        [XmlElement("Segments")]
+        public SegmentsHierarchical Segments;
+    }
+
+    /// <summary>
+    /// Skeleton Settings from QTM.
+    /// The skeleton is stored hierarchicaly.
+    /// </summary>
+    [XmlRoot("Skeletons")]
+    public class SettingsSkeletonsHierarchical : SettingsBase
+    {
+        [XmlElement("Skeleton")]
+        public List<SettingSkeletonHierarchical> Skeletons;
+    }
+
+    /// <summary>Skeleton segment</summary>
     public class SettingSkeletonSegment
     {
         [XmlAttribute("Name")]
@@ -230,21 +433,24 @@ namespace QTMRealTimeSDK.Settings
         public Rotation Rotation;
     }
 
-    /// <summary>SettingSkeleton</summary>
+    /// <summary>Skeleton</summary>
     public class SettingSkeleton
     {
         [XmlAttribute("Name")]
         public string Name;
         [XmlElement("Segment")]
-        public List<SettingSkeletonSegment> SettingSegmentList;
+        public List<SettingSkeletonSegment> Segments;
     }
 
-    /// <summary>Skeleton Settings from QTM</summary>
+    /// <summary>
+    /// Skeleton Settings from QTM.
+    /// The skeleton is stored in a vector.
+    /// </summary>
     [XmlRoot("Skeletons")]
-    public class SkeletonSettingsCollection : SettingsBase
+    public class SettingsSkeletons : SettingsBase
     {
         [XmlElement("Skeleton")]
-        public List<SettingSkeleton> SettingSkeletonList;
+        public List<SettingSkeleton> Skeletons;
     }
 
     /// <summary>General settings for Camera System</summary>
@@ -268,7 +474,7 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Camera mode the camera is set to</summary>
         [XmlElement("Mode")]
         public CameraMode Mode;
-       /// <summary>Values for camera video mode, current, min and max</summary>
+        /// <summary>Values for camera video mode, current, min and max</summary>
         [XmlElement("Video_Frequency")]
         public int VideoFrequency;
         /// <summary>Values for camera video exposure, current, min and max</summary>
@@ -301,22 +507,25 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Video Field Of View, left, top, right and bottom coordinates</summary>
         [XmlElement("Video_FOV")]
         public FieldOfView VideoFOV;
-        /// <summary>Sync out settings for Oqus sync out or Miqus Sync Unit Out1</summary>
+        /// <summary>Sync out settings for Oqus sync out or Sync Unit Out1</summary>
         [XmlElement("Sync_Out")]
         public SettingsSyncOut SyncOut;
-        /// <summary>Sync out settings for Miqus Sync Unit Out2</summary>
+        /// <summary>Sync out settings for Sync Unit Out2</summary>
         [XmlElement("Sync_Out2")]
         public SettingsSyncOut SyncOut2;
-        /// <summary>Sync out settings for Miqus Sync Unit Measurement Time (MT)</summary>
+        /// <summary>Sync out settings for Sync Unit Measurement Time (MT)</summary>
         [XmlElement("Sync_Out_MT")]
         public SettingsSyncOut SyncOutMT;
         /// <summary>Lens Control settings for camera equipped with motorized lens</summary>
         [XmlElement("LensControl")]
         public SettingsLensControl LensControl;
+        /// <summary>Auto exposure settings for video camera</summary>
         [XmlElement("AutoExposure")]
         public SettingsAutoExposure AutoExposure;
+        /// <summary>Video resolution for non-marker cameras</summary>
         [XmlElement("Video_Resolution")]
         public SettingsVideoResolution VideoResolution;
+        /// <summary>Video aspect ratio for non-marker cameras</summary>
         [XmlElement("Video_Aspect_Ratio")]
         public SettingsVideoAspectRatio VideoAspectRatio;
     }
@@ -324,8 +533,10 @@ namespace QTMRealTimeSDK.Settings
     /// <summary>Settings regarding Lens Control for camera equipped with motorized lens</summary>
     public struct SettingsLensControl
     {
+        /// <summary>Camera focus lens control</summary>
         [XmlElement("Focus")]
         public SettingsLensControlValues Focus;
+        /// <summary>Camera aperture lens control</summary>
         [XmlElement("Aperture")]
         public SettingsLensControlValues Aperture;
     }
@@ -486,8 +697,18 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Export to Matlab file</summary>
         [XmlElement("ExportMatlabFile")]
         public bool ExportMatlab;
+        /// <summary>Export to AVI</summary>
         [XmlElement("ExportAviFile")]
         public bool ExportAviFile;
+        /// <summary>Export to FBX</summary>
+        [XmlElement("ExportFbx")]
+        public bool ExportFbx;
+        /// <summary>Start Program</summary>
+        [XmlElement("StartProgram")]
+        public bool StartProgram;
+        /// <summary>Solve skeletons</summary>
+        [XmlElement("SkeletonSolve")]
+        public bool SkeletonSolve;
     }
 
     /// <summary>Settings regarding external Time Base</summary>
@@ -514,10 +735,55 @@ namespace QTMRealTimeSDK.Settings
         [XmlElement("Non_Periodic_Timeout")]
         public float NonPeriodicTimeout;
     }
+  
+    public struct SettingsEulerAngles
+    {
+        [XmlAttribute("First")]
+        public string First;
+        [XmlAttribute("Second")]
+        public string Second;
+        [XmlAttribute("Third")]
+        public string Third;
+    }
+  
+    /// <summary>Settings regarding external time stamp</summary>
+    public struct SettingsExternalTimestamp
+    {
+        [XmlElement("Enabled")]
+        public bool Enabled;
+        [XmlElement("Type")]
+        public TimestampType Type;
+        [XmlElement("Frequency")]
+        public int Frequency;
+    }
+
+    /// <summary>Struct for 6dof point information</summary>
+    public struct Settings6DOFPoint_V1
+    {
+        internal static Settings6DOFPoint ConvertToSettingsPoint(Settings6DOFPoint_V1 settingsPoint)
+        {
+            return new Settings6DOFPoint("", settingsPoint.X, settingsPoint.Y, settingsPoint.Z, settingsPoint.Virtual, settingsPoint.PhysicalId);
+        }
+        [XmlElement("X")]
+        public float X;
+        [XmlElement("Y")]
+        public float Y;
+        [XmlElement("Z")]
+        public float Z;
+        [XmlElement("PhysicalId")]
+        public int PhysicalId;
+        [XmlElement("Virtual")]
+        public bool Virtual;
+    }
 
     /// <summary>Settings for 6DOF bodies</summary>
-    public struct Settings6DOF
+    public struct Settings6DOF_V1
     {
+        internal static Settings6DOF ConvertToSettings6DOF(Settings6DOF_V1 settings6DOF)
+        {
+            return new Settings6DOF(settings6DOF.Name, settings6DOF.ColorRGB, 0, 0, 0, new Settings6DOFFilter(), new Settings6DOFMesh(),
+                settings6DOF.Points.ConvertAll<Settings6DOFPoint>(Settings6DOFPoint_V1.ConvertToSettingsPoint), new Settings6DOFDataOrigin(), new Settings6DOFDataOrientation());
+        }
         /// <summary>Name of 6DOF body</summary>
         [XmlElement("Name")]
         public string Name;
@@ -526,7 +792,229 @@ namespace QTMRealTimeSDK.Settings
         public int ColorRGB;
         /// <summary>List of points in 6DOF body</summary>
         [XmlElement("Point")]
-        public List<Point> Points;
+        public List<Settings6DOFPoint_V1> Points;
+    }
+
+    /// <summary>Struct for 6dof filter</summary>
+    public struct Settings6DOFColor_V2
+    {
+        internal Settings6DOFColor_V2(int ColorRGB)
+        {
+            R = (ColorRGB & 0xff);
+            G = ((ColorRGB >> 8) & 0xff);
+            B = ((ColorRGB >> 16) & 0xff);
+        }
+        [XmlAttribute("R")]
+        public int R;
+        [XmlAttribute("G")]
+        public int G;
+        [XmlAttribute("B")]
+        public int B;
+    }
+
+    /// <summary>Struct for 6dof filter</summary>
+    public struct Settings6DOFFilter
+    {
+        [XmlAttribute("Preset")]
+        public string Preset;
+    }
+
+    /// <summary>Struct for 6dof mesh position</summary>
+    public struct Settings6DOFMeshPosition
+    {
+        [XmlAttribute("X")]
+        public float X;
+        [XmlAttribute("Y")]
+        public float Y;
+        [XmlAttribute("Z")]
+        public float Z;
+    }
+
+    /// <summary>Struct for 6dof mesh rotation</summary>
+    public struct Settings6DOFMeshRotation
+    {
+        [XmlAttribute("X")]
+        public float X;
+        [XmlAttribute("Y")]
+        public float Y;
+        [XmlAttribute("Z")]
+        public float Z;
+    }
+
+    /// <summary>Struct for 6dof mesh</summary>
+    public struct Settings6DOFMesh
+    {
+        [XmlElement("Name")]
+        public string Name;
+        [XmlElement("Position")]
+        public Settings6DOFMeshPosition Position;
+        [XmlElement("Rotation")]
+        public Settings6DOFMeshRotation Rotation;
+        [XmlElement("Scale")]
+        public float Scale;
+        [XmlElement("Opacity")]
+        public float Opacity;
+    }
+
+    /// <summary>Struct for 6dof data origin</summary>
+    public struct Settings6DOFDataOrigin
+    {
+        [XmlText]
+        public string Type;
+        [XmlElement("X")]
+        public float X;
+        [XmlElement("Y")]
+        public float Y;
+        [XmlElement("Z")]
+        public float Z;
+        [XmlElement("RelativeBody")]
+        public int RelativeBody;
+    }
+
+    /// <summary>Struct for 6dof data orientation</summary>
+    public struct Settings6DOFDataOrientation
+    {
+        [XmlText]
+        public string Type;
+        [XmlElement("R11")]
+        public float R11;
+        [XmlElement("R12")]
+        public float R12;
+        [XmlElement("R13")]
+        public float R13;
+        [XmlElement("R21")]
+        public float R21;
+        [XmlElement("R22")]
+        public float R22;
+        [XmlElement("R23")]
+        public float R23;
+        [XmlElement("R31")]
+        public float R31;
+        [XmlElement("R32")]
+        public float R32;
+        [XmlElement("R33")]
+        public float R33;
+    }
+
+    public struct Settings6DOF_V2
+    {
+        internal Settings6DOF_V2(Settings6DOF settings)
+        {
+            Name = settings.Name;
+            Color = new Settings6DOFColor_V2(settings.ColorRGB);
+            MaximumResidual = settings.MaximumResidual;
+            MinimumMarkersInBody = settings.MinimumMarkersInBody;
+            BoneLengthTolerance = settings.BoneLengthTolerance;
+            Filter = settings.Filter;
+            Mesh = settings.Mesh;
+            Points = settings.Points;
+            DataOrigin = settings.DataOrigin;
+            DataOrientation = settings.DataOrientation;
+        }
+        internal static Settings6DOF ConvertToSettings6DOF(Settings6DOF_V2 settings6DOF)
+        {
+            int colorRGB = (settings6DOF.Color.R & 0xff) | ((settings6DOF.Color.G << 8) & 0xff00) | ((settings6DOF.Color.B << 16) & 0xff0000);
+            return new Settings6DOF(settings6DOF.Name, colorRGB, settings6DOF.MaximumResidual, settings6DOF.MinimumMarkersInBody, settings6DOF.BoneLengthTolerance,
+                settings6DOF.Filter, settings6DOF.Mesh, settings6DOF.Points, settings6DOF.DataOrigin, settings6DOF.DataOrientation);
+        }
+        /// <summary>Name of 6DOF body</summary>
+        [XmlElement("Name")]
+        public string Name;
+        /// <summary>Color of 6DOF body</summary>
+        [XmlElement("Color")]
+        public Settings6DOFColor_V2 Color;
+        /// <summary>Maximum residual of 6DOF body</summary>
+        [XmlElement("MaximumResidual")]
+        public float MaximumResidual;
+        /// <summary>Minimum markers in 6DOF body</summary>
+        [XmlElement("MinimumMarkersInBody")]
+        public int MinimumMarkersInBody;
+        /// <summary>Bone length tolerance of 6DOF body</summary>
+        [XmlElement("BoneLengthTolerance")]
+        public float BoneLengthTolerance;
+        /// <summary>Filter of 6DOF body</summary>
+        [XmlElement("Filter")]
+        public Settings6DOFFilter Filter;
+        /// <summary>Mesh of 6DOF body</summary>
+        [XmlElement("Mesh")]
+        public Settings6DOFMesh Mesh;
+        /// <summary>List of points in 6DOF body</summary>
+        [XmlArray("Points")]
+        [XmlArrayItem("Point")]
+        public List<Settings6DOFPoint> Points;
+        /// <summary>Data origin of 6DOF body</summary>
+        [XmlElement("Data_origin")]
+        public Settings6DOFDataOrigin DataOrigin;
+        /// <summary>Data orientation of 6DOF body</summary>
+        [XmlElement("Data_orientation")]
+        public Settings6DOFDataOrientation DataOrientation;
+    }
+
+    public struct Settings6DOFPoint
+    {
+        public Settings6DOFPoint(string name, float x, float y, float z, bool _virtual, int physicalId)
+        {
+            Name = name;
+            X = x;
+            Y = y;
+            Z = z;
+            Virtual = _virtual;
+            PhysicalId = physicalId;
+        }
+        [XmlAttribute("Name")]
+        public string Name;
+        [XmlAttribute("X")]
+        public float X;
+        [XmlAttribute("Y")]
+        public float Y;
+        [XmlAttribute("Z")]
+        public float Z;
+        [XmlAttribute("Virtual")]
+        public bool Virtual;
+        [XmlAttribute("PhysicalId")]
+        public int PhysicalId;
+    }
+
+    public struct Settings6DOF
+    {
+        internal static Settings6DOF_V2 ConvertToSettings6DOF_V2(Settings6DOF settings)
+        {
+            return new Settings6DOF_V2(settings);
+        }
+        public Settings6DOF(string name, int colorRGB, float maxResidual, int minimumMarkersInBody, float boneLengthTolerance, Settings6DOFFilter filter, Settings6DOFMesh mesh,
+            List<Settings6DOFPoint> points, Settings6DOFDataOrigin dataOrigin, Settings6DOFDataOrientation dataOrientation)
+        {
+            Name = name;
+            ColorRGB = colorRGB;
+            MaximumResidual = maxResidual;
+            MinimumMarkersInBody = minimumMarkersInBody;
+            BoneLengthTolerance = boneLengthTolerance;
+            Filter = filter;
+            Mesh = mesh;
+            Points = points;
+            DataOrigin = dataOrigin;
+            DataOrientation = dataOrientation;
+        }
+        /// <summary>Name of 6DOF body</summary>
+        public string Name;
+        /// <summary>Color of 6DOF body</summary>
+        public int ColorRGB;
+        /// <summary>Maximum residual of 6DOF body</summary>
+        public float MaximumResidual;
+        /// <summary>Minimum markers in 6DOF body</summary>
+        public int MinimumMarkersInBody;
+        /// <summary>Bone length tolerance of 6DOF body</summary>
+        public float BoneLengthTolerance;
+        /// <summary>Filter of 6DOF body</summary>
+        public Settings6DOFFilter Filter;
+        /// <summary>Mesh of 6DOF body</summary>
+        public Settings6DOFMesh Mesh;
+        /// <summary>List of points in 6DOF body</summary>
+        public List<Settings6DOFPoint> Points;
+        /// <summary>Data origin of 6DOF body</summary>
+        public Settings6DOFDataOrigin DataOrigin;
+        /// <summary>Data orientation of 6DOF body</summary>
+        public Settings6DOFDataOrientation DataOrientation;
     }
 
     /// <summary>General settings for Analog devices</summary>
@@ -566,7 +1054,7 @@ namespace QTMRealTimeSDK.Settings
     /// <summary>Settings for Analog channel</summary>
     public struct AnalogChannelInformation
     {
-        /// <summary>Channel name</summary>
+        /// <summary>Channel label</summary>
         [XmlElement("Label")]
         public string Name;
         /// <summary>Unit used by channel</summary>
@@ -803,6 +1291,12 @@ namespace QTMRealTimeSDK.Settings
         ModelMiqusVideo,
         [XmlEnum("Miqus Video Color")]
         ModelMiqusVideoColor,
+        [XmlEnum("Miqus Hybrid")]
+        ModelMiqusHybrid,
+        [XmlEnum("Arqus A5")]
+        ModelArqusA5,
+        [XmlEnum("Arqus A12")]
+        ModelArqusA12,
     }
 
     /// <summary>Camera modes</summary>
@@ -913,8 +1407,8 @@ namespace QTMRealTimeSDK.Settings
         VideoResolution_720p,
         [XmlEnum("540p")]
         VideoResolution_540p,
-        [XmlEnum("420p")]
-        VideoResolution_420p,
+        [XmlEnum("480p")]
+        VideoResolution_480p,
     }
     /// <summary>Video aspect ratio settings for video cameras</summary>
     public enum SettingsVideoAspectRatio
@@ -926,5 +1420,14 @@ namespace QTMRealTimeSDK.Settings
         [XmlEnum("1x1")]
         AspectRatio_1x1,
     }
-
+    /// <summary>Timestamp type</summary>
+    public enum TimestampType
+    {
+        [XmlEnum("SMPTE")]
+        SMPTE = 0,
+        [XmlEnum("IRIG")]
+        IRIG,
+        [XmlEnum("CameraTime")]
+        CameraTime,
+    }
 }

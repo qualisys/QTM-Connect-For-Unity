@@ -41,7 +41,7 @@ namespace QualisysRealTime.Unity
             var q = new Quaternion(-src.X, src.Y, src.Z, -src.W);
             return q;
         }
-        public static Quaternion QtmRhsToUnityLhs(this QuaternionRotation src)
+        public static Quaternion QtmRhsToUnityLhs(this QuatRotation src)
         {
             var q = new Quaternion(-src.X, src.Y, src.Z, -src.W);
             return q;
@@ -59,7 +59,7 @@ namespace QualisysRealTime.Unity
             var q = new Quaternion(-src.X, src.Y, src.Z, -src.W);
             return coordinateSystemRotation * q;
         }
-        public static Quaternion QtmRhsToUnityLhs(this QuaternionRotation src, Quaternion coordinateSystemRotation)
+        public static Quaternion QtmRhsToUnityLhs(this QuatRotation src, Quaternion coordinateSystemRotation)
         {
             var q = new Quaternion(-src.X, src.Y, src.Z, -src.W);
             return coordinateSystemRotation * q;
