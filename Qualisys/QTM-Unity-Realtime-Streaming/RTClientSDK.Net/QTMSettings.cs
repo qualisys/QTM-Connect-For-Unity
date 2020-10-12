@@ -170,18 +170,18 @@ namespace QTMRealTimeSDK.Settings
     {
         public Settings6D()
         {
-#pragma warning disable CS0618 // Type or member is obsolete 
+#pragma warning disable CS0618 // Type or member is obsolete
             EulerNames = new EulerNames();
-#pragma warning restore CS0618 // Type or member is obsolete 
+#pragma warning restore CS0618 // Type or member is obsolete
         }
         public Settings6D(string xml, int bodyCount, List<Settings6DOF> bodies, EulerNames eulerNames)
         {
             Xml = xml;
             BodyCount = bodyCount;
             Bodies = bodies;
-#pragma warning disable CS0618 // Type or member is obsolete 
+#pragma warning disable CS0618 // Type or member is obsolete
             EulerNames = eulerNames;
-#pragma warning restore CS0618 // Type or member is obsolete 
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public int BodyCount;
