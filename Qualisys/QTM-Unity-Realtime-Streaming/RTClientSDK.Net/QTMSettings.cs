@@ -170,18 +170,18 @@ namespace QTMRealTimeSDK.Settings
     {
         public Settings6D()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete 
             EulerNames = new EulerNames();
-#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete 
         }
         public Settings6D(string xml, int bodyCount, List<Settings6DOF> bodies, EulerNames eulerNames)
         {
             Xml = xml;
             BodyCount = bodyCount;
             Bodies = bodies;
-#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete 
             EulerNames = eulerNames;
-#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete 
         }
 
         public int BodyCount;
@@ -1295,8 +1295,12 @@ namespace QTMRealTimeSDK.Settings
         ModelMiqusHybrid,
         [XmlEnum("Arqus A5")]
         ModelArqusA5,
+        [XmlEnum("Arqus A9")]
+        ModelArqusA9,
         [XmlEnum("Arqus A12")]
         ModelArqusA12,
+        [XmlEnum("Arqus A26")]
+        ModelArqusA26,
     }
 
     /// <summary>Camera modes</summary>
