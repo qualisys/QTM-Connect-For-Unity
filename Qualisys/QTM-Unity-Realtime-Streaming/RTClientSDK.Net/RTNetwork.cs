@@ -72,11 +72,11 @@ namespace QTMRealTimeSDK.Network
         }
 
         /// <summary>
-        /// Closes all sockets(command(TCP), stream(UDP) and broadcast(UDP)).
+        /// Closes selected sockets(command(TCP), stream(UDP) and broadcast(UDP)). All sockets closed by default.
         /// </summary>
-        internal void Disconnect()
+        internal void Disconnect(bool tcp = true, bool udp = true, bool udpBroadcast = true)
         {
-            if (mTCPClient != null)
+            if (tcp && mTCPClient != null)
             {
                 if (mTCPClient.Client != null)
                 {
@@ -90,13 +90,13 @@ namespace QTMRealTimeSDK.Network
                 mTCPClient = null;
             }
 
-            if (mUDPClient != null)
+            if (udp && mUDPClient != null)
             {
                 mUDPClient.Close();
                 mUDPClient = null;
             }
 
-            if (mUDPBroadcastClient != null)
+            if (udpBroadcast && mUDPBroadcastClient != null)
             {
                 mUDPBroadcastClient.Close();
                 mUDPBroadcastClient = null;

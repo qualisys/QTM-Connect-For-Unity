@@ -1,4 +1,4 @@
-﻿// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
+// Realtime SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
 //
 using QTMRealTimeSDK.Data;
 using QTMRealTimeSDK.Network;
@@ -70,7 +70,7 @@ namespace QTMRealTimeSDK
         }
 
         /// <summary>Packet received from QTM</summary>
-        internal RTPacket Packet
+        protected RTPacket Packet
         {
             get { return mPacket; }
         }
@@ -175,7 +175,6 @@ namespace QTMRealTimeSDK
         /// <summary>Skeleton settings from QTM</summary>
         public SettingsSkeletonsHierarchical SkeletonSettingsHierarchical { get { return mSkeletonSettingsHierarchical; } }
 
-        private bool mBroadcastSocketCreated = false;
         private RTNetwork mNetwork;
         private ushort mUDPport;
         private RTPacket mPacket;
@@ -205,7 +204,6 @@ namespace QTMRealTimeSDK
             mErrorString = "";
 
             mNetwork = new RTNetwork();
-            mBroadcastSocketCreated = false;
             mDiscoveryResponses = new HashSet<DiscoveryResponse>();
         }
 
@@ -353,7 +351,6 @@ namespace QTMRealTimeSDK
         /// <summary>Disconnect from server</summary>
         public void Disconnect()
         {
-            mBroadcastSocketCreated = false;
             mNetwork.Disconnect();
             mDiscoveryResponses.Clear();
 
@@ -426,7 +423,7 @@ namespace QTMRealTimeSDK
                     while (receivedTotal < frameSize)
                     {
                         // As long as we haven't received enough data, wait for more
-                        received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
+                        received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, -1);
                         if (received <= 0)
                         {
                             if (!mNetwork.IsConnected())
@@ -473,14 +470,14 @@ namespace QTMRealTimeSDK
 
             byte[] msg = b.ToArray();
 
-            //if we don't have a udp broadcast socket, create one
-            if (mBroadcastSocketCreated || mNetwork.CreateUDPSocket(ref replyPort, true))
+            // Create udp broadcast socket.
+            if (mNetwork.CreateUDPSocket(ref replyPort, true))
             {
-                mBroadcastSocketCreated = true;
                 var sendStatus = mNetwork.SendUDPBroadcast(msg, 10);
                 if (!sendStatus)
                 {
                     // Something major failed when trying to broadcast
+                    mNetwork.Disconnect();
                     return false;
                 }
 
@@ -509,7 +506,7 @@ namespace QTMRealTimeSDK
                 }
                 while (received != -1 && received > 8);
             }
-
+            mNetwork.Disconnect(tcp: false, udp: false, udpBroadcast: true);
             return true;
         }
 
@@ -549,13 +546,14 @@ namespace QTMRealTimeSDK
                 return false;
             }
 
-            if (SendCommandExpectCommandResponse("Version " + majorVersion + "." + minorVersion, out response))
+            if (!SendCommandExpectCommandResponse("Version " + majorVersion + "." + minorVersion, out response))
             {
-                this.mMajorVersion = majorVersion;
-                this.mMinorVersion = minorVersion;
-                return true;
+                return false;
             }
-            return false;
+
+            this.mMajorVersion = majorVersion;
+            this.mMinorVersion = minorVersion;
+            return true;
         }
 
         /// <summary>Ask QTM server what version is used.</summary>
@@ -921,6 +919,19 @@ namespace QTMRealTimeSDK
             return false;
         }
 
+        /// <summary>Get 6DOF settings from XML string</summary>
+        /// <returns>Returns true if settings was retrieved</returns>
+        public static bool Get6dSettings(string xmlData, out Settings6D settings, out string error)
+        {
+            xmlData = xmlData.Replace("QTM_Body_File_Ver_1.00", "The_6D");
+            settings = Settings6D_V2.ConvertToSettings6DOF(RTProtocol.ReadSettings<Settings6D_V2>("The_6D", xmlData, out error));
+            if (settings != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>Get Analog settings from QTM Server</summary>
         /// <returns>Returns true if settings was retrieved</returns>
         public bool GetAnalogSettings()
@@ -1026,7 +1037,6 @@ namespace QTMRealTimeSDK
                 {
                     mErrorString = error;
                 }
-
             }
             settingObject = default(TSettings);
             return false;
@@ -1045,6 +1055,21 @@ namespace QTMRealTimeSDK
                 return SetSettings("6D", "The_6D", settings6D_v2);
             }
             mErrorString = "Can not set 6D settings in protocol versions prior to 1.21";
+            return false;
+        }
+
+        public static bool Set6DSettings(in Settings6D settings, out string xmlData, out string error)
+        {
+            Settings6D_V2 settings6D_v2 = new Settings6D_V2(settings);
+
+            xmlData = RTProtocol.CreateSettingsXml(settings6D_v2, out error);
+            if (xmlData != string.Empty)
+            {
+                xmlData = xmlData.Replace("</QTM_Settings>", "");
+                xmlData = xmlData.Replace("<QTM_Settings>", "");
+                xmlData = xmlData.Replace("The_6D", "QTM_Body_File_Ver_1.00");
+                return true;
+            }
             return false;
         }
 
@@ -1089,6 +1114,8 @@ namespace QTMRealTimeSDK
                 XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
                 {
                     OmitXmlDeclaration = true,
+                    Indent = true,
+                    IndentChars = "  ",
                 };
                 StringBuilder settingsOutput = new StringBuilder();
                 using (var writer = XmlWriter.Create(settingsOutput, xmlWriterSettings))

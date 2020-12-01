@@ -174,7 +174,7 @@ namespace QualisysRealTime.Unity
                             continue;
                         }
 
-                        var packet = rtProtocol.Packet;
+                        var packet = rtProtocol.GetRTPacket();
                         if (packet != null)
                         {
                             if (packetType == PacketType.PacketData)
