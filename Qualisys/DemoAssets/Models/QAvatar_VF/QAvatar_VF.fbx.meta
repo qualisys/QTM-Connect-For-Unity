@@ -2,7 +2,10 @@ fileFormatVersion: 2
 guid: ba9b6c38719f2b94c9a455857a360172
 ModelImporter:
   serializedVersion: 19301
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: 1827226128182048838
+    second: Take 001
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -276,15 +279,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftInHandThumb
-      humanName: Left Thumb Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: VF:LeftHandThumb1
+    - boneName: VF:LeftHandThumb2
       humanName: Left Thumb Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -292,7 +287,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandThumb2
+    - boneName: VF:LeftHandThumb3
       humanName: Left Thumb Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -300,7 +295,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftInHandIndex
+    - boneName: VF:LeftHandIndex1
       humanName: Left Index Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -308,7 +303,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandIndex1
+    - boneName: VF:LeftHandIndex2
       humanName: Left Index Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -316,7 +311,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandIndex2
+    - boneName: VF:LeftHandIndex3
       humanName: Left Index Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -324,7 +319,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftInHandMiddle
+    - boneName: VF:LeftHandMiddle1
       humanName: Left Middle Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -332,7 +327,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandMiddle1
+    - boneName: VF:LeftHandMiddle2
       humanName: Left Middle Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -340,7 +335,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandMiddle2
+    - boneName: VF:LeftHandMiddle3
       humanName: Left Middle Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -348,7 +343,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftInHandRing
+    - boneName: VF:LeftHandRing1
       humanName: Left Ring Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -356,7 +351,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandRing1
+    - boneName: VF:LeftHandRing2
       humanName: Left Ring Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -364,7 +359,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandRing2
+    - boneName: VF:LeftHandRing3
       humanName: Left Ring Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -372,7 +367,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftInHandPinky
+    - boneName: VF:LeftHandPinky1
       humanName: Left Little Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -380,7 +375,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandPinky1
+    - boneName: VF:LeftHandPinky2
       humanName: Left Little Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -388,7 +383,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:LeftHandPinky2
+    - boneName: VF:LeftHandPinky3
       humanName: Left Little Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -396,15 +391,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightInHandThumb
-      humanName: Right Thumb Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: VF:RightHandThumb1
+    - boneName: VF:RightHandThumb2
       humanName: Right Thumb Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -412,7 +399,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandThumb2
+    - boneName: VF:RightHandThumb3
       humanName: Right Thumb Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -420,7 +407,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightInHandIndex
+    - boneName: VF:RightHandIndex1
       humanName: Right Index Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -428,7 +415,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandIndex1
+    - boneName: VF:RightHandIndex2
       humanName: Right Index Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -436,7 +423,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandIndex2
+    - boneName: VF:RightHandIndex3
       humanName: Right Index Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -444,7 +431,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightInHandMiddle
+    - boneName: VF:RightHandMiddle1
       humanName: Right Middle Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -452,7 +439,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandMiddle1
+    - boneName: VF:RightHandMiddle2
       humanName: Right Middle Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -460,7 +447,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandMiddle2
+    - boneName: VF:RightHandMiddle3
       humanName: Right Middle Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -468,7 +455,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightInHandRing
+    - boneName: VF:RightHandRing1
       humanName: Right Ring Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -476,7 +463,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandRing1
+    - boneName: VF:RightHandRing2
       humanName: Right Ring Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -484,7 +471,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandRing2
+    - boneName: VF:RightHandRing3
       humanName: Right Ring Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -492,7 +479,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightInHandPinky
+    - boneName: VF:RightHandPinky1
       humanName: Right Little Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -500,7 +487,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandPinky1
+    - boneName: VF:RightHandPinky2
       humanName: Right Little Intermediate
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -508,7 +495,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: VF:RightHandPinky2
+    - boneName: VF:RightHandPinky3
       humanName: Right Little Distal
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -524,380 +511,61 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: VF:LeftHandThumb1
+      humanName: Left Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: VF:RightHandThumb1
+      humanName: Right Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     skeleton:
-    - name: QAvatar_VF 1(Clone)
+    - name: QAvatar_VF(Clone)
       parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: VF:Reference
-      parentName: QAvatar_VF 1(Clone)
-      position: {x: -0, y: 0, z: 0}
+    - name: VF:QAvatarRB
+      parentName: QAvatar_VF(Clone)
+      position: {x: -0, y: 0.9090595, z: -0.8573942}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Reference
+      parentName: QAvatar_VF(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:Hips
       parentName: VF:Reference
-      position: {x: -0, y: 0, z: 1.0027131}
-      rotation: {x: -0, y: 0, z: 1, w: -6.123234e-17}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Spine
-      parentName: VF:Hips
-      position: {x: 0.00085581304, y: -0.0031018672, z: 0.06626794}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Spine1
-      parentName: VF:Spine
-      position: {x: -0, y: 0, z: 0.13350481}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Spine2
-      parentName: VF:Spine1
-      position: {x: -0, y: 0, z: 0.15575561}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Neck
-      parentName: VF:Spine2
-      position: {x: -1.901257e-17, y: 0, z: 0.155}
-      rotation: {x: 0.024418917, y: 0.001469915, z: -6.121402e-17, w: 0.9997008}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Head
-      parentName: VF:Neck
-      position: {x: -0.0031972309, y: 0.053113997, z: 0.087631}
-      rotation: {x: -0.0066325925, y: 0.008767224, z: -0.025949094, w: 0.9996028}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:Head_end
-      parentName: VF:Head
-      position: {x: -0, y: 0, z: 0.1924823}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftShoulder
-      parentName: VF:Spine2
-      position: {x: 0.024999999, y: 0.0075, z: 0.114999995}
-      rotation: {x: -0.002738183, y: -0.034791913, z: -0.0784113, w: 0.99631006}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftArm
-      parentName: VF:LeftShoulder
-      position: {x: 0.13, y: 0, z: 0}
-      rotation: {x: -0.008294351, y: 0.03451212, z: 0.038480036, w: 0.9986288}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftForeArm
-      parentName: VF:LeftArm
-      position: {x: 0.28, y: 0, z: 0}
-      rotation: {x: 0, y: 0, z: 0.06975647, w: 0.9975641}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftForeArmRoll
-      parentName: VF:LeftForeArm
-      position: {x: 0.125, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHand
-      parentName: VF:LeftForeArmRoll
-      position: {x: 0.125, y: 0, z: 0}
-      rotation: {x: -0.004826382, y: 0.045258015, z: 0.062368102, w: 0.9970149}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHand_end
-      parentName: VF:LeftHand
-      position: {x: 0.08, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftInHandThumb
-      parentName: VF:LeftHand
-      position: {x: 0.010759431, y: 0.015602312, z: 0.001024091}
-      rotation: {x: 0.008450387, y: -0.022256605, z: 0.30895472, w: 0.9507788}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandThumb1
-      parentName: VF:LeftInHandThumb
-      position: {x: 0.014947548, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandThumb2
-      parentName: VF:LeftHandThumb1
-      position: {x: 0.04107384, y: 3.7019e-17, z: 3.524958e-17}
-      rotation: {x: 0.007389741, y: 0.031056488, z: 0.020653442, w: 0.99927694}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandThumb3
-      parentName: VF:LeftHandThumb2
-      position: {x: 0.042407155, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0.038071066, w: 0.999275}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandThumb3_end
-      parentName: VF:LeftHandThumb3
-      position: {x: 0.033925723, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftInHandIndex
-      parentName: VF:LeftHand
-      position: {x: 0.014308369, y: 0.0066467146, z: 0.0028187328}
-      rotation: {x: 0.0070328005, y: -0.07719715, z: -0.00060709874, w: 0.9969909}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandIndex1
-      parentName: VF:LeftInHandIndex
-      position: {x: 0.08538962, y: 4.3120346e-17, z: 7.834445e-18}
-      rotation: {x: 0.000000068917835, y: 0.037924424, z: -0.000000972213, w: 0.9992806}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandIndex2
-      parentName: VF:LeftHandIndex1
-      position: {x: 0.034069743, y: 2.8353703e-16, z: -2.549523e-16}
-      rotation: {x: 0, y: 0.030952847, z: -0, w: 0.99952084}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandIndex3
-      parentName: VF:LeftHandIndex2
-      position: {x: 0.024069922, y: 0, z: 0}
-      rotation: {x: 0, y: 0.046885803, z: -0, w: 0.9989003}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandIndex3_end
-      parentName: VF:LeftHandIndex3
-      position: {x: 0.026703062, y: -9.3371486e-17, z: -1.4321877e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftInHandMiddle
-      parentName: VF:LeftHand
-      position: {x: 0.017857308, y: -0.002308881, z: 0.004613375}
-      rotation: {x: 0.18701224, y: -0.05813537, z: -0.016138256, w: 0.98050314}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandMiddle1
-      parentName: VF:LeftInHandMiddle
-      position: {x: 0.08068713, y: -6.0298985e-17, z: 1.0404871e-16}
-      rotation: {x: -0.09060615, y: 0.030684337, z: -0.019924838, w: 0.9952146}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandMiddle2
-      parentName: VF:LeftHandMiddle1
-      position: {x: 0.036673613, y: -3.8880355e-16, z: -2.1257302e-16}
-      rotation: {x: -0.000000059604616, y: 0.040291578, z: -0.00000062165753, w: 0.99918795}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandMiddle3
-      parentName: VF:LeftHandMiddle2
-      position: {x: 0.027193105, y: 4.3076652e-16, z: 7.7854385e-17}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandMiddle3_end
-      parentName: VF:LeftHandMiddle3
-      position: {x: 0.031520363, y: 2.1746494e-16, z: 1.9428903e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftInHandRing
-      parentName: VF:LeftHand
-      position: {x: 0.012261508, y: -0.010039631, z: 0.002390547}
-      rotation: {x: -0.005002126, y: -0.048087332, z: -0.08857242, w: 0.9948957}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandRing1
-      parentName: VF:LeftInHandRing
-      position: {x: 0.08429799, y: 8.064513e-17, z: -9.318934e-17}
-      rotation: {x: 0.20948878, y: 0.031607836, z: -0.0038955165, w: 0.9772923}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandRing2
-      parentName: VF:LeftHandRing1
-      position: {x: 0.033686392, y: 1.2767565e-16, z: 5.8841817e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandRing3
-      parentName: VF:LeftHandRing2
-      position: {x: 0.024069922, y: 0, z: 0}
-      rotation: {x: 0, y: 0.03481613, z: -0, w: 0.99939376}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandRing3_end
-      parentName: VF:LeftHandRing3
-      position: {x: 0.027879992, y: 9.0483176e-17, z: -1.4432899e-17}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftInHandPinky
-      parentName: VF:LeftHand
-      position: {x: 0.0067737517, y: -0.017805584, z: 0.00102311}
-      rotation: {x: 0.18523763, y: -0.07843946, z: -0.089035876, w: 0.9755034}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandPinky1
-      parentName: VF:LeftInHandPinky
-      position: {x: 0.08500991, y: 8.160139e-17, z: 5.456746e-16}
-      rotation: {x: 0.000000089406946, y: 0.03546983, z: -0.00000063609315, w: 0.9993708}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandPinky2
-      parentName: VF:LeftHandPinky1
-      position: {x: 0.030997042, y: 0, z: 0}
-      rotation: {x: 0, y: 0.03340442, z: -0, w: 0.9994419}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandPinky3
-      parentName: VF:LeftHandPinky2
-      position: {x: 0.018903358, y: -5.162537e-17, z: 0.0005830778}
-      rotation: {x: 0, y: 0.03925696, z: -0, w: 0.99922913}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:LeftHandPinky3_end
-      parentName: VF:LeftHandPinky3
-      position: {x: 0.021050083, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightShoulder
-      parentName: VF:Spine2
-      position: {x: -0.024999999, y: 0.0075, z: 0.114999995}
-      rotation: {x: -0.002738183, y: 0.034791913, z: 0.0784113, w: 0.99631006}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightArm
-      parentName: VF:RightShoulder
-      position: {x: -0.13, y: 0, z: 0}
-      rotation: {x: -0.008294351, y: -0.03451212, z: -0.038480036, w: 0.9986288}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightForeArm
-      parentName: VF:RightArm
-      position: {x: -0.28, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0.06975647, w: 0.9975641}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightForeArmRoll
-      parentName: VF:RightForeArm
-      position: {x: -0.125, y: -0.000000003, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHand
-      parentName: VF:RightForeArmRoll
-      position: {x: -0.125, y: 0.000000001, z: 0}
-      rotation: {x: -0.009896637, y: -0.06801958, z: -0.063016064, w: 0.9956427}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHand_end
-      parentName: VF:RightHand
-      position: {x: -0.08, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightInHandPinky
-      parentName: VF:RightHand
-      position: {x: -0.0071038487, y: -0.01896295, z: 0.0016188569}
-      rotation: {x: 0.14919254, y: 0.09448026, z: 0.075644925, w: 0.98137295}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandPinky1
-      parentName: VF:RightInHandPinky
-      position: {x: -0.0861339, y: -1.3532361e-16, z: -6.6374857e-16}
-      rotation: {x: -0.000000014901156, y: -0.044147484, z: -0.0000004828906, w: 0.99902505}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandPinky2
-      parentName: VF:RightHandPinky1
-      position: {x: -0.02845941, y: -2.2673704e-16, z: 0.0002888688}
-      rotation: {x: 0.0000000775082, y: -0.034233656, z: 0.000000029574359, w: 0.99941385}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandPinky3
-      parentName: VF:RightHandPinky2
-      position: {x: -0.021482863, y: 1.3329615e-16, z: 2.4147351e-17}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandPinky3_end
-      parentName: VF:RightHandPinky3
-      position: {x: -0.020523306, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightInHandRing
-      parentName: VF:RightHand
-      position: {x: -0.012535214, y: -0.010435595, z: 0.003139103}
-      rotation: {x: 0.13439648, y: 0.088948056, z: 0.0795449, w: 0.98371667}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandRing1
-      parentName: VF:RightInHandRing
-      position: {x: -0.08357439, y: -3.696262e-16, z: 6.5031315e-16}
-      rotation: {x: -0.000000044703473, y: -0.03360628, z: 0.0000008763743, w: 0.99943525}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandRing2
-      parentName: VF:RightHandRing1
-      position: {x: -0.035768937, y: -1.5581286e-16, z: 4.3187674e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandRing3
-      parentName: VF:RightHandRing2
-      position: {x: -0.02069648, y: -9.992007e-17, z: -1.3614109e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandRing3_end
-      parentName: VF:RightHandRing3
-      position: {x: -0.029521134, y: -1.172673e-16, z: 5.828671e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightInHandMiddle
-      parentName: VF:RightHand
-      position: {x: -0.018038962, y: -0.001928899, z: 0.005536688}
-      rotation: {x: 0.14156589, y: 0.073190525, z: 0.014899217, w: 0.98710704}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandMiddle1
-      parentName: VF:RightInHandMiddle
-      position: {x: -0.08141324, y: -2.7616797e-16, z: 3.9884762e-16}
-      rotation: {x: -0.006884199, y: -0.034206763, z: 0.010118505, w: 0.9993399}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandMiddle2
-      parentName: VF:RightHandMiddle1
-      position: {x: -0.03590579, y: -4.1008862e-17, z: -1.1185496e-16}
-      rotation: {x: 0, y: -0.026532238, z: -0, w: 0.999648}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandMiddle3
-      parentName: VF:RightHandMiddle2
-      position: {x: -0.028554408, y: -1.0151602e-16, z: 4.787837e-16}
-      rotation: {x: 0, y: -0.06513877, z: -0, w: 0.9978762}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandMiddle3_end
-      parentName: VF:RightHandMiddle3
-      position: {x: -0.031973805, y: -5.7565063e-16, z: -3.0531133e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightInHandIndex
-      parentName: VF:RightHand
-      position: {x: -0.014378464, y: 0.007583559, z: 0.003411253}
-      rotation: {x: 0.0114449095, y: 0.1082209, z: -0.0200562, w: 0.99385864}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandIndex1
-      parentName: VF:RightInHandIndex
-      position: {x: -0.08758036, y: 5.2638015e-17, z: 1.0217521e-17}
-      rotation: {x: 0.000000057741985, y: -0.03552273, z: 0.0000006735789, w: 0.9993689}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandIndex2
-      parentName: VF:RightHandIndex1
-      position: {x: -0.03120207, y: 6.869071e-17, z: -4.3118286e-16}
-      rotation: {x: 0, y: -0.025558397, z: -0, w: 0.99967337}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandIndex3
-      parentName: VF:RightHandIndex2
-      position: {x: -0.023699626, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandIndex3_end
-      parentName: VF:RightHandIndex3
-      position: {x: -0.029634846, y: -1.9529516e-16, z: -4.077294e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightInHandThumb
-      parentName: VF:RightHand
-      position: {x: -0.010717967, y: 0.017096017, z: 0.001285818}
-      rotation: {x: 0.012804206, y: 0.041107316, z: -0.31471425, w: 0.9482094}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandThumb1
-      parentName: VF:RightInHandThumb
-      position: {x: -0.014408811, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandThumb2
-      parentName: VF:RightHandThumb1
-      position: {x: -0.04186763, y: 2.0138621e-16, z: 1.3919421e-16}
-      rotation: {x: 0.004830214, y: -0.03529277, z: -0.008241677, w: 0.9993315}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandThumb3
-      parentName: VF:RightHandThumb2
-      position: {x: -0.04043957, y: 0, z: 0}
-      rotation: {x: 0, y: 0, z: 0.07066918, w: 0.9974998}
-      scale: {x: 1, y: 1, z: 1}
-    - name: VF:RightHandThumb3_end
-      parentName: VF:RightHandThumb3
-      position: {x: -0.032351654, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
+      position: {x: -0, y: 1.0027131, z: 0}
+      rotation: {x: -4.3297806e-17, y: 0.7071068, z: 0.7071068, w: -4.3297806e-17}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:LeftUpLeg
       parentName: VF:Hips
-      position: {x: 0.08549681, y: 0.0144216595, z: -0.029915983}
-      rotation: {x: 0.015293247, y: -0.00868551, z: 0.0027508487, w: 0.9998416}
+      position: {x: 0.08549681, y: 0.0144216595, z: -0.029916}
+      rotation: {x: 0.015293063, y: -0.008685504, z: 0.0027508445, w: 0.9998416}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:LeftLeg
       parentName: VF:LeftUpLeg
-      position: {x: -0, y: -0.0037999998, z: -0.44}
-      rotation: {x: -0.0392199, y: 0.008891021, z: -0.0040171803, w: 0.999183}
+      position: {x: 0.000000009976048, y: -0.0037998382, z: -0.44}
+      rotation: {x: -0.03921985, y: 0.008891015, z: -0.0040171747, w: 0.999183}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:LeftFoot
       parentName: VF:LeftLeg
-      position: {x: -0.000000001, y: -0.024, z: -0.45}
-      rotation: {x: 0.008725206, y: -0.017451743, z: 0.00015229905, w: 0.9998096}
+      position: {x: -0.0000000054141163, y: -0.023999874, z: -0.45}
+      rotation: {x: 0.008724149, y: -0.017451689, z: 0.00015228012, w: 0.9998096}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:LeftToeBase
       parentName: VF:LeftFoot
-      position: {x: -0, y: 0.11, z: -0.06}
+      position: {x: 0.000000012175771, y: 0.11000014, z: -0.05999974}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:LeftToeBase_end
@@ -907,22 +575,22 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: VF:RightUpLeg
       parentName: VF:Hips
-      position: {x: -0.08549681, y: 0.0144216595, z: -0.029915983}
-      rotation: {x: 0.015293247, y: 0.00868551, z: -0.0027508487, w: 0.9998416}
+      position: {x: -0.08549681, y: 0.0144216595, z: -0.029916}
+      rotation: {x: 0.015293063, y: 0.008685504, z: -0.0027508445, w: 0.9998416}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:RightLeg
       parentName: VF:RightUpLeg
-      position: {x: -0, y: -0.0037994168, z: -0.44}
-      rotation: {x: -0.0392199, y: -0.008891021, z: 0.0040171803, w: 0.999183}
+      position: {x: -0.00000001303404, y: -0.0037992545, z: -0.44000003}
+      rotation: {x: -0.03921985, y: -0.008891015, z: 0.0040171747, w: 0.999183}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:RightFoot
       parentName: VF:RightLeg
-      position: {x: -0.000000001, y: -0.024, z: -0.45}
-      rotation: {x: 0.008725206, y: -0.017451743, z: 0.00015229905, w: 0.9998096}
+      position: {x: 0.000000005412016, y: -0.02399988, z: -0.45}
+      rotation: {x: 0.008725115, y: -0.017451728, z: 0.00015229733, w: 0.9998096}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:RightToeBase
       parentName: VF:RightFoot
-      position: {x: -0, y: 0.11, z: -0.06}
+      position: {x: -0.0000000011797933, y: 0.11000003, z: -0.05999995}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: VF:RightToeBase_end
@@ -930,10 +598,345 @@ ModelImporter:
       position: {x: -0, y: 0.11, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: VF:QAvatarRB
-      parentName: QAvatar_VF 1(Clone)
-      position: {x: -0, y: 0.9090595, z: -0.8573942}
-      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+    - name: VF:Spine
+      parentName: VF:Hips
+      position: {x: 0.00085581304, y: -0.0031018672, z: 0.06626793}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Spine1
+      parentName: VF:Spine
+      position: {x: -1.6375789e-17, y: 0, z: 0.1335048}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Spine2
+      parentName: VF:Spine1
+      position: {x: -1.901257e-17, y: 0, z: 0.15575568}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftShoulder
+      parentName: VF:Spine2
+      position: {x: 0.024999999, y: 0.0075, z: 0.114999995}
+      rotation: {x: -0.0027381692, y: -0.03479181, z: -0.07841114, w: 0.99631006}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftArm
+      parentName: VF:LeftShoulder
+      position: {x: 0.12999998, y: -0.000000047298663, z: -0.000000015950423}
+      rotation: {x: -0.0068589305, y: 0.034043472, z: 0.0789651, w: 0.9962723}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftForeArm
+      parentName: VF:LeftArm
+      position: {x: 0.28, y: 3.5731676e-10, z: -0.000000037120085}
+      rotation: {x: 0.000090010384, y: 0.0012807855, z: 0.0031705317, w: 0.99999416}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftForeArmRoll
+      parentName: VF:LeftForeArm
+      position: {x: 0.125, y: 0, z: 0}
+      rotation: {x: 1.3877788e-17, y: -3.469447e-18, z: -8.673618e-18, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHand
+      parentName: VF:LeftForeArmRoll
+      position: {x: 0.12500003, y: 0.000000003136749, z: 0.00000007592998}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHand_end
+      parentName: VF:LeftHand
+      position: {x: 0.08, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftInHandIndex
+      parentName: VF:LeftHand
+      position: {x: 0.014308396, y: 0.0066467146, z: 0.0028185688}
+      rotation: {x: 0, y: 0, z: 0.034899496, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandIndex1
+      parentName: VF:LeftInHandIndex
+      position: {x: 0.08538959, y: 0.000000009223578, z: 0.00000009777169}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandIndex2
+      parentName: VF:LeftHandIndex1
+      position: {x: 0.03406973, y: 0.0000000047200706, z: -0.000000102403256}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandIndex3
+      parentName: VF:LeftHandIndex2
+      position: {x: 0.024069924, y: -0.0000000037248715, z: 0.00000014521821}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandIndex3_end
+      parentName: VF:LeftHandIndex3
+      position: {x: 0.02670305, y: 0.0000000043082062, z: -0.000000052058258}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftInHandMiddle
+      parentName: VF:LeftHand
+      position: {x: 0.017857278, y: -0.0023088853, z: 0.0046132687}
+      rotation: {x: 0, y: 0, z: 0.017452406, w: 0.9998477}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandMiddle1
+      parentName: VF:LeftInHandMiddle
+      position: {x: 0.08068711, y: 0.000000017232296, z: 0.000000030811346}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandMiddle2
+      parentName: VF:LeftHandMiddle1
+      position: {x: 0.03667362, y: -0.0000000019379813, z: -0.0000000030276714}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandMiddle3
+      parentName: VF:LeftHandMiddle2
+      position: {x: 0.027193176, y: 0.000000011478063, z: 0.000000019831129}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandMiddle3_end
+      parentName: VF:LeftHandMiddle3
+      position: {x: 0.031520315, y: -0.00000003813522, z: -0.00000012652775}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftInHandPinky
+      parentName: VF:LeftHand
+      position: {x: 0.0067737433, y: -0.017805586, z: 0.0010230757}
+      rotation: {x: 0, y: -0, z: -0.034899496, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandPinky1
+      parentName: VF:LeftInHandPinky
+      position: {x: 0.085009865, y: 0.0000000016454739, z: -0.000000014630231}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandPinky2
+      parentName: VF:LeftHandPinky1
+      position: {x: 0.030997064, y: -0.0000000136652885, z: -0.000000026893687}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandPinky3
+      parentName: VF:LeftHandPinky2
+      position: {x: 0.018903337, y: -0.0000000082342275, z: 0.0005830408}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandPinky3_end
+      parentName: VF:LeftHandPinky3
+      position: {x: 0.021050055, y: -0.0000000021564621, z: 0.00000005880423}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftInHandRing
+      parentName: VF:LeftHand
+      position: {x: 0.012261456, y: -0.010039629, z: 0.0023905023}
+      rotation: {x: 0, y: -0, z: -0.017452406, w: 0.9998477}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandRing1
+      parentName: VF:LeftInHandRing
+      position: {x: 0.08429803, y: -5.229241e-10, z: -0.00000011030507}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandRing2
+      parentName: VF:LeftHandRing1
+      position: {x: 0.033686418, y: -0.000000019572939, z: -0.00000007221679}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandRing3
+      parentName: VF:LeftHandRing2
+      position: {x: 0.024069848, y: 0.00000004983018, z: 0.00000014603518}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandRing3_end
+      parentName: VF:LeftHandRing3
+      position: {x: 0.02787999, y: -0.000000026263635, z: -0.00000007147965}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftInHandThumb
+      parentName: VF:LeftHand
+      position: {x: 0.01075936, y: 0.01560232, z: 0.0010240214}
+      rotation: {x: -0.6532815, y: -0.270598, z: 0.270598, w: 0.6532815}
+      scale: {x: 1, y: 1, z: 0.99999726}
+    - name: VF:LeftHandThumb1
+      parentName: VF:LeftInHandThumb
+      position: {x: 0.014947637, y: 0.000000032371005, z: -0.000000036718184}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandThumb2
+      parentName: VF:LeftHandThumb1
+      position: {x: 0.041073713, y: -0.00000025546035, z: 0.00000014386475}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandThumb3
+      parentName: VF:LeftHandThumb2
+      position: {x: 0.04240728, y: 0.00000025027921, z: -0.000000009344694}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:LeftHandThumb3_end
+      parentName: VF:LeftHandThumb3
+      position: {x: 0.033925768, y: 0.000000048276718, z: 0.000000017465094}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Neck
+      parentName: VF:Spine2
+      position: {x: -1.901257e-17, y: 0, z: 0.155}
+      rotation: {x: 0.024419155, y: 0.0014699274, z: 3.1354632e-17, w: 0.9997008}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Head
+      parentName: VF:Neck
+      position: {x: -0.0031972309, y: 0.053113997, z: 0.08763092}
+      rotation: {x: -0.0066328268, y: 0.008767219, z: -0.025949078, w: 0.9996028}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:Head_end
+      parentName: VF:Head
+      position: {x: -0, y: 0, z: 0.1924823}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightShoulder
+      parentName: VF:Spine2
+      position: {x: -0.024999999, y: 0.0075, z: 0.114999995}
+      rotation: {x: -0.0027381692, y: 0.03479181, z: 0.07841114, w: 0.99631006}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightArm
+      parentName: VF:RightShoulder
+      position: {x: -0.12999998, y: -0.000000047298663, z: -0.000000015950425}
+      rotation: {x: -0.0069724284, y: -0.033854913, z: -0.075214006, w: 0.99656814}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightForeArm
+      parentName: VF:RightArm
+      position: {x: -0.28, y: 2.695927e-10, z: -0.00000009374449}
+      rotation: {x: 0, y: -0, z: -0.0068709743, w: 0.9999764}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightForeArmRoll
+      parentName: VF:RightForeArm
+      position: {x: -0.125, y: -0.000000003, z: 0}
+      rotation: {x: -1.686e-42, y: 1.3877788e-17, z: 1.0408341e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHand
+      parentName: VF:RightForeArmRoll
+      position: {x: -0.12500001, y: 0.000000004476767, z: 0.00000006164355}
+      rotation: {x: 0, y: -0.008726519, z: -0, w: 0.9999619}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHand_end
+      parentName: VF:RightHand
+      position: {x: -0.08, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightInHandIndex
+      parentName: VF:RightHand
+      position: {x: -0.014378446, y: 0.0075835637, z: 0.0034111908}
+      rotation: {x: 0, y: -0, z: -0.034899496, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandIndex1
+      parentName: VF:RightInHandIndex
+      position: {x: -0.087580346, y: 0.000000012652502, z: 0.000000042654346}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandIndex2
+      parentName: VF:RightHandIndex1
+      position: {x: -0.03120202, y: -0.0000000026668112, z: 0.00000010814334}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandIndex3
+      parentName: VF:RightHandIndex2
+      position: {x: -0.023699686, y: 1.1563677e-10, z: -0.000000034863042}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandIndex3_end
+      parentName: VF:RightHandIndex3
+      position: {x: -0.02963491, y: 0.000000003480328, z: -0.00000009453047}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightInHandMiddle
+      parentName: VF:RightHand
+      position: {x: -0.01803892, y: -0.0019288954, z: 0.005536756}
+      rotation: {x: 0, y: -0, z: -0.017452406, w: 0.9998477}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandMiddle1
+      parentName: VF:RightInHandMiddle
+      position: {x: -0.08141323, y: -0.000000011184536, z: -0.00000008737978}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandMiddle2
+      parentName: VF:RightHandMiddle1
+      position: {x: -0.035905804, y: 0.0000000131022215, z: -0.0000000039781356}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandMiddle3
+      parentName: VF:RightHandMiddle2
+      position: {x: -0.028554415, y: 0.0000000013656697, z: -0.000000016157525}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandMiddle3_end
+      parentName: VF:RightHandMiddle3
+      position: {x: -0.031973835, y: -0.000000007327373, z: 0.000000018820778}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightInHandPinky
+      parentName: VF:RightHand
+      position: {x: -0.007103838, y: -0.018962944, z: 0.0016189103}
+      rotation: {x: 0, y: 0, z: 0.034899496, w: 0.99939084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandPinky1
+      parentName: VF:RightInHandPinky
+      position: {x: -0.08613387, y: 0.0000000097001855, z: -0.00000006080891}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandPinky2
+      parentName: VF:RightHandPinky1
+      position: {x: -0.028459486, y: -0.000000016450842, z: 0.0002888497}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandPinky3
+      parentName: VF:RightHandPinky2
+      position: {x: -0.02148282, y: -0.000000012883224, z: -0.000000012633688}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandPinky3_end
+      parentName: VF:RightHandPinky3
+      position: {x: -0.02052326, y: 0.000000003361858, z: 0.000000051738287}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightInHandRing
+      parentName: VF:RightHand
+      position: {x: -0.01253517, y: -0.0104355905, z: 0.0031390276}
+      rotation: {x: 0, y: 0, z: 0.017452406, w: 0.9998477}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandRing1
+      parentName: VF:RightInHandRing
+      position: {x: -0.08357446, y: 0.0000000058762173, z: 0.00000015069853}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandRing2
+      parentName: VF:RightHandRing1
+      position: {x: -0.03576891, y: -0.000000014947341, z: -0.00000007936772}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandRing3
+      parentName: VF:RightHandRing2
+      position: {x: -0.020696402, y: 0.000000030131492, z: -0.000000010011732}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandRing3_end
+      parentName: VF:RightHandRing3
+      position: {x: -0.02952121, y: 3.6781073e-10, z: 0.0000000785165}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightInHandThumb
+      parentName: VF:RightHand
+      position: {x: -0.01071797, y: 0.017096018, z: 0.0012857781}
+      rotation: {x: -0.6532815, y: 0.27059802, z: -0.27059802, w: 0.6532815}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandThumb1
+      parentName: VF:RightInHandThumb
+      position: {x: -0.0144087905, y: -0.00000012255205, z: 0.00000006605207}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 0.9999986}
+    - name: VF:RightHandThumb2
+      parentName: VF:RightHandThumb1
+      position: {x: -0.041867733, y: 0.00000012687738, z: -0.00000006920728}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandThumb3
+      parentName: VF:RightHandThumb2
+      position: {x: -0.040439658, y: 0.00000010221892, z: 0.000000110407136}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: VF:RightHandThumb3_end
+      parentName: VF:RightHandThumb3
+      position: {x: -0.032351594, y: 0.000000054957923, z: -0.00000010642327}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
