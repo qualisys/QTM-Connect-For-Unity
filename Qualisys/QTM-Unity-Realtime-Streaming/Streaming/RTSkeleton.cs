@@ -44,9 +44,10 @@ namespace QualisysRealTime.Unity
                 if(mStreamedRootObject != null)
                     GameObject.Destroy(mStreamedRootObject);
                 mStreamedRootObject = new GameObject(this.SkeletonName);
+
 #if DEBUG_SKELETON
                 if (mTPoseRoot != null)
-                    GameObject.Destroy(mStreamedRootObject);
+                    GameObject.Destroy(mTPoseRoot);
                 mTPoseRoot = new GameObject();
                 mStreamedRootObject.AddComponent<DebugHierarchyRotations>().color = Color.yellow;
 #endif
