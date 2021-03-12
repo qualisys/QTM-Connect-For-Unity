@@ -5,6 +5,7 @@ namespace QualisysRealTime.Unity
 {
     public class DebugHierarchyRotations : MonoBehaviour
     {
+        public Color color = Color.red;
         private void OnDrawGizmos()
         {
             var transforms = new Stack<Transform>();
@@ -12,8 +13,8 @@ namespace QualisysRealTime.Unity
             while (transforms.Count > 0)
             {
                 var x = transforms.Pop();
-                UnityEditor.Handles.color = Color.red;
-                UnityEditor.Handles.ArrowHandleCap(-1, x.transform.position, x.rotation, 0.2f, EventType.Repaint);
+                UnityEditor.Handles.color = color;
+                UnityEditor.Handles.ArrowHandleCap(-1, x.transform.position, x.rotation, 0.04f, EventType.Repaint);
 
                 foreach (Transform child in x)
                 {

@@ -1,5 +1,9 @@
-﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2018 Qualisys AB
+﻿// Unity SDK for Qualisys Track Manager. Copyright 2015-2021 Qualisys AB
 //
+
+#define FINGERS
+//#define DEBUG_SKELETON
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +25,9 @@ namespace QualisysRealTime.Unity
         private HumanPoseHandler mDestiationPoseHandler;
 
         private Skeleton mQtmSkeletonCache;
-
+#if DEBUG_SKELETON
+        private GameObject mTPoseRoot;
+#endif
         void Update()
         {
             var skeleton = RTClient.GetInstance().GetSkeleton(SkeletonName);
@@ -37,8 +43,14 @@ namespace QualisysRealTime.Unity
 
                 if(mStreamedRootObject != null)
                     GameObject.Destroy(mStreamedRootObject);
-                
                 mStreamedRootObject = new GameObject(this.SkeletonName);
+
+#if DEBUG_SKELETON
+                if (mTPoseRoot != null)
+                    GameObject.Destroy(mTPoseRoot);
+                mTPoseRoot = new GameObject();
+                mStreamedRootObject.AddComponent<DebugHierarchyRotations>().color = Color.yellow;
+#endif
 
                 mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
 
@@ -52,6 +64,11 @@ namespace QualisysRealTime.Unity
                 }
 
                 mStreamedRootObject.transform.SetParent(this.transform, false);
+#if DEBUG_SKELETON
+                mTPoseRoot = GameObject.Instantiate<GameObject>(mStreamedRootObject.gameObject, this.transform, false);
+                mTPoseRoot.name = this.SkeletonName + "-TPose";
+                mTPoseRoot.GetComponent<DebugHierarchyRotations>().color = Color.white;
+#endif
                 BuildMecanimAvatarFromQtmTPose();
 
                 return;
@@ -162,7 +179,7 @@ namespace QualisysRealTime.Unity
             mMecanimToQtmSegmentNames.Add("UpperChest", skeletonName + "_Spine2");
             mMecanimToQtmSegmentNames.Add("Neck", skeletonName + "_Neck");
             mMecanimToQtmSegmentNames.Add("Head", skeletonName + "_Head");
-            /*
+#if FINGERS
             mMecanimToQtmSegmentNames.Add("Left Thumb Proximal", skeletonName + "_LeftHandThumb1");
             mMecanimToQtmSegmentNames.Add("Left Thumb Intermediate", skeletonName + "_LeftHandThumb2");
             mMecanimToQtmSegmentNames.Add("Left Thumb Distal", skeletonName + "_LeftHandThumb3");
@@ -194,7 +211,7 @@ namespace QualisysRealTime.Unity
             mMecanimToQtmSegmentNames.Add("Right Little Proximal", skeletonName + "_RightHandPinky1");
             mMecanimToQtmSegmentNames.Add("Right Little Intermediate", skeletonName + "_RightHandPinky2");
             mMecanimToQtmSegmentNames.Add("Right Little Distal", skeletonName + "_RightHandPinky3");
-            */
+#endif
         }
     }
 }
