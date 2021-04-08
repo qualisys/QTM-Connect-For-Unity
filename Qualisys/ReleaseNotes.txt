@@ -1,3 +1,28 @@
+Package 11
+
+- Tested with Unity 2019.4.23f1
+- Updated the QAvatar with rigged hands and fingers.
+- Enabled hand/finger retargeting in RTSkeleton.cs (can be disabled by commenting out #FINGERS)
+
+Package 10
+
+- Tested with Unity 2019.4.15f1 (LTS)
+- Arqus support
+- Custom Avatar
+- Updated RTClientSDK.Net
+- New thread handling
+- New connection handling (non blocking alternative)
+
+Package 9
+
+- Tested with Unity 2019.3.1f1
+- Update QAvatar.fbx to fix right hand issue
+
+Package 8
+
+- Tested with Unity 2018.4.16f1
+- Fixed T-Pose rotation issue
+
 Package 7
 
 - Added support for mecanim skeleton animation for QTM streaming skeleton data (available in QTM 2019)

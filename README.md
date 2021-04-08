@@ -21,6 +21,7 @@ Note that you can also use the editor window to connect to QTM. It's located und
 
 The scripts below can be attached to GameObjects for streaming data from QTM. They are built using the [Qualisys Real-time Client SDK for .NET](https://github.com/qualisys/RTClientSDK.Net).
 
+* **RTGenericSkeleton.cs** - Control a generic Unity rig using custom skeleton streaming from QTM. 
 * **RTSkeleton.cs** - Add this script to use qtm skeleton data to drive mecanim humanoid character in Unity.
 * **RTMarker.cs** - Add this script to a Game object to set the position of game object from a specific labeled marker name.
 * **RTUnlabeledMarker.cs** - Add this script to a Game object to set the position of game object from a specific unlabeled marker id.
