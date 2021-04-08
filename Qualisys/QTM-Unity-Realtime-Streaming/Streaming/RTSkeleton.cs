@@ -26,7 +26,7 @@ namespace QualisysRealTime.Unity
 
         private Skeleton mQtmSkeletonCache;
 #if DEBUG_SKELETON
-        private GameObject mTPoseRoot;
+        private GameObject mDebugSkeletonTPose;
 #endif
         void Update()
         {
@@ -46,12 +46,8 @@ namespace QualisysRealTime.Unity
                 mStreamedRootObject = new GameObject(this.SkeletonName);
 
 #if DEBUG_SKELETON
-                if (mTPoseRoot != null)
-                    GameObject.Destroy(mTPoseRoot);
-                mTPoseRoot = new GameObject();
                 mStreamedRootObject.AddComponent<DebugHierarchyRotations>().color = Color.yellow;
 #endif
-
                 mQTmSegmentIdToGameObject = new Dictionary<uint, GameObject>(mQtmSkeletonCache.Segments.Count);
 
                 foreach (var segment in mQtmSkeletonCache.Segments)
@@ -65,9 +61,11 @@ namespace QualisysRealTime.Unity
 
                 mStreamedRootObject.transform.SetParent(this.transform, false);
 #if DEBUG_SKELETON
-                mTPoseRoot = GameObject.Instantiate<GameObject>(mStreamedRootObject.gameObject, this.transform, false);
-                mTPoseRoot.name = this.SkeletonName + "-TPose";
-                mTPoseRoot.GetComponent<DebugHierarchyRotations>().color = Color.white;
+                if (mDebugSkeletonTPose != null)
+                    GameObject.Destroy(mDebugSkeletonTPose);
+                mDebugSkeletonTPose = GameObject.Instantiate<GameObject>(mStreamedRootObject.gameObject, this.transform, false);
+                mDebugSkeletonTPose.name = this.SkeletonName + "-TPose";
+                mDebugSkeletonTPose.GetComponent<DebugHierarchyRotations>().color = Color.white;
 #endif
                 BuildMecanimAvatarFromQtmTPose();
 
