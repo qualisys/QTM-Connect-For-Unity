@@ -58,7 +58,7 @@ namespace QualisysRealTime.Unity
             if (stream3dNoLabels) componentSelection.Add(ComponentType.Component3dNoLabelsResidual);
             if (stream6d) componentSelection.Add(ComponentType.Component6d);
             if (streamGaze) componentSelection.Add(ComponentType.ComponentGazeVector);
-            if (streamAnalog) componentSelection.Add(ComponentType.ComponentAnalog);
+            if (streamAnalog) componentSelection.Add(ComponentType.ComponentAnalogSingle);
             if (streamSkeleton) componentSelection.Add(ComponentType.ComponentSkeleton);
 
             killThread = false;
@@ -256,7 +256,8 @@ namespace QualisysRealTime.Unity
                     case ComponentType.Component3dNoLabelsResidual: return Get3DSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     case ComponentType.Component6d: return Get6DOFSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     case ComponentType.ComponentGazeVector: return GetGazeVectorSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
-                    case ComponentType.ComponentAnalog: return GetAnalogSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
+                    case ComponentType.ComponentAnalog: 
+                    case ComponentType.ComponentAnalogSingle: return GetAnalogSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     case ComponentType.ComponentSkeleton: return GetSkeletonSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     default: return ComponentType.ComponentNone;
                 };
@@ -495,10 +496,18 @@ namespace QualisysRealTime.Unity
                     state.gazeVectors[i].Direction = gazeVector.GazeVectorData[0].Gaze.QtmRhsToUnityLhsNormalizedDirection(state.coordinateSystemChange);
                 }
             }
-            
-            packet.GetAnalogData(cachedAnalog);
-            if (cachedAnalog != null)
+
+
+            if (state.componentsInStream.Contains(ComponentType.ComponentAnalogSingle))
             {
+                packet.GetAnalogSingleData(cachedAnalog);
+            }
+            else
+            {
+                packet.GetAnalogData(cachedAnalog);
+            }
+
+            { 
                 int channelIndex = 0;
                 foreach (var analogDevice in cachedAnalog)
                 {
