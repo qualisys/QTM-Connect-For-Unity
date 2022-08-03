@@ -23,7 +23,8 @@ namespace QualisysRealTime.Unity
 
         private HumanPoseHandler mSourcePoseHandler;
         private HumanPoseHandler mDestiationPoseHandler;
-
+        private float mTimeOflastSkeletonUpdate = 0.0f;
+        
         private Skeleton mQtmSkeletonCache;
 #if DEBUG_SKELETON
         private GameObject mDebugSkeletonTPose;
@@ -31,7 +32,7 @@ namespace QualisysRealTime.Unity
         void Update()
         {
             var skeleton = RTClient.GetInstance().GetSkeleton(SkeletonName);
-
+  
             if (mQtmSkeletonCache != skeleton)
             {
                 mQtmSkeletonCache = skeleton;
@@ -71,9 +72,23 @@ namespace QualisysRealTime.Unity
 
                 return;
             }
-
+            
             if (mQtmSkeletonCache == null)
+            {
                 return;
+            }
+
+            if(mQtmSkeletonCache.HasNewData)
+            {
+                mTimeOflastSkeletonUpdate = Time.realtimeSinceStartup;
+            }
+            
+            const float streamTimeout = 1.2f;
+            bool timeoutReached = (Time.realtimeSinceStartup - mTimeOflastSkeletonUpdate) >= streamTimeout;
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(!timeoutReached);
+            }
 
             //Update all the game objects
             foreach (var segment in mQtmSkeletonCache.Segments)

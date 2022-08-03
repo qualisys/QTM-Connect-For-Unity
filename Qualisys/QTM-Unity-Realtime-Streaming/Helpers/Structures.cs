@@ -167,11 +167,13 @@ namespace QualisysRealTime.Unity
     public class Skeleton : ICopyFrom<Skeleton>
     {
         public string Name = "";
+        public bool HasNewData = true;
         public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
         public Skeleton() { }
         public Skeleton(Skeleton skeleton) 
         {
             Name = skeleton.Name;
+            HasNewData = skeleton.HasNewData;
             foreach (var kv in skeleton.Segments) {
                 var segment = kv.Value;
                 var key = kv.Key;
@@ -186,10 +188,11 @@ namespace QualisysRealTime.Unity
                 });
             }
         }
-
+        
         public void CopyFrom(Skeleton source) 
         {
             Name = source.Name;
+            HasNewData = source.HasNewData;
             foreach (var kv in source.Segments)
             {
                 var segment = kv.Value;

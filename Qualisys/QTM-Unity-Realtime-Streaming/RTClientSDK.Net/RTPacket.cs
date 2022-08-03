@@ -1074,6 +1074,7 @@ namespace QTMRealTimeSDK.Data
                                 }
                                 mSkeletonData.Add(skeleton);
                             }
+                    
                         }
                         else
                         {

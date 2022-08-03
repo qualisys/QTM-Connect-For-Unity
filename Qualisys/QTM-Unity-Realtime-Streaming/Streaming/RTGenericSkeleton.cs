@@ -16,6 +16,7 @@ namespace QualisysRealTime.Unity
         private Dictionary<uint, GameObject> mQtmSegmentIdToGameObject = new Dictionary<uint, GameObject>();
         private Dictionary<string, GameObject> mSegmentNameToGameObject = new Dictionary<string, GameObject>();
         private Skeleton mQtmSkeletonCache = null;
+        private float mTimeOflastSkeletonUpdate = 0.0f;
 
         private void Awake()
         {
@@ -91,6 +92,18 @@ namespace QualisysRealTime.Unity
 
             if (mQtmSkeletonCache == null)
                 return;
+
+            if(mQtmSkeletonCache.HasNewData)
+            {
+                mTimeOflastSkeletonUpdate = Time.realtimeSinceStartup;
+            }
+
+            const float streamTimeout = 1.2f;
+            bool timeoutReached = (Time.realtimeSinceStartup - mTimeOflastSkeletonUpdate) >= streamTimeout;
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(!timeoutReached);
+            }
 
             // Update all the game objects
             foreach (var segment in mQtmSkeletonCache.Segments)

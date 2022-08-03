@@ -514,21 +514,30 @@ namespace QualisysRealTime.Unity
             packet.GetSkeletonData(cachedSkeletons);
             for (int skeletonIndex = 0; skeletonIndex < cachedSkeletons.Count; skeletonIndex++)
             {
-                foreach (var segmentData in cachedSkeletons[skeletonIndex].Segments)
+                if (cachedSkeletons[skeletonIndex].SegmentCount == 0)
+                { 
+                    state.skeletons[skeletonIndex].HasNewData = false;
+                }
+                else
                 {
-                    Segment targetSegment;
-                    if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.ID, out targetSegment))
-                        continue;
+                    state.skeletons[skeletonIndex].HasNewData = true;
 
-                    if (targetSegment.ParentId == 0)
+                    foreach (var segmentData in cachedSkeletons[skeletonIndex].Segments)
                     {
-                        targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
-                        targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs(state.coordinateSystemChange);
-                    }
-                    else
-                    {
-                        targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs();
-                        targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs();
+                        Segment targetSegment;
+                        if (!state.skeletons[skeletonIndex].Segments.TryGetValue(segmentData.ID, out targetSegment))
+                            continue;
+
+                        if (targetSegment.ParentId == 0)
+                        {
+                            targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                            targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                        }
+                        else
+                        {
+                            targetSegment.Position = segmentData.Position.QtmRhsToUnityLhs();
+                            targetSegment.Rotation = segmentData.Rotation.QtmRhsToUnityLhs();
+                        }
                     }
                 }
             }
