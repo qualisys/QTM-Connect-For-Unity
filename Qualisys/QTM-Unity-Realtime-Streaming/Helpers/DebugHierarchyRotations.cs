@@ -5,7 +5,10 @@ namespace QualisysRealTime.Unity
 {
     public class DebugHierarchyRotations : MonoBehaviour
     {
+        
         public Color color = Color.red;
+
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             var transforms = new Stack<Transform>();
@@ -27,5 +30,6 @@ namespace QualisysRealTime.Unity
 
             }
         }
+#endif
     }
 }
