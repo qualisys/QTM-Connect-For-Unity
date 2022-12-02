@@ -27,7 +27,7 @@ public class ServerButton : MonoBehaviour
 
     IEnumerator Connect()
     {
-        RTClient.GetInstance().StartConnecting(response.IpAddress, -1, true, true, false, true, false, true);
+        RTClient.GetInstance().StartConnecting(response.IpAddress, -1, true, true, false, true, false, true, true);
         InfoText.color = Color.yellow;
         InfoText.text = "Connecting ...";
         

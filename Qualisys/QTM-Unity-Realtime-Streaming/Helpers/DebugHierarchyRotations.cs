@@ -24,7 +24,6 @@ namespace QualisysRealTime.Unity
                         transforms.Push(child);
                     }
                 }
-
             }
         }
     }

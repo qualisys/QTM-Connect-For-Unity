@@ -69,6 +69,30 @@ namespace QualisysRealTime.Unity
         }
     }
 
+    public class ForceVector : ICopyFrom<ForceVector>
+    {
+        public ForceVector() { }
+        public Matrix4x4 Transform = Matrix4x4.identity;
+        public Vector3 ApplicationPoint = Vector3.zero;
+        public Vector3 Force = Vector3.zero;
+        public Vector3 Moment = Vector3.zero;
+        public Vector3[] Corners = {Vector3.zero,Vector3.zero,Vector3.zero,Vector3.zero}; 
+
+        public string Name = "";
+        public void CopyFrom(ForceVector source)
+        {
+            this.ApplicationPoint = source.ApplicationPoint;
+            this.Force = source.Force;
+            this.Moment = source.Moment;
+            this.Name = source.Name;
+            this.Transform = source.Transform;
+            this.Corners[0] = source.Corners[0];
+            this.Corners[1] = source.Corners[1];
+            this.Corners[2] = source.Corners[2];
+            this.Corners[3] = source.Corners[3];
+        }
+    }
+
     public class LabeledMarker : ICopyFrom<LabeledMarker>
     {
         public LabeledMarker() { }

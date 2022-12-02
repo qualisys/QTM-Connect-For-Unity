@@ -20,6 +20,7 @@ namespace QualisysRealTime.Unity
         bool streamGaze = true;
         bool streamAnalog = false;
         bool streamSkeleton = true;
+        bool streamForcePlateForces = true;
 
         //private List<SixDOFBody> availableBodies;
         private List<DiscoveryResponse> discoveryResponses;
@@ -164,7 +165,7 @@ namespace QualisysRealTime.Unity
         {
             if (selectedDiscoveryResponse.HasValue)
             {
-                RTClient.GetInstance().StartConnecting(selectedDiscoveryResponse.Value.IpAddress, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+                RTClient.GetInstance().StartConnecting(selectedDiscoveryResponse.Value.IpAddress, portUDP, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton, streamForcePlateForces);
             }
 
         }

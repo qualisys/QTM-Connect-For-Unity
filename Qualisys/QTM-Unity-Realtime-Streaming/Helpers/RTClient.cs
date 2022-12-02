@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
+using System.Linq;
 
 namespace QualisysRealTime.Unity
 {
@@ -165,6 +166,16 @@ namespace QualisysRealTime.Unity
             }
             return rtStreamThread.ReaderThreadState.GetAnalogChannel(name);
         }
+
+        public ForceVector GetForceVector(string forcePlateName)
+        {
+            if (rtStreamThread == null)
+            { 
+                return null;
+            }
+            return rtStreamThread.ReaderThreadState.GetForcePlateVector(forcePlateName);
+        }
+
         public List<AnalogChannel> GetAnalogChannels(List<string> names)
         {
             if (rtStreamThread == null)
@@ -178,6 +189,7 @@ namespace QualisysRealTime.Unity
         {
             return ConnectionState == RTConnectionState.Connected && rtStreamThread.ReaderThreadState.isStreaming;
         }
+
         /// <summary>
         /// Get list of servers available on network (always add localhost)
         /// </summary>
@@ -230,7 +242,7 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
         /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public void StartConnecting(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
+        public void StartConnecting(string IpAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton, bool streamForce)
         {
             errorString = string.Empty;
             if (rtStreamThread != null)
@@ -238,7 +250,7 @@ namespace QualisysRealTime.Unity
                 rtStreamThread.Dispose();
                 rtStreamThread = null;
             }
-            rtStreamThread = new RTStreamThread(IpAddress, udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            rtStreamThread = new RTStreamThread(IpAddress, udpPort, StreamRate.RateAllFrames, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton, streamForce);
         }
 
         /// <summary>
@@ -252,9 +264,9 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3dNoLabels">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
         /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
+        public bool Connect(DiscoveryResponse discoveryResponse, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton, bool streamForce)
         {
-            StartConnecting(discoveryResponse.IpAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            StartConnecting(discoveryResponse.IpAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton, streamForce);
             while (ConnectionState == RTConnectionState.Connecting)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(200));
@@ -274,9 +286,9 @@ namespace QualisysRealTime.Unity
         /// <param name="stream3d">if unlabeled markers should be streamed.</param>
         /// <param name="streamGaze">if gaze vectors should be streamed.</param>
         /// <param name="streamAnalog">if analog data should be streamed.</param>
-        public bool Connect(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
+        public bool Connect(string ipAddress, short udpPort, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton, bool streamForce)
         {
-            StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton);
+            StartConnecting(ipAddress, udpPort, stream6d, stream3d, stream3dNoLabels, streamGaze, streamAnalog, streamSkeleton, streamForce);
             while (ConnectionState == RTConnectionState.Connecting)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(200));
@@ -350,6 +362,7 @@ namespace QualisysRealTime.Unity
                 instance = null;
             }
         }
-        
+
+
     }
 }
