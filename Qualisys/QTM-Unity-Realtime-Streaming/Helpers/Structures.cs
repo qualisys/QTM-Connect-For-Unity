@@ -29,6 +29,7 @@ namespace QualisysRealTime.Unity
         {
             return string.Format("Version {0}.{1}", major, minor);
         }
+
         public static bool operator <(RtProtocolVersion a, RtProtocolVersion b) 
         {
             if (a.major < b.major || (a.major == b.major && a.minor < b.minor))
@@ -36,10 +37,11 @@ namespace QualisysRealTime.Unity
                 return true;
             }
             else
-            { 
+            {
                 return false;
-            }    
+            }
         }
+
         public static bool operator >(RtProtocolVersion a, RtProtocolVersion b)
         {
             if (a.major > b.major || (a.major == b.major && a.minor > b.minor))
@@ -72,11 +74,32 @@ namespace QualisysRealTime.Unity
     public class ForceVector : ICopyFrom<ForceVector>
     {
         public ForceVector() { }
-        public Matrix4x4 Transform = Matrix4x4.identity;
+        
+        /// <summary>
+        /// A 3D point definning the center of pressure in Meters.
+        /// </summary>
         public Vector3 ApplicationPoint = Vector3.zero;
+        
+        /// <summary>
+        /// Force expressed in Newton
+        /// </summary>
         public Vector3 Force = Vector3.zero;
+        
+        /// <summary>
+        /// Moment expressed in Newtwon/Meter
+        /// </summary>
         public Vector3 Moment = Vector3.zero;
+        
+        /// <summary>
+        /// Force plate corner positions in world coordinates.
+        /// </summary>
         public Vector3[] Corners = {Vector3.zero,Vector3.zero,Vector3.zero,Vector3.zero}; 
+
+        /// <summary>
+        /// Transform used to convert from force plate local to world space.
+        /// Already applied to ApplicationPoint, Force and Moment.
+        /// </summary>
+        public Matrix4x4 Transform = Matrix4x4.identity;
 
         public string Name = "";
         public void CopyFrom(ForceVector source)

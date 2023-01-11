@@ -362,7 +362,6 @@ namespace QualisysRealTime.Unity
             { 
                 return false;
             }
-                
 
             var forcePlates = mProtocol.ForceSettings.Plates;
             state.forceVectors.Clear(); 
@@ -373,42 +372,56 @@ namespace QualisysRealTime.Unity
                 forceVector.Moment = Vector3.zero;
                 forceVector.ApplicationPoint = Vector3.zero;
                 forceVector.Name = forcePlate.Name;
-                var corners = new Vector3[]{
-                    forcePlate.Location.Corner1.QtmRhsToUnityLhs(state.coordinateSystemChange),
-                    forcePlate.Location.Corner2.QtmRhsToUnityLhs(state.coordinateSystemChange),
-                    forcePlate.Location.Corner3.QtmRhsToUnityLhs(state.coordinateSystemChange),
-                    forcePlate.Location.Corner4.QtmRhsToUnityLhs(state.coordinateSystemChange),
-                };
 
-                var zAxis = (
-                    ((corners[3] + corners[2])-(corners[0] + corners[1])) / 2.0f
-                ).normalized;
+                var c1 = forcePlate.Location.Corner1.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c2 = forcePlate.Location.Corner2.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c3 = forcePlate.Location.Corner3.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c4 = forcePlate.Location.Corner4.QtmRhsToUnityLhs(state.coordinateSystemChange);
 
+                // Force plate corner layout.
+                // Forces and application points are defined in this system
+                // Z is pointing down making it right handed.
+
+                // 1--------2
+                // |    +y  |
+                // |    ^   |
+                // |    |   |
+                // |+x<-    |
+                // |        |
+                // 4--------3
+                
+                // X is oriented towards side (1, 4) 
                 var xAxis = (
-                    ((corners[1] + corners[2]) - (corners[0] + corners[3])) / 2.0f
+                   (c1 + c4) - (c2 + c3) 
                 ).normalized;
 
-                var yAxis = Vector3.Cross(zAxis, xAxis).normalized;
+                // Y is oriented towards side (1, 2) 
+                var yAxis = (
+                   (c1 + c2) - (c3 + c4)
+                ).normalized;
 
-                var translation = (corners[0] + corners[1] + corners[2] + corners[3]) / 4.0f;
+                // Z up, Z is flipped in order to convert from a left handed system into a right handed.
+                var zAxis = Vector3.Cross(xAxis, yAxis).normalized;
+
+                var translation = (c1 + c2 + c4 + c3) / 4.0f;
                 Matrix4x4 m = Matrix4x4.identity;
                 
                 m.m00 = xAxis.x;
-                m.m01 = xAxis.y;
-                m.m02 = xAxis.z;
+                m.m10 = xAxis.y;
+                m.m20 = xAxis.z;
 
-                m.m10 = yAxis.x;
+                m.m01 = yAxis.x;
                 m.m11 = yAxis.y;
-                m.m12 = yAxis.z;
+                m.m21 = yAxis.z;
 
-                m.m20 = zAxis.x;
-                m.m21 = zAxis.y;
+                m.m02 = zAxis.x; 
+                m.m12 = zAxis.y;
                 m.m22 = zAxis.z;
 
                 m.m03 = translation.x;
                 m.m13 = translation.y;
                 m.m23 = translation.z;
-
+                
                 if(!m.ValidTRS())
                 {
                     throw new Exception( "Invalid TRS" );
@@ -416,7 +429,13 @@ namespace QualisysRealTime.Unity
                 
                 forceVector.Transform = m;
 
-                forceVector.Corners = corners;
+                forceVector.Corners = new Vector3[]{ 
+                    c1,
+                    c2,
+                    c3,
+                    c4
+                };
+
                 state.forceVectors.Add(forceVector);
             }
             return true;
@@ -613,22 +632,23 @@ namespace QualisysRealTime.Unity
                         break;
                     }
                     
-                    
                     var target = state.forceVectors[forcePlateIndex];
                     
                     if(forcePlate.ForceSamples.Length != 0)
-                    {
-                        
+                    {   
                         var sample = forcePlate.ForceSamples[forcePlate.ForceSamples.Length - 1];
-                        var force = sample.Force;
-                        force.X = -force.X;
-                        force.Y = -force.Y;
-                        force.Z = -force.Z;
-                        var applicationPoint = sample.ApplicationPoint;
-                        var moment = sample.Moment;
-                        target.Force = target.Transform.MultiplyPoint(force.QtmRhsToUnityLhs(state.coordinateSystemChange));
-                        target.ApplicationPoint = target.Transform.MultiplyPoint(applicationPoint.QtmRhsToUnityLhs(state.coordinateSystemChange));
-                        target.Moment = target.Transform.MultiplyPoint(moment.QtmRhsToUnityLhs(state.coordinateSystemChange));
+
+                        Vector3 ForcePlateRHStoUnityLHS( Point p ){ return new Vector3(p.X, p.Y, -p.Z); }
+
+                        var force = ForcePlateRHStoUnityLHS(sample.Force);
+                        
+                        var applicationPoint = ForcePlateRHStoUnityLHS(sample.ApplicationPoint) / 1000f; // Convert Millimeters to Meters
+                        
+                        var moment = ForcePlateRHStoUnityLHS(sample.Moment);
+
+                        target.Force = target.Transform.MultiplyVector(force);
+                        target.ApplicationPoint = target.Transform.MultiplyPoint(applicationPoint);
+                        target.Moment = target.Transform.MultiplyVector(moment);
                     }
                     forcePlateIndex ++;
                     

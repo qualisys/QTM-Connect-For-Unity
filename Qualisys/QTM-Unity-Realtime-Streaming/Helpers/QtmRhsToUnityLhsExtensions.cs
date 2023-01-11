@@ -8,11 +8,6 @@ namespace QualisysRealTime.Unity
 {
     public static class QtmRhsToUnityLhsExtensions 
     {
-        public static Vector3 ToVector3(this Point point)
-        { 
-            return new Vector3(point.X, point.Y, point.Z);
-        }
-
         public static Vector3 QtmRhsToUnityLhs(this Point position)
         {
             return new Vector3(-position.X / 1000f, position.Y / 1000f, position.Z / 1000f);
@@ -56,8 +51,6 @@ namespace QualisysRealTime.Unity
             var q = new Quaternion(-src.x, src.y, src.z, -src.w);
             return q;
         }
-
-
 
         public static Quaternion QtmRhsToUnityLhs(this QTMRealTimeSDK.Settings.Rotation src, Quaternion coordinateSystemRotation)
         {
