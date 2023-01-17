@@ -1,4 +1,4 @@
-﻿// Unity SDK for Qualisys ack Manager. Copyright 2015-2022 Qualisys AB
+﻿// Unity SDK for Qualisys ack Manager. Copyright 2015-2023 Qualisys AB
 //
 using UnityEngine;
 
@@ -88,7 +88,7 @@ namespace QualisysRealTime.Unity
                 forcePlateCube.SetActive(forceVectorCached != null);
                 if (forceVectorCached != null)
                 {
-                    // Adjust cube to fit force-plate
+                    // Adjust cube to fit force plate
                     var src = forceVectorCached.Transform;
                     var forcePlateThickness = 0.02f;
                     var destTransform = forcePlateCube.transform;

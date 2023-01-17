@@ -86,7 +86,7 @@ namespace QualisysRealTime.Unity
         public Vector3 Force = Vector3.zero;
         
         /// <summary>
-        /// Moment expressed in Newtwon/Meter
+        /// Moment expressed in Newton/Meter
         /// </summary>
         public Vector3 Moment = Vector3.zero;
         
