@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73b0fe15cf07814cb47575098b39084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForcePlateName: Force-plate 2
+  forcePlateName: Force-plate 2
   forceArrow: {fileID: 1151815016}
   momentArrow: {fileID: 1023253265}
   forcePlateCube: {fileID: 1429679304}
@@ -1882,7 +1882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73b0fe15cf07814cb47575098b39084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForcePlateName: Force-plate 1
+  forcePlateName: Force-plate 1
   forceArrow: {fileID: 475800269}
   momentArrow: {fileID: 1750136386}
   forcePlateCube: {fileID: 1153436687}

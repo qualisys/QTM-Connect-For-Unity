@@ -19,10 +19,14 @@ namespace QualisysRealTime.Unity
 
     class RTForcePlate : MonoBehaviour
     {
-        public string ForcePlateName = "Force-plate 1";
+        public string forcePlateName = "Force-plate 1";
+
         public LineRenderer forceArrow;
+        
         public LineRenderer momentArrow;
+        
         public GameObject forcePlateCube;
+
         private ForceVector forceVectorCached;
 
         Vector3 VisualDownscaleForce(Vector3 v)
@@ -81,7 +85,7 @@ namespace QualisysRealTime.Unity
 
         void Update()
         {
-            forceVectorCached = RTClient.GetInstance().GetForceVector(ForcePlateName);
+            forceVectorCached = RTClient.GetInstance().GetForceVector(forcePlateName);
             
             if (forcePlateCube) 
             {
