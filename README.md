@@ -32,6 +32,7 @@ The scripts below can be attached to GameObjects for streaming data from QTM. Th
 * **RTGazeStream.cs** - Add this script to visualize gaze vectors as lines.
 * **RTAnalog.cs** - Example script to display how to get data from a specific analog channel (using name).
 * **RTAnalogIMU.cs** - Add this script and set analog channel names for IMU data (X, Y, Z, W).
+* **RTForcePlate.cs** - Add this script to visualizie force plate data. Example scene: DemoForceDataScene
 
 ### Helpers
 
