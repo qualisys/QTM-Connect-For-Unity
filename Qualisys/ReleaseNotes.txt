@@ -1,3 +1,9 @@
+Package 12
+
+- Tested with Unity 2019.4.23f1
+- Added support for streaming force plate data
+- Fixed issue accessing the UnityEditor namespace during build
+
 Package 11
 
 - Tested with Unity 2019.4.23f1
