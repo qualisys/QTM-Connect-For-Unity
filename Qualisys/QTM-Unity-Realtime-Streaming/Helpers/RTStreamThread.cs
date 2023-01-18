@@ -44,9 +44,10 @@ namespace QualisysRealTime.Unity
         List<QTMRealTimeSDK.Data.Q3D> cachedUnabeledMarkers = new List<QTMRealTimeSDK.Data.Q3D>();
         List<QTMRealTimeSDK.Data.Skeleton> cachedSkeletons = new List<QTMRealTimeSDK.Data.Skeleton>();
         List<QTMRealTimeSDK.Data.GazeVector> cachedGazeVectors = new List<QTMRealTimeSDK.Data.GazeVector>();
+        List<QTMRealTimeSDK.Data.ForcePlate> cachedForceVectors = new List<QTMRealTimeSDK.Data.ForcePlate>();
 
 
-        public RTStreamThread(string IpAddress, short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton)
+        public RTStreamThread(string IpAddress, short udpPort, StreamRate streamRate, bool stream6d, bool stream3d, bool stream3dNoLabels, bool streamGaze, bool streamAnalog, bool streamSkeleton, bool force)
         {
             this.writerThreadState = new RTState();
             this.ReaderThreadState = new RTState();
@@ -60,6 +61,7 @@ namespace QualisysRealTime.Unity
             if (streamGaze) componentSelection.Add(ComponentType.ComponentGazeVector);
             if (streamAnalog) componentSelection.Add(ComponentType.ComponentAnalog);
             if (streamSkeleton) componentSelection.Add(ComponentType.ComponentSkeleton);
+            if (force) componentSelection.Add(ComponentType.ComponentForceSingle);
 
             killThread = false;
             writerThread = new Thread(WriterThreadFunction);
@@ -258,6 +260,7 @@ namespace QualisysRealTime.Unity
                     case ComponentType.ComponentGazeVector: return GetGazeVectorSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     case ComponentType.ComponentAnalog: return GetAnalogSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     case ComponentType.ComponentSkeleton: return GetSkeletonSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
+                    case ComponentType.ComponentForceSingle: return GetForceSettings(rtState, rtProtocol) ? x : ComponentType.ComponentNone;
                     default: return ComponentType.ComponentNone;
                 };
             })
@@ -346,11 +349,96 @@ namespace QualisysRealTime.Unity
                     state.bodies.Add(newbody);
 
                 }
-
                 return true;
             }
-
             return false;
+        }
+
+        static bool GetForceSettings(RTState state, RTProtocol mProtocol)
+        {
+            bool getStatus = mProtocol.GetForceSettings();
+
+            if (!getStatus)
+            { 
+                return false;
+            }
+
+            var forcePlates = mProtocol.ForceSettings.Plates;
+            state.forceVectors.Clear(); 
+            foreach (var forcePlate in forcePlates)
+            {
+                var forceVector = new ForceVector();
+                forceVector.Force = Vector3.zero;
+                forceVector.Moment = Vector3.zero;
+                forceVector.ApplicationPoint = Vector3.zero;
+                forceVector.Name = forcePlate.Name;
+
+                var c1 = forcePlate.Location.Corner1.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c2 = forcePlate.Location.Corner2.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c3 = forcePlate.Location.Corner3.QtmRhsToUnityLhs(state.coordinateSystemChange);
+                var c4 = forcePlate.Location.Corner4.QtmRhsToUnityLhs(state.coordinateSystemChange);
+
+                // Force plate corner layout.
+                // Forces and application points are defined in this system
+                // Z is pointing down making it right handed.
+
+                // 1--------2
+                // |    +y  |
+                // |    ^   |
+                // |    |   |
+                // |+x<-    |
+                // |        |
+                // 4--------3
+                
+                // X is oriented towards side (1, 4) 
+                var xAxis = (
+                   (c1 + c4) - (c2 + c3) 
+                ).normalized;
+
+                // Y is oriented towards side (1, 2) 
+                var yAxis = (
+                   (c1 + c2) - (c3 + c4)
+                ).normalized;
+
+                // Z up, Z is flipped in order to convert from a left handed system into a right handed.
+                var zAxis = Vector3.Cross(xAxis, yAxis).normalized;
+
+                var translation = (c1 + c2 + c4 + c3) / 4.0f;
+                Matrix4x4 m = Matrix4x4.identity;
+                
+                m.m00 = xAxis.x;
+                m.m10 = xAxis.y;
+                m.m20 = xAxis.z;
+
+                m.m01 = yAxis.x;
+                m.m11 = yAxis.y;
+                m.m21 = yAxis.z;
+
+                m.m02 = zAxis.x; 
+                m.m12 = zAxis.y;
+                m.m22 = zAxis.z;
+
+                m.m03 = translation.x;
+                m.m13 = translation.y;
+                m.m23 = translation.z;
+                
+                if(!m.ValidTRS())
+                {
+                    throw new Exception( "Invalid TRS" );
+                }
+                
+                forceVector.Transform = m;
+
+                forceVector.Corners = new Vector3[]{ 
+                    c1,
+                    c2,
+                    c3,
+                    c4
+                };
+
+                state.forceVectors.Add(forceVector);
+            }
+            return true;
         }
 
         static bool GetSkeletonSettings(RTState state, RTProtocol mProtocol)
@@ -532,6 +620,41 @@ namespace QualisysRealTime.Unity
                     }
                 }
             }
+
+            packet.GetForceSingleData(cachedForceVectors);
+            if (cachedForceVectors != null)
+            {
+                int forcePlateIndex = 0;
+                foreach (var forcePlate in cachedForceVectors)
+                {
+                    if(forcePlateIndex >= state.forceVectors.Count)
+                    { 
+                        break;
+                    }
+                    
+                    var target = state.forceVectors[forcePlateIndex];
+                    
+                    if(forcePlate.ForceSamples.Length != 0)
+                    {   
+                        var sample = forcePlate.ForceSamples[forcePlate.ForceSamples.Length - 1];
+
+                        Vector3 ForcePlateRHStoUnityLHS( Point p ){ return new Vector3(p.X, p.Y, -p.Z); }
+
+                        var force = ForcePlateRHStoUnityLHS(sample.Force);
+                        
+                        var applicationPoint = ForcePlateRHStoUnityLHS(sample.ApplicationPoint) / 1000f; // Convert Millimeters to Meters
+                        
+                        var moment = ForcePlateRHStoUnityLHS(sample.Moment);
+
+                        target.Force = target.Transform.MultiplyVector(force);
+                        target.ApplicationPoint = target.Transform.MultiplyPoint(applicationPoint);
+                        target.Moment = target.Transform.MultiplyVector(moment);
+                    }
+                    forcePlateIndex ++;
+                    
+                }
+            }
+
         }
     }
 }

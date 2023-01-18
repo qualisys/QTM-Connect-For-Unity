@@ -16,7 +16,10 @@ namespace QualisysRealTime.Unity
         internal List<GazeVector> gazeVectors = new List<GazeVector>();
         internal List<AnalogChannel> analogChannels = new List<AnalogChannel>();
         internal List<Skeleton> skeletons = new List<Skeleton>();
+        internal List<ForceVector> forceVectors = new List<ForceVector>();
+
         internal List<ComponentType> componentsInStream = new List<ComponentType>();
+        
         internal Axis upAxis = Axis.XAxisUpwards;
         internal Quaternion coordinateSystemChange = Quaternion.identity;
         internal RtProtocolVersion rtProtocolVersion = new RtProtocolVersion(0, 0);
@@ -48,6 +51,7 @@ namespace QualisysRealTime.Unity
             CopyFromList(rtState.analogChannels, this.analogChannels);
             CopyFromList(rtState.bones, this.bones);
             CopyFromList(rtState.skeletons, this.skeletons);
+            CopyFromList(rtState.forceVectors, this.forceVectors);
 
             this.rtProtocolVersion.CopyFrom(rtState.rtProtocolVersion);
 
@@ -126,6 +130,22 @@ namespace QualisysRealTime.Unity
                 if (analogChannel.Name == name)
                 {
                     return analogChannel;
+                }
+            }
+            return null;
+        }
+
+        
+        public ForceVector GetForcePlateVector(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            foreach (var force in forceVectors)
+            {
+                if (force.Name == name)
+                {
+                    return force;
                 }
             }
             return null;

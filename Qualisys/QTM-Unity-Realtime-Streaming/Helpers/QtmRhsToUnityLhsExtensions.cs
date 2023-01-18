@@ -12,29 +12,29 @@ namespace QualisysRealTime.Unity
         {
             return new Vector3(-position.X / 1000f, position.Y / 1000f, position.Z / 1000f);
         }
+
         public static Vector3 QtmRhsToUnityLhs(this Position position)
         {
             return new Vector3(-position.X / 1000f, position.Y / 1000f, position.Z / 1000f);
         }
-
 
         public static Vector3 QtmRhsToUnityLhsNormalizedDirection(this Point position, Quaternion coordinateSystemRotation)
         {
             var p = new Vector3(-position.X, position.Y, position.Z);
             return coordinateSystemRotation.Rotate(p);
         }
+
         public static Vector3 QtmRhsToUnityLhs(this Point position, Quaternion coordinateSystemRotation)
         {
             var p = new Vector3(-position.X / 1000f, position.Y / 1000f, position.Z / 1000f);
             return coordinateSystemRotation.Rotate(p);
         }
+
         public static Vector3 QtmRhsToUnityLhs(this Position position, Quaternion coordinateSystemRotation)
         {
             var p = new Vector3(-position.X / 1000f, position.Y / 1000f, position.Z / 1000f);
             return coordinateSystemRotation.Rotate(p);
         }
-
-
 
         public static Quaternion QtmRhsToUnityLhs(this QTMRealTimeSDK.Settings.Rotation src)
         {
@@ -51,8 +51,6 @@ namespace QualisysRealTime.Unity
             var q = new Quaternion(-src.x, src.y, src.z, -src.w);
             return q;
         }
-
-
 
         public static Quaternion QtmRhsToUnityLhs(this QTMRealTimeSDK.Settings.Rotation src, Quaternion coordinateSystemRotation)
         {

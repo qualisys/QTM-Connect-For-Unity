@@ -75,7 +75,7 @@ namespace QualisysRealTime.Unity
         void Connect()
         {
             if (selectedDiscoveryResponse.HasValue)
-                RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true);
+                RTClient.GetInstance().Connect(selectedDiscoveryResponse.Value, portUDP, true, true, false, true, false, true, true);
         }
     }
 }
