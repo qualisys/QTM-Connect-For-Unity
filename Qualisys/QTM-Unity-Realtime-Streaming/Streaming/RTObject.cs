@@ -9,6 +9,7 @@ namespace QualisysRealTime.Unity
         public string ObjectName = "Put QTM 6DOF object name here";
         public Vector3 PositionOffset = new Vector3(0, 0, 0);
         public Vector3 RotationOffset = new Vector3(0, 0, 0);
+        public bool IsLocalTransform = false;
 
         protected RTClient rtClient;
 
@@ -16,10 +17,18 @@ namespace QualisysRealTime.Unity
         {
             if (!float.IsNaN(body.Position.sqrMagnitude)) //just to avoid error when position is NaN
             {
-                transform.position = body.Position + PositionOffset;
-                if (transform.parent) transform.position += transform.parent.position;
-                transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
-                if (transform.parent) transform.rotation *= transform.parent.rotation;
+                if (IsLocalTransform)
+                {
+                    transform.localPosition = body.Position + PositionOffset;
+                    transform.localRotation = body.Rotation + PositionOffset;
+                }
+                else 
+                {
+                    transform.position = body.Position + PositionOffset;
+                    if (transform.parent) transform.position += transform.parent.position;
+                    transform.rotation = body.Rotation * Quaternion.Euler(RotationOffset);
+                    if (transform.parent) transform.rotation *= transform.parent.rotation;
+                }
             }
         }
 
