@@ -104,7 +104,7 @@ namespace QualisysRealTime.Unity
                         forcePlateThickness
                     );
 
-                    destTransform.position = src.ExtractPosition() - destTransform.forward * (forcePlateThickness / 2.0f);
+                    destTransform.localPosition = src.ExtractPosition() - destTransform.forward * (forcePlateThickness / 2.0f);
                 }
             }
             
@@ -113,7 +113,7 @@ namespace QualisysRealTime.Unity
                 forceArrow.gameObject.SetActive(forceVectorCached != null);
                 if (forceVectorCached != null)
                 {
-                    UpdateArrow(forceArrow, forceVectorCached.ApplicationPoint, VisualDownscaleForce(forceVectorCached.Force));
+                    UpdateArrow(forceArrow, forceVectorCached.ApplicationPoint + this.transform.localPosition, VisualDownscaleForce(forceVectorCached.Force));
                 }
             }
 
@@ -122,7 +122,7 @@ namespace QualisysRealTime.Unity
                 momentArrow.gameObject.SetActive(forceVectorCached != null);
                 if (forceVectorCached != null)
                 {
-                    UpdateArrow(momentArrow, forceVectorCached.ApplicationPoint, VisualDownscaleMoment(forceVectorCached.Moment));
+                    UpdateArrow(momentArrow, forceVectorCached.ApplicationPoint + this.transform.localPosition, VisualDownscaleMoment(forceVectorCached.Moment));
                 }
             }
         }
